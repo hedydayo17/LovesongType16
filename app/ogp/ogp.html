@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>OGP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Yomogi&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden;
+    font-family: "Zen Maru Gothic", system-ui, sans-serif;
+    font-feature-settings: "palt" 1;
+    color: #2a1830;
+    background: #fff5f8; }
+  .card { position: relative; width: 1200px; height: 630px; overflow: hidden;
+    background:
+      radial-gradient(ellipse at 12% 18%, #ffd5e0 0%, transparent 55%),
+      radial-gradient(ellipse at 92% 84%, #ffe0b3 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 110%, #f9c0db 0%, transparent 60%),
+      linear-gradient(135deg, #fff5f8 0%, #fff0e8 100%); }
+  .blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .55; }
+  .b1 { width: 380px; height: 380px; background: #ff7eb0; top: -120px; left: -80px; }
+  .b2 { width: 320px; height: 320px; background: #ffc857; bottom: -110px; right: -80px; }
+  .b3 { width: 240px; height: 240px; background: #b6a3ff; top: 30%; right: 8%; opacity: .35; }
+
+  .frame { position: absolute; inset: 28px; border-radius: 36px;
+    background: rgba(255,255,255,.55);
+    border: 2px dashed rgba(255, 94, 138, .35);
+    backdrop-filter: blur(1px); }
+
+  .content { position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 60px 80px; text-align: center; }
+
+  .brand-pill { display: inline-flex; align-items: center; gap: 10px;
+    background: #ffe5ee; color: #ff5e8a;
+    font-size: 26px; font-weight: 900; letter-spacing: .12em;
+    padding: 14px 28px; border-radius: 999px;
+    box-shadow: 0 4px 0 rgba(255, 94, 138, .15); margin-bottom: 36px; }
+  .brand-pill .num { display: inline-block; padding: 4px 14px; border-radius: 999px;
+    background: #ff5e8a; color: #fff; font-weight: 900; letter-spacing: 0; }
+
+  .title { font-size: 96px; font-weight: 900; line-height: 1.18; letter-spacing: -.025em;
+    margin-bottom: 32px; }
+  .title .grad { background: linear-gradient(135deg, #ff5e8a, #ff7eb0 50%, #ffc857);
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .lead { font-size: 30px; font-weight: 700; color: #6b5670; letter-spacing: .02em;
+    line-height: 1.4; }
+  .lead .accent { color: #ff5e8a; font-weight: 900; }
+
+  .meta-row { display: flex; gap: 12px; margin-top: 44px; }
+  .pill { font-size: 20px; font-weight: 800; color: #ff5e8a;
+    background: #fff; border: 1.5px solid #ffd0dc;
+    padding: 10px 22px; border-radius: 999px;
+    box-shadow: 0 3px 0 rgba(255, 94, 138, .08); }
+
+  .heart { position: absolute; opacity: .85; }
+  .h1 { top: 110px; left: 110px; transform: rotate(-12deg); }
+  .h2 { bottom: 110px; right: 130px; transform: rotate(14deg); }
+  .h3 { top: 80px; right: 180px; transform: rotate(8deg); }
+
+  .star { position: absolute; }
+  .s1 { top: 160px; right: 90px; }
+  .s2 { bottom: 130px; left: 110px; transform: rotate(20deg); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+
+    <svg class="heart h1" width="56" height="50" viewBox="0 0 24 22" fill="#ff5e8a" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.5-4.6-9.5-9.2C1.1 8.4 2.6 4.8 6 4c2.3-.5 4.5.8 6 2.7 1.5-1.9 3.7-3.2 6-2.7 3.4.8 4.9 4.4 3.5 7.8C19.5 16.4 12 21 12 21z"/></svg>
+    <svg class="heart h2" width="42" height="38" viewBox="0 0 24 22" fill="#ffc857" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.5-4.6-9.5-9.2C1.1 8.4 2.6 4.8 6 4c2.3-.5 4.5.8 6 2.7 1.5-1.9 3.7-3.2 6-2.7 3.4.8 4.9 4.4 3.5 7.8C19.5 16.4 12 21 12 21z"/></svg>
+    <svg class="heart h3" width="32" height="29" viewBox="0 0 24 22" fill="#ff7eb0" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.5-4.6-9.5-9.2C1.1 8.4 2.6 4.8 6 4c2.3-.5 4.5.8 6 2.7 1.5-1.9 3.7-3.2 6-2.7 3.4.8 4.9 4.4 3.5 7.8C19.5 16.4 12 21 12 21z"/></svg>
+    <svg class="star s1" width="44" height="44" viewBox="0 0 24 24" fill="#ffc857" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.6 6.7L22 9.6l-5.4 4.9L18 22l-6-3.6L6 22l1.4-7.5L2 9.6l7.4-.9z"/></svg>
+    <svg class="star s2" width="36" height="36" viewBox="0 0 24 24" fill="#b6a3ff" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.6 6.7L22 9.6l-5.4 4.9L18 22l-6-3.6L6 22l1.4-7.5L2 9.6l7.4-.9z"/></svg>
+
+    <div class="frame"></div>
+
+    <div class="content">
+      <div class="brand-pill">ラブソング診断<span class="num">16</span></div>
+      <h1 class="title">あなたの<span class="grad">恋愛タイプ</span>と<br>運命の10曲。</h1>
+      <p class="lead">3分の質問で、<span class="accent">16タイプ</span>の中からあなたを診断。<br>その人だけの<span class="accent">10曲のプレイリスト</span>が手に入る。</p>
+      <div class="meta-row">
+        <span class="pill">所要 3分</span>
+        <span class="pill">完全無料</span>
+        <span class="pill">登録不要</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

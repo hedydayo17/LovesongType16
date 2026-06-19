@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Future build artifacts (Node)
+node_modules/
+dist/
+build/
+.next/
+
+# Claude / Playwright ローカル開発用
+.claude/
+.playwright-mcp/
+
+# 開発中の一時スクリーンショット(プレビュー検証用)
+/hero-*.png
+/songs-*.png
+/result-*.png
+/page-*.png
+
+# ローカルだけの環境ファイル
+.env
+.env.local
