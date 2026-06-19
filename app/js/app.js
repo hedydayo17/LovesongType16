@@ -522,12 +522,30 @@ function observeReveals() {
 // ---- Step 3: 10曲レコメンド(モック) ----
 function recommend(typeKey) {
   const t = TYPE_MAP[typeKey];
-  // 重み付け: 本人タイプ一致=5 / 相性タイプ一致=2 / ジャンル一致=+2 / ベース0.3
+  // 100曲 × 16タイプ × 0-10 のキュレーション済みスコアから重み付け抽出
+  //   本人タイプスコア(0-10)を主軸 [二乗してメリハリ]
+  //   + 相性タイプスコア合計の 25%
+  //   + ジャンル一致 +1.5 ブースト
+  //   + 旧 types[] レガシー互換(スコアがない曲のため)
   const weighted = SONGS.map(song => {
-    let w = 0.3;
-    if (song.types.includes(typeKey)) w += 5;
-    if (song.types.some(x => t.compatible.includes(x))) w += 2;
-    if (state.genres.length && state.genres.includes(song.genre)) w += 2;
+    const sc = song.scores || {};
+    let primary = sc[typeKey];
+    if (primary == null && Array.isArray(song.types)) primary = song.types.includes(typeKey) ? 9 : 3;
+    if (primary == null) primary = 3;
+    // 相性タイプの平均ボーナス
+    let compatBonus = 0;
+    if (t.compatible && t.compatible.length) {
+      let sum = 0, n = 0;
+      t.compatible.forEach(k => {
+        const v = sc[k];
+        if (v != null) { sum += v; n++; }
+      });
+      if (n) compatBonus = (sum / n) * 0.25;
+    }
+    // ジャンル一致でブースト
+    const genreBonus = (state.genres && state.genres.includes(song.genre)) ? 1.5 : 0;
+    // 二乗でメリハリ + 0.3 のベース(全曲ゼロ防止)
+    const w = Math.max(0.3, Math.pow(primary, 1.7) + compatBonus + genreBonus);
     return { song, w };
   });
   // 重み付きランダム抽出(非復元)で10曲。再シャッフルで毎回変化
