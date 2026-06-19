@@ -372,7 +372,7 @@ function renderWrapped() {
       <section class="panel p-songs-lead">
         <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">そんなあなたへ</span></div>
         <h2 class="reveal songs-leadhead" style="--d:.2s">あなたにぴったりの<br><b class="g">ラブソング10曲</b>レコメンド。</h2>
-        ${IS_MOCK ? '<p class="reveal mock-note" style="--d:.5s">※ サンプル選曲・スワイプで1曲ずつ表示</p>' : ''}
+        <p class="reveal mock-note" style="--d:.5s">スワイプで1曲ずつ表示<br>各曲タップで30秒試聴</p>
         <div class="reveal scroll-hint" style="--d:.7s">↓ スワイプで聴く</div>
       </section>
 
@@ -618,42 +618,116 @@ function songRow(s, i) {
     </div>`;
 }
 
-// ---- 30秒試聴 + ジャケ写(iTunes Search API: 認証不要・CORS可・previewUrl=.m4a / artworkUrl100=ジャケ写) ----
-// _songMeta = { previewUrl, artworkUrl } を曲ごとにキャッシュ
+// ---- 30秒試聴 + ジャケ写 ----
+// 取得元:Spotify Web API(優先) → iTunes Search API(preview_url欠落時のフォールバック)
+// 日本曲は Spotify の preview_url が null になりがちなため iTunes 併用は必須
 let _audio = null;
 let _activeBtn = null;
-const _songMeta = new Map(); // key: "title|||artist" → { previewUrl, artworkUrl } | null
+const _songMeta = new Map(); // key: "title|||artist" → { previewUrl, artworkUrl, spotifyUrl, spotifyId } | null
+
+// Spotify アクセストークン(50分キャッシュ)
+let _spToken = null;
+let _spTokenExp = 0;
+async function getSpotifyToken() {
+  if (_spToken && Date.now() < _spTokenExp) return _spToken;
+  try {
+    const r = await fetch("/api/spotify-token");
+    if (!r.ok) return null;
+    const d = await r.json();
+    if (!d.access_token) return null;
+    _spToken = d.access_token;
+    _spTokenExp = Date.now() + ((d.expires_in || 3600) - 60) * 1000;
+    return _spToken;
+  } catch { return null; }
+}
+
+async function fetchSpotifyTrack(title, artist) {
+  const token = await getSpotifyToken();
+  if (!token) return null;
+  try {
+    // フィールド指定検索でヒット率UP。market=JP で日本リージョン優先
+    const q = encodeURIComponent(`track:${title} artist:${artist}`);
+    const r = await fetch(`https://api.spotify.com/v1/search?q=${q}&type=track&limit=1&market=JP`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!r.ok) return null;
+    const data = await r.json();
+    const t = data.tracks && data.tracks.items && data.tracks.items[0];
+    if (!t) return null;
+    return {
+      spotifyId: t.id,
+      previewUrl: t.preview_url || null,
+      artworkUrl: (t.album && t.album.images && t.album.images[0] && t.album.images[0].url) || null,
+      spotifyUrl: t.external_urls && t.external_urls.spotify,
+    };
+  } catch { return null; }
+}
+
+async function fetchITunesTrack(title, artist) {
+  try {
+    const term = encodeURIComponent(`${title} ${artist}`);
+    const r = await fetch(`https://itunes.apple.com/search?term=${term}&country=jp&entity=song&limit=1`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    const hit = j.results && j.results[0];
+    if (!hit) return null;
+    const art = (hit.artworkUrl100 || "").replace(/100x100/g, "600x600");
+    return { previewUrl: hit.previewUrl || null, artworkUrl: art || null };
+  } catch { return null; }
+}
 
 async function fetchSongMeta(title, artist) {
   const key = `${title}|||${artist}`;
   if (_songMeta.has(key)) return _songMeta.get(key);
-  try {
-    const term = encodeURIComponent(`${title} ${artist}`);
-    const r = await fetch(`https://itunes.apple.com/search?term=${term}&country=jp&entity=song&limit=1`);
-    const j = await r.json();
-    const hit = j.results && j.results[0];
-    if (!hit) { _songMeta.set(key, null); return null; }
-    const art = (hit.artworkUrl100 || "").replace(/100x100/g, "600x600");
-    const meta = { previewUrl: hit.previewUrl || null, artworkUrl: art || null };
-    _songMeta.set(key, meta);
-    return meta;
-  } catch { _songMeta.set(key, null); return null; }
+  const meta = { previewUrl: null, artworkUrl: null, spotifyUrl: null, spotifyId: null };
+  // 1) Spotify Search(優先)
+  const sp = await fetchSpotifyTrack(title, artist);
+  if (sp) {
+    meta.previewUrl = sp.previewUrl;
+    meta.artworkUrl = sp.artworkUrl;
+    meta.spotifyUrl = sp.spotifyUrl;
+    meta.spotifyId = sp.spotifyId;
+  }
+  // 2) iTunes fallback(Spotifyに無い・preview_urlがnull・artworkが取れない場合)
+  if (!meta.previewUrl || !meta.artworkUrl) {
+    const it = await fetchITunesTrack(title, artist);
+    if (it) {
+      if (!meta.previewUrl) meta.previewUrl = it.previewUrl;
+      if (!meta.artworkUrl) meta.artworkUrl = it.artworkUrl;
+    }
+  }
+  if (!meta.previewUrl && !meta.artworkUrl) {
+    _songMeta.set(key, null);
+    return null;
+  }
+  _songMeta.set(key, meta);
+  return meta;
 }
 
-// 結果ページ初期化時に呼ぶ:全10曲分のジャケ写/previewを並列で取得し各行のジャケ写を流し込む
+// 結果ページ初期化時に呼ぶ:全10曲分のジャケ写/preview/Spotify URLを並列取得し各行に流し込む
 // 1曲フルスクリーン panel と summary リスト両方の同じ曲に注入(data-song-id で照合)
 async function prefetchSongMeta() {
   if (!state.lastRecommend) return;
   await Promise.all(state.lastRecommend.map(async (s) => {
     const meta = await fetchSongMeta(s.title, s.artist);
-    if (!meta || !meta.artworkUrl) return;
+    if (!meta) return;
     const id = fbId(s);
-    document.querySelectorAll(`[data-song-id="${CSS.escape(id)}"]`).forEach((row) => {
-      const jacket = row.querySelector(".sp-jacket");
-      if (jacket) {
-        jacket.style.backgroundImage = `url("${meta.artworkUrl}")`;
-        const playBtn = row.querySelector(".song-play");
-        if (playBtn) playBtn.classList.add("art-loaded");
+    const rows = document.querySelectorAll(`[data-song-id="${CSS.escape(id)}"]`);
+    rows.forEach((row) => {
+      // ジャケ写
+      if (meta.artworkUrl) {
+        const jacket = row.querySelector(".sp-jacket");
+        if (jacket) {
+          jacket.style.backgroundImage = `url("${meta.artworkUrl}")`;
+          const playBtn = row.querySelector(".song-play");
+          if (playBtn) playBtn.classList.add("art-loaded");
+        }
+      }
+      // Spotify 直リンクが取れたら検索URL→トラックURLに差し替え
+      if (meta.spotifyUrl) {
+        row.querySelectorAll("a.song-link.sp, a.ps-svc.sp").forEach((a) => {
+          a.href = meta.spotifyUrl;
+        });
       }
     });
   }));

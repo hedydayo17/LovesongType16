@@ -6,8 +6,9 @@
 // fallback により、どのタイプでも必ず10曲そろう。
 // ============================================================
 
-// IS_MOCK: UIに「サンプル楽曲」表示を出すフラグ。本番接続時 false に。
-const IS_MOCK = true;
+// IS_MOCK: 楽曲選定はモック手動マッピングだが、データ取得は Spotify Web API + iTunes 併用で本物
+// 「サンプル選曲」UI表記を出すかのフラグ
+const IS_MOCK = false;
 
 const SONGS = [
   { title: "Pretender", artist: "Official髭男dism", genre: "J-POP", types: ["沼っくま", "ロマンチスト", "情熱ラブゾンビ"] },
