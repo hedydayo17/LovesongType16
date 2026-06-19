@@ -566,6 +566,7 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
     max-width: 460px;
     margin: 28px auto;
     min-height: calc(100vh - 56px);
+    max-height: calc(100vh - 56px);
     padding: 0 22px;
     background: rgba(255, 255, 255, .82);
     border: 1px solid rgba(255, 200, 220, .55);
@@ -576,33 +577,28 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
       inset 0 1px 0 rgba(255, 255, 255, .9);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    overflow: hidden;  /* 角丸を子要素にも効かせる */
+    /* PCではどの画面でも内部スクロール可能(横は角丸維持のため hidden) */
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
   }
+  #app::-webkit-scrollbar { width: 6px; }
+  #app::-webkit-scrollbar-thumb { background: rgba(255,94,138,.35); border-radius: 999px; }
   /* 結果のwrappedは枠内に収める(スマホでは -20px で枠貫通 → PCでは枠内) */
   .wrapped { margin: 0 -22px; }
   /* 上部余白を少し詰める(中央カードに収まるよう) */
   .screen { padding: 28px 0 44px; }
 
-  /* PCでは結果ページのみ #app を内部スクロールコンテナに切替 -------- */
+  /* 結果ページの snap-mode は #app に scroll-snap を追加(html側は無効化) */
   html.snap-mode { scroll-snap-type: none; }
-  html.snap-mode #app {
-    overflow-y: auto;
-    max-height: calc(100vh - 56px);
-    scroll-snap-type: y mandatory;
-    scrollbar-width: thin;
-  }
-  html.snap-mode #app::-webkit-scrollbar { width: 6px; }
-  html.snap-mode #app::-webkit-scrollbar-thumb { background: rgba(255,94,138,.35); border-radius: 999px; }
+  html.snap-mode #app { scroll-snap-type: y mandatory; }
 }
-@media (min-width: 1100px) {
-  html.snap-mode #app { max-height: calc(100vh - 80px); }
-}
-
 /* さらに大きい画面では中央カードを少し大きめに */
 @media (min-width: 1100px) {
   #app {
     max-width: 480px;
     margin: 40px auto;
     min-height: calc(100vh - 80px);
+    max-height: calc(100vh - 80px);
   }
 }
