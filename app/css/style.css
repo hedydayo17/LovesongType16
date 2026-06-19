@@ -258,9 +258,9 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
 .hero-card .type-mascot { width: 150px; height: 160px; margin: 0 auto 8px; align-self: center; }
 .hero-card .w-type { font-size: 15px; font-weight: 800; letter-spacing: .04em; opacity: .92; }
 .hero-card .w-parody {
-  font-size: clamp(32px, 10vw, 48px); font-weight: 900;
-  line-height: 1.1; letter-spacing: -.035em; margin: 2px 0 14px;
-  word-break: keep-all; overflow-wrap: anywhere;
+  font-size: clamp(26px, 8vw, 38px); font-weight: 900;
+  line-height: 1.12; letter-spacing: -.04em; margin: 2px 0 14px;
+  word-break: keep-all; overflow-wrap: normal;
   text-shadow: 0 3px 16px rgba(0,0,0,.22), 0 1px 2px rgba(0,0,0,.18); }
 .hc-catch {
   font-size: 18px; font-weight: 800; line-height: 1.55;
@@ -434,20 +434,22 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
 .fb.down.on { background: #c9b8d0; border-color: #c9b8d0; color: #fff; }
 
 /* p-share(スクショ用カード) */
-.share-card { width: 100%; border-radius: 26px; padding: 32px 26px; color: #fff;
+.share-card { width: 100%; border-radius: 26px; padding: 30px 22px; color: #fff;
   box-shadow: 0 18px 40px rgba(0,0,0,.18); margin-bottom: 22px; text-align: center; }
 .sc-brand { font-size: 12px; font-weight: 800; letter-spacing: .06em; opacity: .92; }
 .sc-kei { display: inline-block; font-size: 13px; font-weight: 900; letter-spacing: .04em;
   background: rgba(0,0,0,.28); padding: 5px 16px; border-radius: 999px; margin-top: 10px; }
 .sc-type { font-size: 14px; font-weight: 800; letter-spacing: .03em; opacity: .95; margin-top: 12px; }
 .sc-parody {
-  font-size: clamp(30px, 9vw, 42px); font-weight: 900;
-  line-height: 1.1; letter-spacing: -.035em;
-  word-break: keep-all; overflow-wrap: anywhere;
+  font-size: clamp(26px, 8vw, 38px); font-weight: 900;
+  line-height: 1.12; letter-spacing: -.04em;
+  word-break: keep-all; overflow-wrap: normal;
   margin: 6px 0 14px;
   text-shadow: 0 3px 14px rgba(0,0,0,.22), 0 1px 2px rgba(0,0,0,.18); }
 .sc-tagline {
-  font-size: 16px; font-weight: 800; letter-spacing: .01em; line-height: 1.5;
+  font-size: 15px; font-weight: 800; letter-spacing: .005em; line-height: 1.5;
+  word-break: auto-phrase; overflow-wrap: anywhere; text-wrap: pretty;
+  hanging-punctuation: allow-end;
   text-shadow: 0 2px 4px rgba(0,0,0,.28), 0 1px 1px rgba(0,0,0,.2); }
 .p-share .btn { margin-bottom: 12px; }
 
