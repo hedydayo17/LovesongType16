@@ -203,6 +203,15 @@ body {
 /* p-type は背景フル面のため装飾不要 */
 .p-type::before { display: none; }
 .p-type + .panel { border-top: none; }
+/* 各panel右下にマスコット透かし(タイプ世界観で全画面包む) */
+.panel-watermark { position: absolute; right: -52px; bottom: -52px;
+  width: 280px; height: 280px; opacity: .06; pointer-events: none; z-index: -1;
+  transform: rotate(-12deg);
+  filter: blur(.4px) saturate(.8); }
+.panel-watermark svg { width: 100%; height: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  .panel-watermark { opacity: .04; }
+}
 /* 結果ページ限定:html.snap-mode でセクションごとに pita.止まる -------- */
 html.snap-mode { scroll-snap-type: y mandatory; }
 html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }

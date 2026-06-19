@@ -383,6 +383,21 @@ function renderWrapped() {
   MX.magnetize(document);
   prefetchSongMeta(); // ジャケ写/preview を一括取得して各曲行に流し込む
   document.documentElement.classList.add("snap-mode"); // scroll-snap 結果ページ限定
+  injectPanelWatermarks(t.parody); // 各panelに薄いマスコット透かし(p-typeは除く)
+}
+
+// 各 result panel の背景に半透明マスコット透かしを追加 — タイプ世界観で全画面包む演出
+function injectPanelWatermarks(parody) {
+  document.querySelectorAll(".wrapped .panel").forEach((p) => {
+    if (p.classList.contains("p-type")) return;
+    if (p.classList.contains("p-share")) return;
+    if (p.querySelector(".panel-watermark")) return;
+    const w = document.createElement("div");
+    w.className = "panel-watermark";
+    w.setAttribute("aria-hidden", "true");
+    w.innerHTML = mascotSVG(parody);
+    p.appendChild(w);
+  });
 }
 
 function scrollWrappedTop() {
