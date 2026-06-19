@@ -127,12 +127,13 @@ const MX = (() => {
 
   function screenIn() {
     if (!on) return;
-    gsap.from("#app .screen > *", { y: 22, opacity: 0, stagger: .06, duration: .5, ease: EASE, clearProps: "all" });
+    gsap.from("#app .screen > *", { y: 22, opacity: 0, stagger: .06, duration: .5, ease: EASE, clearProps: "transform,opacity" });
     magnetize(document);
   }
   function galleryIn() {
     if (!on) return;
-    gsap.from(".g-card", { y: 30, opacity: 0, scale: .85, stagger: { each: .035, from: "start" }, duration: .5, ease: "back.out(1.7)", clearProps: "all" });
+    // clearProps: "all" だと --c 等のカスタムプロパティも消えてしまう → transform/opacity だけ掃除
+    gsap.from(".g-card", { y: 30, opacity: 0, scale: .85, stagger: { each: .035, from: "start" }, duration: .5, ease: "back.out(1.7)", clearProps: "transform,opacity" });
   }
 
   // 選択した円が弾ける
@@ -185,7 +186,7 @@ const MX = (() => {
     if (mt) gsap.to(mt, { xPercent: -50, duration: 20, repeat: -1, ease: "none" });
     // 曲リストを1件ずつ
     ScrollTrigger.create({ trigger: ".p-songs", start: "top 65%", once: true,
-      onEnter: () => gsap.from(".songlist .song", { x: -30, opacity: 0, stagger: .06, duration: .5, ease: EASE, clearProps: "all" }) });
+      onEnter: () => gsap.from(".songlist .song", { x: -30, opacity: 0, stagger: .06, duration: .5, ease: EASE, clearProps: "transform,opacity" }) });
     magnetize(document);
     refresh();
     return true;
