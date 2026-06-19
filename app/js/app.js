@@ -383,8 +383,7 @@ function renderGallery(from) {
   const cards = TYPES.map(t => `
     <button class="g-card" style="--c:${t.color}" onclick="go(()=>renderTypeDetail('${t.key}','${from}'))">
       <div class="g-mascot">${mascotSVG(t.parody)}</div>
-      <div class="g-parody">${t.parody}</div>
-      <div class="g-type">${t.type}</div>
+      <div class="g-parody">${t.parody}タイプ</div>
     </button>`).join("");
   const back = from === "result"
     ? `<button class="btn ghost" onclick="go(renderWrapped)">← 結果に戻る</button>`
