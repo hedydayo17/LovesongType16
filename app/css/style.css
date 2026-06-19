@@ -582,6 +582,20 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   .wrapped { margin: 0 -22px; }
   /* 上部余白を少し詰める(中央カードに収まるよう) */
   .screen { padding: 28px 0 44px; }
+
+  /* PCでは結果ページのみ #app を内部スクロールコンテナに切替 -------- */
+  html.snap-mode { scroll-snap-type: none; }
+  html.snap-mode #app {
+    overflow-y: auto;
+    max-height: calc(100vh - 56px);
+    scroll-snap-type: y mandatory;
+    scrollbar-width: thin;
+  }
+  html.snap-mode #app::-webkit-scrollbar { width: 6px; }
+  html.snap-mode #app::-webkit-scrollbar-thumb { background: rgba(255,94,138,.35); border-radius: 999px; }
+}
+@media (min-width: 1100px) {
+  html.snap-mode #app { max-height: calc(100vh - 80px); }
 }
 
 /* さらに大きい画面では中央カードを少し大きめに */
