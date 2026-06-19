@@ -31,6 +31,7 @@ const MX = (() => {
     window.scrollTo(0, 0);
   }
   function refresh() { if (hasST) ScrollTrigger.refresh(); if (lenis) lenis.resize(); }
+  function lenisStart() { if (lenis) { try { lenis.start(); } catch {} } }
 
   // ---- 文字分割 ----
   function splitChars(el) {
@@ -145,9 +146,10 @@ const MX = (() => {
     gsap.fromTo(ring, { scale: .2, opacity: .7 }, { scale: 2.6, opacity: 0, duration: .5, ease: "power2.out", onComplete: () => ring.remove() });
   }
 
-  // ---- 結果:Lenis + ScrollTrigger(window スクロール) ----
+  // ---- 結果:scroll-snap 優先のため Lenis 慣性は止める / 他画面復帰で再開 ----
   function result() {
     if (!on) return false;
+    if (lenis) { try { lenis.stop(); } catch {} }
     refresh();
     // 本文リビールは CSS+IntersectionObserver(observeReveals)が担当。
     // ここではGSAPの「飾り」だけ(失敗しても本文は見える設計)。
@@ -202,5 +204,5 @@ const MX = (() => {
     setTimeout(() => box.remove(), 2500);
   }
 
-  return { on, lenis, scrollTo, killScroll, refresh, hero, screenIn, galleryIn, dotBurst, result, wipe, magnetize, blobs, splitChars };
+  return { on, lenis, scrollTo, killScroll, refresh, lenisStart, hero, screenIn, galleryIn, dotBurst, result, wipe, magnetize, blobs, splitChars };
 })();

@@ -187,9 +187,15 @@ body {
 /* ============================================================
    結果:スクロール体験(明るい地に、タイプ色のポップなパネル)
    ============================================================ */
-.wrapped { margin: 0 -20px; }   /* Lenisでwindowスクロール。通常フロー */
+.wrapped { margin: 0 -20px; }   /* 結果ページのみ snap-mode で scroll-snap */
 .panel { min-height: 100svh; display: flex; flex-direction: column;
   align-items: stretch; justify-content: center; padding: 64px 26px; position: relative; background: transparent; }
+/* 結果ページ限定:html.snap-mode でセクションごとに pita.止まる -------- */
+html.snap-mode { scroll-snap-type: y mandatory; }
+html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
+@media (prefers-reduced-motion: reduce) {
+  html.snap-mode { scroll-snap-type: y proximity; }
+}
 
 .reveal { opacity: 0; transform: translateY(30px);
   transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0s); }
@@ -330,29 +336,47 @@ body {
 .song { display: flex; align-items: center; gap: 14px; background: var(--bg2);
   border: 1px solid var(--line); border-radius: 16px; padding: 13px 15px; box-shadow: var(--shadow); }
 .song-num { font-size: 16px; font-weight: 900; color: var(--c); width: 22px; text-align: center; flex: none; }
-.song-play { position: relative; width: 38px; height: 38px; border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  flex: none; cursor: pointer; padding: 0; margin-top: 2px;
-  background: #ffeef3; border: 1.5px solid #ffd5e0;
-  color: var(--pink); font-family: inherit;
-  transition: transform .12s ease, background .15s ease, border-color .15s ease; }
-.song-play .sp-num { display: none; }
-.song-play .sp-icon::before { content: "▶"; font-size: 13px; line-height: 1; color: #ff5e8a; }
-.song-play:hover { background: #ffe0ea; }
-.song-play:active { transform: scale(.92); }
-.song-play.playing { background: #ff5e8a; border-color: #ff5e8a;
-  box-shadow: 0 0 0 6px rgba(255, 94, 138, .12); }
-.song-play.playing .sp-icon::before { content: "⏸"; color: #fff; }
+/* ジャケ写 + プレビューボタン(80x80) ----------------------------- */
+.song-play { position: relative; width: 84px; height: 84px; border-radius: 14px;
+  display: inline-block; flex: none; cursor: pointer; padding: 0; margin: 0;
+  border: none; overflow: hidden;
+  background: linear-gradient(135deg, var(--jc, #ff5e8a), color-mix(in srgb, var(--jc, #ff5e8a) 60%, #2a1830 40%));
+  font-family: inherit; transition: transform .12s ease;
+  box-shadow: 0 6px 14px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.18); }
+.song-play .sp-jacket { position: absolute; inset: 0;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  opacity: 0; transition: opacity .35s ease; }
+.song-play.art-loaded .sp-jacket { opacity: 1; }
+.song-play .sp-overlay { position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.42) 100%);
+  opacity: .65; transition: opacity .2s ease; }
+.song-play:hover .sp-overlay { opacity: .55; }
+.song-play .sp-num { position: absolute; top: 6px; left: 7px;
+  font-size: 10px; font-weight: 900; color: #fff; letter-spacing: .04em;
+  background: rgba(0,0,0,.45); padding: 2px 6px; border-radius: 999px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.4); backdrop-filter: blur(2px); }
+.song-play .sp-icon { position: absolute; left: 50%; top: 50%;
+  width: 32px; height: 32px; transform: translate(-50%,-50%);
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.55); border-radius: 50%;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,.25), inset 0 0 0 1.5px rgba(255,255,255,.4); }
+.song-play .sp-icon::before { content: "▶"; font-size: 12px; line-height: 1; color: #fff;
+  margin-left: 2px; text-shadow: 0 1px 1px rgba(0,0,0,.4); }
+.song-play:active { transform: scale(.96); }
+.song-play.playing .sp-icon { background: #ff5e8a; box-shadow: 0 0 0 5px rgba(255,94,138,.25), 0 2px 8px rgba(0,0,0,.3); }
+.song-play.playing .sp-icon::before { content: "⏸"; margin-left: 0; }
 .song-play.loading .sp-icon::before { content: ""; }
-.song-play.loading::after { content: ""; position: absolute;
-  width: 16px; height: 16px; border: 2px solid #ffd5e0; border-top-color: #ff5e8a;
+.song-play.loading .sp-icon::after { content: ""; position: absolute;
+  width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.25); border-top-color: #fff;
   border-radius: 50%; animation: sp-spin .7s linear infinite; }
-.song-play.error { background: #ffe0e0; border-color: #ff8e8e; }
-.song-play.error .sp-icon::before { content: "!"; color: #d02525; font-weight: 900; }
+.song-play.error .sp-icon { background: rgba(208,37,37,.85); }
+.song-play.error .sp-icon::before { content: "!"; font-weight: 900; margin-left: 0; }
 @keyframes sp-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
-  .song-play.loading::after { animation: none; }
-  .song-play.playing { box-shadow: none; }
+  .song-play.loading .sp-icon::after { animation: none; }
+  .song-play.playing .sp-icon { box-shadow: none; }
+  .song-play .sp-jacket { transition: none; }
 }
 .song-meta { flex: 1; min-width: 0; }
 .song-title { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -448,19 +472,31 @@ body {
 
 /* タイプ名マーキー */
 .hero-preview { margin-top: 28px; }
-.hp-label { font-size: 12px; font-weight: 800; color: var(--muted);
-  letter-spacing: .08em; text-align: center; margin-bottom: 12px; }
+.hp-label { font-size: 12.5px; font-weight: 900; color: var(--pink);
+  letter-spacing: .12em; text-align: center; margin-bottom: 14px;
+  text-transform: none; }
+.hp-label::before, .hp-label::after { content: "─"; opacity: .55; margin: 0 8px; }
 .marquee { overflow: hidden;
-  -webkit-mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-          mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+  -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+          mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
 .marquee-track { display: flex; gap: 10px; width: max-content; }
-.mq { display: inline-flex; align-items: center; gap: 6px;
-  font-size: 13px; font-weight: 900; white-space: nowrap;
-  color: color-mix(in srgb, var(--c) 50%, #2a1830 50%);
-  background: #fff; border: 1.5px solid color-mix(in srgb, var(--c) 35%, #fff 65%);
-  padding: 8px 14px; border-radius: 999px;
-  box-shadow: 0 2px 0 color-mix(in srgb, var(--c) 18%, transparent 82%); }
-.mq-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.mq { position: relative; display: inline-flex; flex-direction: column; align-items: center;
+  gap: 4px; white-space: nowrap; padding: 12px 10px 12px;
+  min-width: 98px; border-radius: 18px; color: #fff; font-family: inherit;
+  background:
+    radial-gradient(ellipse at 30% 18%, color-mix(in srgb, var(--c) 25%, #fff 75%) 0%, transparent 55%),
+    linear-gradient(160deg, var(--c) 0%, color-mix(in srgb, var(--c) 75%, #2a1830 25%) 100%);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--c) 30%, transparent 70%),
+              inset 0 1.5px 0 rgba(255,255,255,.22);
+  overflow: hidden; }
+.mq::after { content: ""; position: absolute; top: -25%; right: -15%;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(255,255,255,.18); filter: blur(6px); pointer-events: none; }
+.mq-mascot { position: relative; z-index: 1; width: 48px; height: 48px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.18)); }
+.mq-label { position: relative; z-index: 1;
+  font-size: 11.5px; font-weight: 900; letter-spacing: -.01em;
+  text-shadow: 0 1px 4px rgba(0,0,0,.32); }
 
 /* スケールの円を少し立体的に */
 .qcard { background: linear-gradient(180deg, #ffffff, #fff6fb); }

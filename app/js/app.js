@@ -19,7 +19,13 @@ const $ = (sel) => document.querySelector(sel);
 const app = () => $("#app");
 
 // ---- 画面遷移 ----
-function show(html) { MX.killScroll(); app().innerHTML = html; window.scrollTo(0, 0); }
+function show(html) {
+  MX.killScroll();
+  document.documentElement.classList.remove("snap-mode");
+  if (MX.lenisStart) MX.lenisStart(); // 結果ページで止めた lenis を他画面で復帰
+  app().innerHTML = html;
+  window.scrollTo(0, 0);
+}
 
 // 画面遷移(ワイプ付き)。GSAP無ければ即実行
 function go(fn) { MX.wipe(fn); }
@@ -27,7 +33,10 @@ function go(fn) { MX.wipe(fn); }
 // ---- ランディング(ヒーロー):摩擦ゼロの入口。16P/ラブタイプ流に「即スタート」を強調 ----
 function renderLanding() {
   const marquee = TYPES.concat(TYPES).map(t =>
-    `<span class="mq" style="--c:${t.color}"><span class="mq-dot" style="background:${t.color}"></span>${t.parody}</span>`).join("");
+    `<span class="mq" style="--c:${t.color}">
+      <span class="mq-mascot">${mascotSVG(t.parody)}</span>
+      <span class="mq-label">${t.parody}</span>
+    </span>`).join("");
   show(`
     <section class="screen hero">
       <div class="hero-brand">ラブソング診断<span class="hero-brand-num">16</span></div>
@@ -372,6 +381,8 @@ function renderWrapped() {
   observeReveals();   // 本文リビールは必ず表示(CSS+IO)
   MX.result();        // GSAPは飾り(文字/カウント/バー/視差/紙吹雪)だけ
   MX.magnetize(document);
+  prefetchSongMeta(); // ジャケ写/preview を一括取得して各曲行に流し込む
+  document.documentElement.classList.add("snap-mode"); // scroll-snap 結果ページ限定
 }
 
 function scrollWrappedTop() {
@@ -530,10 +541,13 @@ function songRow(s, i) {
   const yt = `https://music.youtube.com/search?q=${q}`;
   const safeT = (s.title || "").replace(/'/g, "\\'");
   const safeA = (s.artist || "").replace(/'/g, "\\'");
+  const typeColor = TYPE_MAP[state.result] ? TYPE_MAP[state.result].color : "#ff5e8a";
   return `
     <div class="song reveal" data-song-id="${id}" style="--d:${Math.min(i, 8) * .05}s">
-      <button class="song-play" type="button" aria-label="30秒試聴" onclick="togglePreview(this, '${safeT}', '${safeA}')">
-        <span class="sp-num">${i + 1}</span>
+      <button class="song-play" type="button" aria-label="30秒試聴して再生" style="--jc:${typeColor}" onclick="togglePreview(this, '${safeT}', '${safeA}')">
+        <span class="sp-jacket" aria-hidden="true"></span>
+        <span class="sp-overlay" aria-hidden="true"></span>
+        <span class="sp-num">#${i + 1}</span>
         <span class="sp-icon" aria-hidden="true"></span>
       </button>
       <div class="song-meta">
@@ -552,11 +566,44 @@ function songRow(s, i) {
     </div>`;
 }
 
-// ---- 30秒試聴(iTunes Search API: 認証不要・CORS可・previewUrl が .m4a 直リンク) ----
-// ボタン単一・1曲ずつ排他再生・キャッシュあり・失敗時はリンク3兄弟に逃がす
+// ---- 30秒試聴 + ジャケ写(iTunes Search API: 認証不要・CORS可・previewUrl=.m4a / artworkUrl100=ジャケ写) ----
+// _songMeta = { previewUrl, artworkUrl } を曲ごとにキャッシュ
 let _audio = null;
 let _activeBtn = null;
-const _previewCache = new Map(); // key: "title|||artist" → previewUrl | null
+const _songMeta = new Map(); // key: "title|||artist" → { previewUrl, artworkUrl } | null
+
+async function fetchSongMeta(title, artist) {
+  const key = `${title}|||${artist}`;
+  if (_songMeta.has(key)) return _songMeta.get(key);
+  try {
+    const term = encodeURIComponent(`${title} ${artist}`);
+    const r = await fetch(`https://itunes.apple.com/search?term=${term}&country=jp&entity=song&limit=1`);
+    const j = await r.json();
+    const hit = j.results && j.results[0];
+    if (!hit) { _songMeta.set(key, null); return null; }
+    const art = (hit.artworkUrl100 || "").replace(/100x100/g, "600x600");
+    const meta = { previewUrl: hit.previewUrl || null, artworkUrl: art || null };
+    _songMeta.set(key, meta);
+    return meta;
+  } catch { _songMeta.set(key, null); return null; }
+}
+
+// 結果ページ初期化時に呼ぶ:全10曲分のジャケ写/previewを並列で取得し各行のジャケ写を流し込む
+async function prefetchSongMeta() {
+  if (!state.lastRecommend) return;
+  await Promise.all(state.lastRecommend.map(async (s) => {
+    const meta = await fetchSongMeta(s.title, s.artist);
+    if (!meta || !meta.artworkUrl) return;
+    const row = document.querySelector(`.song[data-song-id="${fbId(s)}"]`);
+    const jacket = row && row.querySelector(".sp-jacket");
+    if (jacket) {
+      jacket.style.backgroundImage = `url("${meta.artworkUrl}")`;
+      const playBtn = row.querySelector(".song-play");
+      if (playBtn) playBtn.classList.add("art-loaded");
+    }
+  }));
+}
+
 function _setBtnState(btn, state) {
   // state: idle | loading | playing | error
   btn.classList.remove("loading", "playing", "error");
@@ -572,18 +619,12 @@ async function togglePreview(btn, title, artist) {
   // 同じボタン2度押し→停止
   if (_activeBtn === btn && _audio && !_audio.paused) { _stopAudio(); return; }
   _stopAudio();
-  const key = `${title}|||${artist}`;
-  let url = _previewCache.get(key);
-  if (url === undefined) {
+  let meta = _songMeta.get(`${title}|||${artist}`);
+  if (meta === undefined) {
     _setBtnState(btn, "loading");
-    try {
-      const term = encodeURIComponent(`${title} ${artist}`);
-      const r = await fetch(`https://itunes.apple.com/search?term=${term}&country=jp&entity=song&limit=1`);
-      const j = await r.json();
-      url = j.results && j.results[0] && j.results[0].previewUrl ? j.results[0].previewUrl : null;
-      _previewCache.set(key, url);
-    } catch { _previewCache.set(key, null); url = null; }
+    meta = await fetchSongMeta(title, artist);
   }
+  const url = meta && meta.previewUrl;
   if (!url) { _setBtnState(btn, "error"); setTimeout(() => _setBtnState(btn, "idle"), 1800); return; }
   _audio = new Audio(url);
   _audio.preload = "auto";
