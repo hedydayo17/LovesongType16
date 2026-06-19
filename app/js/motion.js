@@ -205,16 +205,5 @@ const MX = (() => {
     setTimeout(() => box.remove(), 2500);
   }
 
-  // ---- PCのみ:#app 内ホイールを smooth + 速度減速(Lenis 無効でも自然なスクロール感) ----
-  const _appEl = document.getElementById("app");
-  if (_appEl) {
-    _appEl.addEventListener("wheel", (e) => {
-      if (window.innerWidth < 768) return; // スマホ・タブ縦は対象外(body scroll)
-      if (_appEl.scrollHeight <= _appEl.clientHeight + 1) return; // スクロール不要画面
-      e.preventDefault();
-      _appEl.scrollBy({ top: e.deltaY * 0.5, behavior: "smooth" });
-    }, { passive: false });
-  }
-
   return { on, lenis, scrollTo, killScroll, refresh, lenisStart, hero, screenIn, galleryIn, dotBurst, result, wipe, magnetize, blobs, splitChars };
 })();
