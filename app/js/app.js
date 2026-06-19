@@ -272,16 +272,48 @@ function renderWrapped() {
   const comp = t.compatible
     .map((c, i) => `<span class="w-chip reveal" style="--d:${i * .12}s">${c}</span>`).join("");
 
+  // 各曲フルスクリーン panel(scroll-snap で1曲1ページ・スクショ前提)
+  const songPanels = state.lastRecommend.map((s, i) => {
+    const id = fbId(s);
+    const fb = getFeedback(id);
+    const q = encodeURIComponent(`${s.title} ${s.artist}`);
+    const spotify = `https://open.spotify.com/search/${q}`;
+    const apple = `https://music.apple.com/jp/search?term=${q}`;
+    const yt = `https://music.youtube.com/search?q=${q}`;
+    const safeT_ = (s.title || "").replace(/'/g, "\\'");
+    const safeA_ = (s.artist || "").replace(/'/g, "\\'");
+    return `
+      <section class="panel p-song" data-song-id="${id}">
+        <div class="ps-num"><span class="ps-num-n">${i + 1}</span><span class="ps-num-of">/10</span></div>
+        <div class="ps-card reveal">
+          <button class="ps-play song-play" type="button" style="--jc:${t.color}"
+            aria-label="30秒試聴"
+            onclick="togglePreview(this, '${safeT_}', '${safeA_}')">
+            <span class="sp-jacket" aria-hidden="true"></span>
+            <span class="sp-overlay" aria-hidden="true"></span>
+            <span class="sp-icon" aria-hidden="true"></span>
+          </button>
+          <div class="ps-meta">
+            <span class="ps-genre">${s.genre}</span>
+            <div class="ps-title">${s.title}</div>
+            <div class="ps-artist">${s.artist}</div>
+          </div>
+          <div class="ps-services">
+            <a class="ps-svc sp" href="${spotify}" target="_blank" rel="noopener" aria-label="Spotifyでフル尺">Spotify</a>
+            <a class="ps-svc am" href="${apple}" target="_blank" rel="noopener" aria-label="Apple Musicでフル尺">Apple</a>
+            <a class="ps-svc yt" href="${yt}" target="_blank" rel="noopener" aria-label="YouTubeでフル尺">YouTube</a>
+          </div>
+          <div class="ps-fb">
+            <button class="fb up ${fb === 'up' ? 'on' : ''}" onclick="vote('${id}','up',this)" aria-label="good">good</button>
+            <button class="fb down ${fb === 'down' ? 'on' : ''}" onclick="vote('${id}','down',this)" aria-label="bad">bad</button>
+          </div>
+        </div>
+      </section>
+    `;
+  }).join("");
+
   app().innerHTML = `
     <div class="wrapped" id="wrapped" style="--c:${t.color};--ac:${t.accent}">
-
-      <section class="panel p-intro">
-        <div class="reveal w-kicker">ラブソング診断16</div>
-        <div class="reveal w-build" style="--d:.1s">あなたの</div>
-        <div class="reveal w-build" style="--d:.25s">恋愛タイプは</div>
-        <div class="reveal w-build big" style="--d:.4s">…?</div>
-        <div class="reveal scroll-hint" style="--d:.9s">スクロール ↓</div>
-      </section>
 
       <section class="panel p-type" style="background:
         linear-gradient(165deg, var(--c), color-mix(in srgb, var(--c) 45%, #000 55%))">
@@ -290,38 +322,33 @@ function renderWrapped() {
           <div class="hc-brand">ラブソング診断16</div>
           <div class="hc-kei">${state.kei || ""}</div>
           <div class="type-mascot">${mascotSVG(t.parody)}</div>
-          <div class="w-type">${t.type}</div>
           <h1 class="w-parody">${t.parody}</h1>
           <p class="hc-catch handwrite">「${t.tagline}」</p>
         </div>
         <div class="reveal scroll-hint light" style="--d:.3s">↓</div>
       </section>
 
-      <section class="panel p-tagline">
-        <div class="reveal w-quote-mark">"</div>
-        <p class="reveal w-tagline" style="--d:.15s">${t.tagline}</p>
-      </section>
-
       <section class="panel p-desc">
-        <div class="reveal w-section-label">あなたの恋愛</div>
+        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">あなたの恋愛</span></div>
         <p class="reveal w-desc" style="--d:.15s">${t.description}</p>
       </section>
 
       <section class="panel p-traits">
-        <div class="reveal w-section-label">あなたの恋愛傾向</div>
-        <div class="trait-list">${traitsHTML()}</div>
+        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">あなたの中の他のタイプ</span></div>
+        <p class="reveal traits-lead" style="--d:.1s">メインは <b>${t.parody}</b>。<br>その奥にもう3つの顔がいる。</p>
+        <div class="alsome-list">${traitsHTML()}</div>
       </section>
 
       <section class="panel p-strengths">
-        <div class="reveal w-section-label">恋愛の強み</div>
+        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">恋愛の強み</span></div>
         <ul class="w-list">
-          ${t.strengths.map((s, i) => `<li class="reveal" style="--d:${.1 + i * .12}s"><span class="li-no">0${i + 1}</span>${s}</li>`).join("")}
+          ${t.strengths.map((s, i) => `<li class="reveal" style="--d:${.1 + i * .12}s"><span class="li-no">0${i + 1}</span><span class="li-text">${s}</span></li>`).join("")}
         </ul>
         <div class="reveal w-loved" style="--d:.5s"><span class="w-loved-label">愛されポイント</span>${t.loved}</div>
       </section>
 
       <section class="panel p-ideal">
-        <div class="reveal w-section-label">こんな恋がしたい</div>
+        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">こんな恋がしたい</span></div>
         <p class="reveal w-ideal" style="--d:.12s">${t.ideal}</p>
         <div class="reveal w-aruaru-label" style="--d:.3s">${t.parody} あるある</div>
         <div class="w-aruaru">
@@ -330,7 +357,7 @@ function renderWrapped() {
       </section>
 
       <section class="panel p-compat">
-        <div class="reveal w-section-label">相性診断</div>
+        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">相性診断</span></div>
         <div class="reveal compat-block good" style="--d:.1s">
           <div class="cb-head">相性◎ 惹かれ合う</div>
           <div class="w-chips">${comp}</div>
@@ -342,18 +369,20 @@ function renderWrapped() {
         <button class="btn share reveal" style="--d:.5s" onclick="shareCompat()">気になる人に送って相性チェック</button>
       </section>
 
-      <section class="panel p-songs-intro">
-        <div class="reveal w-section-label">そんなあなたへ</div>
-        <div class="reveal w-songs-count" style="--d:.15s">10</div>
-        <div class="reveal w-songs-label" style="--d:.3s">あなた専用のプレイリスト</div>
-        ${IS_MOCK ? '<p class="reveal mock-note" style="--d:.5s">※ サンプル選曲。各曲の▶ボタンで30秒試聴/Spotify・Apple Music・YouTubeでフル尺。</p>' : ''}
-        <div class="song-marquee"><div class="song-marquee-track">${songMarquee()}</div></div>
-        <div class="reveal scroll-hint" style="--d:.9s">↓</div>
+      <section class="panel p-songs-lead">
+        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">そんなあなたへ</span></div>
+        <h2 class="reveal songs-leadhead" style="--d:.2s">あなたにぴったりの<br><b class="g">ラブソング10曲</b>レコメンド。</h2>
+        ${IS_MOCK ? '<p class="reveal mock-note" style="--d:.5s">※ サンプル選曲・スワイプで1曲ずつ表示</p>' : ''}
+        <div class="reveal scroll-hint" style="--d:.7s">↓ スワイプで聴く</div>
       </section>
 
-      <section class="panel p-songs">
-        <div class="reveal w-songs-head">${t.parody} のための10曲</div>
+      ${songPanels}
+
+      <section class="panel p-songs-summary">
+        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">10曲まとめ</span></div>
+        <h2 class="reveal w-songs-head">あなたのラブソング10曲</h2>
         <div class="songlist" id="songlist">${buildSongsHTML()}</div>
+        <button class="btn primary reveal" data-mag style="--d:.4s" onclick="reshuffleSongs()">別の10曲を見る ↻</button>
       </section>
 
       <section class="panel p-share">
@@ -362,15 +391,17 @@ function renderWrapped() {
           <div class="sc-brand">ラブソング診断16</div>
           <div class="sc-mascot">${mascotSVG(t.parody)}</div>
           <div class="sc-kei">${state.kei || ""}</div>
-          <div class="sc-type">${t.type}</div>
           <div class="sc-parody">${t.parody}</div>
           <div class="sc-tagline handwrite">「${t.tagline}」</div>
+          <div class="sc-foot">あなたは何タイプ?<br><span class="sc-url">lovesong-type16.vercel.app</span></div>
         </div>
-        <button class="btn primary reveal" data-mag style="--d:.2s" onclick="reshuffleSongs()">別の10曲を見る ↻</button>
-        <button class="btn save reveal" style="--d:.3s" onclick="savePNG(event)">画像で保存(SNSに貼れる)</button>
-        <div class="share-row reveal" style="--d:.4s">
-          <button class="btn sns x" onclick="shareX()">Xでシェア</button>
-          <button class="btn sns line" onclick="shareLINE()">LINEで送る</button>
+        <button class="btn save reveal" data-mag style="--d:.2s" onclick="savePNG(event)">画像で保存</button>
+        <div class="share-grid reveal" style="--d:.3s">
+          <button class="btn sns ig" onclick="shareTo('instagram', event)" aria-label="Instagramでシェア">Instagram</button>
+          <button class="btn sns tt" onclick="shareTo('tiktok', event)" aria-label="TikTokでシェア">TikTok</button>
+          <button class="btn sns br" onclick="shareTo('bereal', event)" aria-label="BeRealでシェア">BeReal</button>
+          <button class="btn sns x" onclick="shareX()" aria-label="Xでシェア">X</button>
+          <button class="btn sns line" onclick="shareLINE()" aria-label="LINEで送る">LINE</button>
         </div>
         <button class="btn ghost reveal" style="--d:.5s" onclick="go(()=>renderGallery('result'))">16タイプ図鑑を見る</button>
         <button class="btn ghost reveal" style="--d:.6s" onclick="scrollWrappedTop()">最初から見る ↑</button>
@@ -516,18 +547,22 @@ function buildSongsHTML() {
   return state.lastRecommend.map((s, i) => songRow(s, i)).join("");
 }
 
-// 恋愛傾向の%バー(上位5タイプ)。スコアを0-100に正規化
+// 「あなたの中の他のタイプ」:メインタイプを除いた上位3つを 1行解説付きで並べる
 function traitsHTML() {
-  const max = Math.max(...Object.values(state.scores), 1);
   const top = Object.entries(state.scores)
-    .sort((a, b) => b[1] - a[1]).slice(0, 5);
-  return top.map(([k, v]) => {
-    const pct = Math.max(8, Math.round((v / max) * 100));
-    const c = TYPE_MAP[k].color;
+    .sort((a, b) => b[1] - a[1]);
+  const subs = top.filter(([k]) => k !== state.result).slice(0, 3);
+  return subs.map(([k], i) => {
+    const tt = TYPE_MAP[k];
+    if (!tt) return "";
     return `
-      <div class="trait reveal">
-        <div class="trait-top"><span>${k}</span><span class="trait-pct">${pct}%</span></div>
-        <div class="trait-bar"><i data-w="${pct}" style="--bc:${c};width:${pct}%"></i></div>
+      <div class="alsome reveal" style="--c:${tt.color};--d:${i * .14}s">
+        <div class="alsome-mascot">${mascotSVG(tt.parody)}</div>
+        <div class="alsome-body">
+          <div class="alsome-rank">No.${i + 2}</div>
+          <div class="alsome-name">${tt.parody}タイプ</div>
+          <div class="alsome-line">${tt.tagline}</div>
+        </div>
       </div>`;
   }).join("");
 }
@@ -539,12 +574,14 @@ function songMarquee() {
   return row + row; // ループ用に2倍
 }
 
-// 再シャッフルは曲リストだけ差し替え(スクロール位置を保つ)
+// 再シャッフル:曲リストを差し替えてジャケ写を取り直し、曲セクション先頭にスクロール
 function reshuffleSongs() {
   state.lastRecommend = recommend(state.result);
   const list = document.getElementById("songlist");
   if (list) list.innerHTML = buildSongsHTML();
-  MX.scrollTo(document.querySelector(".p-songs"));
+  prefetchSongMeta(); // ジャケ写・preview を再取得して新しい行に流し込み
+  const target = document.querySelector(".p-songs") || document.querySelector(".songs-summary");
+  if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function songRow(s, i) {
@@ -604,18 +641,21 @@ async function fetchSongMeta(title, artist) {
 }
 
 // 結果ページ初期化時に呼ぶ:全10曲分のジャケ写/previewを並列で取得し各行のジャケ写を流し込む
+// 1曲フルスクリーン panel と summary リスト両方の同じ曲に注入(data-song-id で照合)
 async function prefetchSongMeta() {
   if (!state.lastRecommend) return;
   await Promise.all(state.lastRecommend.map(async (s) => {
     const meta = await fetchSongMeta(s.title, s.artist);
     if (!meta || !meta.artworkUrl) return;
-    const row = document.querySelector(`.song[data-song-id="${fbId(s)}"]`);
-    const jacket = row && row.querySelector(".sp-jacket");
-    if (jacket) {
-      jacket.style.backgroundImage = `url("${meta.artworkUrl}")`;
-      const playBtn = row.querySelector(".song-play");
-      if (playBtn) playBtn.classList.add("art-loaded");
-    }
+    const id = fbId(s);
+    document.querySelectorAll(`[data-song-id="${CSS.escape(id)}"]`).forEach((row) => {
+      const jacket = row.querySelector(".sp-jacket");
+      if (jacket) {
+        jacket.style.backgroundImage = `url("${meta.artworkUrl}")`;
+        const playBtn = row.querySelector(".song-play");
+        if (playBtn) playBtn.classList.add("art-loaded");
+      }
+    });
   }));
 }
 
@@ -679,78 +719,93 @@ function shareResult() {
   }
 }
 
-// 結果カードをPNG化 → Web Share APIで画像を共有(iOS等) or ダウンロード
+// share-card を PNG Blob に変換(savePNG / shareTo の共通)
+async function createSharePNG() {
+  const target = document.querySelector(".share-card");
+  if (!target || typeof html2canvas === "undefined") return null;
+  // reveal が in 状態じゃないと見えないので強制
+  const prev = { opacity: target.style.opacity, transform: target.style.transform };
+  target.style.opacity = "1"; target.style.transform = "none";
+  try {
+    const canvas = await html2canvas(target, {
+      backgroundColor: "#ffffff",  // 完全透明だとPNGが透ける環境あり
+      scale: Math.min(window.devicePixelRatio || 1, 2) * 1.5,
+      useCORS: true,
+      allowTaint: true,            // CORS失敗時もキャプチャ続行
+      logging: false,
+      windowWidth: document.documentElement.clientWidth,
+    });
+    return await new Promise(r => canvas.toBlob(r, "image/png", 0.95));
+  } catch (e) {
+    console.error("createSharePNG", e);
+    return null;
+  } finally {
+    target.style.opacity = prev.opacity || "";
+    target.style.transform = prev.transform || "";
+  }
+}
+
+function _btnLoading(btn, on) {
+  if (!btn) return;
+  if (on) { btn.dataset.label = btn.textContent; btn.classList.add("loading"); btn.disabled = true;
+    const spin = document.createElement("span"); spin.className = "spin"; spin.style.marginRight = "8px";
+    btn.textContent = ""; btn.appendChild(spin); btn.appendChild(document.createTextNode("画像を準備中…")); }
+  else { btn.classList.remove("loading"); btn.disabled = false; btn.textContent = btn.dataset.label || ""; }
+}
+
+// 結果カードを画像として保存 + OS共有シート(対応端末)
 async function savePNG(ev) {
   navigator.vibrate?.(20);
   const btn = ev?.currentTarget;
-  const target = document.querySelector(".share-card");
-  if (!target || typeof html2canvas === "undefined") {
-    alert("保存できませんでした。ページを再読み込みしてください。"); return;
-  }
-  // ボタンに loading 表示(スピナー付き)— DOM操作で組み立て(XSS安全)
-  const origChildren = btn ? Array.from(btn.childNodes) : null;
-  if (btn) {
-    btn.disabled = true; btn.classList.add("loading");
-    while (btn.firstChild) btn.removeChild(btn.firstChild);
-    const spin = document.createElement("span");
-    spin.className = "spin";
-    btn.appendChild(spin);
-    btn.appendChild(document.createTextNode("画像を準備中…"));
-  }
-
-  // reveal が in 状態じゃないと見えないので強制的に表示状態に
-  const prev = { opacity: target.style.opacity, transform: target.style.transform };
-  target.style.opacity = "1"; target.style.transform = "none";
-
+  _btnLoading(btn, true);
   try {
+    const blob = await createSharePNG();
+    if (!blob) { alert("画像の生成に失敗しました。スクショで保存してね。"); return; }
     const t = TYPE_MAP[state.result];
-    // 背景色は share-card のグラデ計算結果(canvas にも転写されるよう backgroundColor: null)
-    const canvas = await html2canvas(target, {
-      backgroundColor: null,
-      scale: Math.min(window.devicePixelRatio || 1, 2) * 1.5, // 高解像度
-      useCORS: true, logging: false, allowTaint: false,
-      windowWidth: document.documentElement.clientWidth,
-    });
-
-    // canvas → blob
-    const blob = await new Promise(res => canvas.toBlob(res, "image/png", 0.95));
-    if (!blob) throw new Error("blob failed");
-    const filename = `ongaku-${t.parody}.png`;
+    const filename = `lovesong-${t.parody}.png`;
     const file = new File([blob], filename, { type: "image/png" });
-
-    // 1) Web Share API(iOS/Android 対応端末) — ユーザーがSNS選んでそのまま画像投稿可
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    if (navigator.canShare?.({ files: [file] })) {
       try {
-        await navigator.share({
-          files: [file],
-          title: "ラブソング診断16",
-          text: shareText(),
-        });
+        await navigator.share({ files: [file], title: "ラブソング診断16", text: shareText() });
         return;
-      } catch (e) {
-        if (e.name === "AbortError") return; // ユーザーがキャンセル
-        // それ以外はフォールバックに進む
-      }
+      } catch (e) { if (e.name === "AbortError") return; }
     }
-
-    // 2) フォールバック:ダウンロード
+    // フォールバック:ダウンロード
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url; a.download = filename;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1500);
-  } catch (e) {
-    console.error("savePNG", e);
-    alert("画像の生成に失敗しました。スクショで保存してください。");
-  } finally {
-    target.style.opacity = prev.opacity || "";
-    target.style.transform = prev.transform || "";
-    if (btn) {
-      btn.disabled = false; btn.classList.remove("loading");
-      while (btn.firstChild) btn.removeChild(btn.firstChild);
-      if (origChildren) origChildren.forEach(n => btn.appendChild(n));
+  } finally { _btnLoading(btn, false); }
+}
+
+// Instagram / TikTok / BeReal などWebURL投稿APIが無いSNS向け:
+// 画像PNGを生成 → Web Share APIでOS共有シート(各SNSアプリが並ぶ)→ 非対応端末はダウンロード+案内
+async function shareTo(targetName, ev) {
+  navigator.vibrate?.(20);
+  const btn = ev?.currentTarget;
+  _btnLoading(btn, true);
+  try {
+    const blob = await createSharePNG();
+    if (!blob) { alert("画像の生成に失敗しました。スクショで保存してね。"); return; }
+    const t = TYPE_MAP[state.result];
+    const filename = `lovesong-${t.parody}.png`;
+    const file = new File([blob], filename, { type: "image/png" });
+    if (navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: "ラブソング診断16", text: shareText() });
+        return;
+      } catch (e) { if (e.name === "AbortError") return; }
     }
-  }
+    // フォールバック
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    const labels = { instagram: "Instagram", tiktok: "TikTok", bereal: "BeReal" };
+    alert(`画像を保存したよ。${labels[targetName] || "SNS"} アプリで投稿してね。`);
+  } finally { _btnLoading(btn, false); }
 }
 
 // ---- 起動 ----

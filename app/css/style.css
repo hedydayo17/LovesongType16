@@ -283,24 +283,28 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   margin-top: 18px;
   font-feature-settings: "palt" 1; }
 
-/* 共通ラベル:タイプ色短バー+ラベルテキストで「ここから新セクション」アクセント */
+/* 共通ラベル:タイプ色の縦バー+大型テキスト(<span>構造で柔軟に) */
 .w-section-label {
-  display: inline-flex; align-items: center; gap: 12px;
-  font-size: 12.5px; font-weight: 900;
-  letter-spacing: .14em; margin-bottom: 26px;
-  color: color-mix(in srgb, var(--c) 72%, #2a1830 28%); }
-.w-section-label::before {
-  content: ""; display: block; width: 32px; height: 3px;
-  border-radius: 999px; background: var(--c); flex: none;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent 82%); }
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 26px; }
+.wsl-bar { display: block; width: 4px; height: 28px; border-radius: 999px;
+  background: var(--c); flex: none;
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--c) 12%, transparent 88%); }
+.wsl-text { font-size: 20px; font-weight: 900; letter-spacing: -.01em;
+  color: color-mix(in srgb, var(--c) 70%, #2a1830 30%);
+  font-feature-settings: "palt" 1; }
+/* 旧 ::before バー指定の互換は不要(全panel書き換え済) */
 .w-desc {
   font-size: 17px; line-height: 1.95; font-weight: 600;
   letter-spacing: .01em;
-  font-feature-settings: "palt" 1; }
+  font-feature-settings: "palt" 1;
+  word-break: auto-phrase; overflow-wrap: anywhere; text-wrap: pretty;
+  hanging-punctuation: allow-end; }
 
 /* p-strengths */
 .w-list { list-style: none; display: flex; flex-direction: column; gap: 18px; margin: 4px 0 0; }
 .w-list li { display: flex; align-items: baseline; gap: 14px; font-size: 18px; font-weight: 800; line-height: 1.5; letter-spacing: .005em; font-feature-settings: "palt" 1; }
+.w-list .li-text { word-break: auto-phrase; overflow-wrap: anywhere; text-wrap: pretty; hanging-punctuation: allow-end; }
 .li-no { flex: none; font-size: 15px; font-weight: 900; width: 28px; color: color-mix(in srgb, var(--c) 72%, #2a1830 28%); }
 .w-loved { margin-top: 26px; font-size: 15px; line-height: 1.7; font-weight: 600;
   background: var(--bg2); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; box-shadow: var(--shadow); }
@@ -310,11 +314,15 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
 .w-ideal {
   font-size: clamp(22px, 6.5vw, 26px); font-weight: 900;
   line-height: 1.55; letter-spacing: -.005em;
-  margin-bottom: 28px; font-feature-settings: "palt" 1; }
+  margin-bottom: 28px; font-feature-settings: "palt" 1;
+  word-break: auto-phrase; overflow-wrap: anywhere; text-wrap: pretty;
+  hanging-punctuation: allow-end; }
 .w-aruaru-label { font-size: 13px; font-weight: 900; margin-bottom: 14px; color: color-mix(in srgb, var(--c) 72%, #2a1830 28%); }
 .w-aruaru { display: flex; flex-direction: column; gap: 10px; }
 .aru { font-size: 15px; font-weight: 700; background: var(--bg2); border: 1px solid var(--line);
-  border-radius: 14px; padding: 13px 16px; box-shadow: var(--shadow); }
+  border-radius: 14px; padding: 13px 16px; box-shadow: var(--shadow);
+  word-break: auto-phrase; overflow-wrap: anywhere; text-wrap: pretty;
+  hanging-punctuation: allow-end; }
 .aru::before { content: "“"; color: var(--c); font-weight: 900; margin-right: 4px; }
 
 /* p-traits(恋愛傾向バー) */
@@ -530,7 +538,154 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   text-shadow: 0 1px 4px rgba(0,0,0,.32); }
 
-/* スケールの円を少し立体的に */
+/* ============================================================
+   p-traits:「あなたの中の他のタイプ」(これも私 ベスト3)
+   ============================================================ */
+.traits-lead { font-size: 15px; font-weight: 700; line-height: 1.75;
+  color: color-mix(in srgb, var(--c) 60%, #2a1830 40%);
+  margin-bottom: 22px;
+  word-break: auto-phrase; overflow-wrap: anywhere; text-wrap: pretty; }
+.traits-lead b { font-weight: 900; color: var(--c); padding: 0 2px;
+  background: linear-gradient(180deg, transparent 70%, color-mix(in srgb, var(--c) 28%, transparent 72%) 70%); }
+.alsome-list { display: flex; flex-direction: column; gap: 12px; }
+.alsome { display: flex; gap: 14px; align-items: center;
+  padding: 16px; border-radius: 20px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 14%, #fff 86%), #fff);
+  border: 1.5px solid color-mix(in srgb, var(--c) 28%, transparent 72%);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--c) 14%, transparent 86%); }
+.alsome-mascot { width: 62px; height: 62px; flex: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.1)); }
+.alsome-body { flex: 1; min-width: 0; }
+.alsome-rank { font-size: 11px; font-weight: 900; color: var(--c); letter-spacing: .14em; }
+.alsome-name { font-size: 17px; font-weight: 900; margin-top: 3px; line-height: 1.25;
+  letter-spacing: -.01em; }
+.alsome-line { font-size: 13.5px; font-weight: 600; color: var(--muted); margin-top: 6px;
+  line-height: 1.5; word-break: auto-phrase; overflow-wrap: anywhere; text-wrap: pretty; }
+
+/* ============================================================
+   p-songs-lead:「あなたにぴったりのラブソング10曲レコメンド。」
+   ============================================================ */
+.songs-leadhead { font-size: clamp(28px, 8.2vw, 36px); font-weight: 900;
+  line-height: 1.32; letter-spacing: -.025em; margin-top: 4px;
+  font-feature-settings: "palt" 1;
+  word-break: keep-all; }
+.songs-leadhead .g { background: linear-gradient(135deg, #ff5e8a, #ff7eb0 50%, #ffc857);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-weight: 900; }
+
+/* ============================================================
+   p-song:1曲フルスクリーン(スクショ前提・コアメイン体験)
+   ============================================================ */
+.p-song { justify-content: center; align-items: center; padding-top: 56px; padding-bottom: 56px; }
+.p-song .ps-num { position: absolute; top: 28px; right: 28px;
+  display: inline-flex; align-items: baseline; gap: 2px;
+  font-family: inherit; }
+.p-song .ps-num-n { font-size: 38px; font-weight: 900; letter-spacing: -.04em;
+  color: var(--c); line-height: 1; }
+.p-song .ps-num-of { font-size: 16px; font-weight: 800; color: var(--muted);
+  opacity: .55; margin-left: 2px; letter-spacing: -.01em; }
+.ps-card { display: flex; flex-direction: column; align-items: center;
+  gap: 22px; width: 100%; }
+.ps-play { width: clamp(220px, 62vw, 280px); height: clamp(220px, 62vw, 280px);
+  border-radius: 28px; position: relative; flex: none;
+  padding: 0; border: none; cursor: pointer; overflow: hidden;
+  background: linear-gradient(135deg, var(--jc, #ff5e8a), color-mix(in srgb, var(--jc, #ff5e8a) 55%, #2a1830 45%));
+  box-shadow: 0 24px 44px color-mix(in srgb, var(--jc, #ff5e8a) 35%, transparent 65%),
+              inset 0 0 0 1.5px rgba(255,255,255,.2);
+  font-family: inherit;
+  transition: transform .14s ease; }
+.ps-play .sp-jacket { position: absolute; inset: 0;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  opacity: 0; transition: opacity .5s ease; }
+.ps-play.art-loaded .sp-jacket { opacity: 1; }
+.ps-play .sp-overlay { position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,.32) 100%);
+  opacity: .55; }
+.ps-play .sp-icon { position: absolute; left: 50%; top: 50%;
+  width: 76px; height: 76px; transform: translate(-50%,-50%);
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.5); border-radius: 50%;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.36), inset 0 0 0 2px rgba(255,255,255,.42);
+  transition: background .18s ease, box-shadow .18s ease; }
+.ps-play .sp-icon::before { content: "▶"; font-size: 28px; color: #fff;
+  margin-left: 6px; text-shadow: 0 2px 4px rgba(0,0,0,.4); line-height: 1; }
+.ps-play:hover .sp-icon { background: rgba(0,0,0,.65); }
+.ps-play:active { transform: scale(.97); }
+.ps-play.playing .sp-icon { background: var(--jc, #ff5e8a);
+  box-shadow: 0 0 0 14px color-mix(in srgb, var(--jc, #ff5e8a) 28%, transparent 72%); }
+.ps-play.playing .sp-icon::before { content: "⏸"; margin-left: 0; }
+.ps-play.loading .sp-icon::before { content: ""; }
+.ps-play.loading .sp-icon::after { content: ""; position: absolute;
+  width: 32px; height: 32px; border: 3px solid rgba(255,255,255,.25);
+  border-top-color: #fff; border-radius: 50%;
+  animation: sp-spin .7s linear infinite; }
+.ps-play.error .sp-icon { background: rgba(208,37,37,.85); }
+.ps-play.error .sp-icon::before { content: "!"; font-weight: 900; margin-left: 0; }
+.ps-play .sp-num { display: none; }
+
+.ps-meta { text-align: center; padding: 0 12px; }
+.ps-genre { display: inline-block; font-size: 11px; font-weight: 900;
+  color: var(--c); letter-spacing: .14em;
+  background: color-mix(in srgb, var(--c) 12%, transparent 88%);
+  padding: 5px 12px; border-radius: 999px; margin-bottom: 12px; }
+.ps-title { font-size: clamp(22px, 6.5vw, 26px); font-weight: 900;
+  line-height: 1.25; letter-spacing: -.02em;
+  word-break: keep-all; overflow-wrap: anywhere;
+  font-feature-settings: "palt" 1; }
+.ps-artist { font-size: 14.5px; font-weight: 800; color: var(--muted);
+  margin-top: 6px; letter-spacing: .01em; }
+
+.ps-services { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
+.ps-svc { display: inline-flex; align-items: center;
+  font-size: 11.5px; font-weight: 800; letter-spacing: -.01em;
+  padding: 6px 13px; border-radius: 999px; text-decoration: none;
+  border: 1.5px solid transparent; white-space: nowrap;
+  transition: transform .12s ease; }
+.ps-svc.sp { background: #e8f8ee; color: #1aa34a; border-color: #c4ecd2; }
+.ps-svc.am { background: #ffe5ed; color: #d6294a; border-color: #f8c4d2; }
+.ps-svc.yt { background: #ffe1e1; color: #d02525; border-color: #f6c2c2; }
+.ps-svc:active { transform: scale(.94); }
+
+.ps-fb { display: flex; gap: 8px; margin-top: 2px; }
+.ps-fb .fb { font-size: 12px; padding: 7px 12px; }
+
+/* ============================================================
+   p-share:シェア5社 + シェアカード強化
+   ============================================================ */
+.share-card .sc-foot { margin-top: 22px; font-size: 12.5px; font-weight: 800;
+  letter-spacing: .04em; opacity: .92; line-height: 1.6; }
+.sc-url { display: inline-block; margin-top: 3px; font-size: 11px;
+  font-weight: 700; letter-spacing: .04em;
+  padding: 3px 10px; border-radius: 999px;
+  background: rgba(255,255,255,.18); backdrop-filter: blur(4px); }
+.share-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px 0 14px; }
+.btn.sns { font-size: 13px; font-weight: 900; padding: 12px 8px;
+  border-radius: 14px; border: none; color: #fff;
+  font-family: inherit; cursor: pointer;
+  letter-spacing: .02em;
+  box-shadow: 0 4px 10px rgba(0,0,0,.12);
+  transition: transform .12s ease; }
+.btn.sns:active { transform: scale(.96); }
+.btn.sns.ig { background: linear-gradient(135deg, #fdaa3b 0%, #ef5b6c 35%, #c93095 70%, #6a3aff 100%); }
+.btn.sns.tt { background: linear-gradient(135deg, #000 30%, #25f4ee 70%, #fe2c55 100%); }
+.btn.sns.br { background: linear-gradient(135deg, #000 0%, #1a1a1a 60%, #2c2c2c 100%); }
+.btn.sns.x { background: #000; grid-column: span 1; }
+.btn.sns.line { background: #06c755; grid-column: span 2; }
+.btn.save { background: #fff; color: var(--c); font-weight: 900;
+  border: 2px solid var(--c); padding: 14px;
+  border-radius: 16px; font-size: 16px; font-family: inherit; cursor: pointer;
+  letter-spacing: .02em; }
+.btn.save:active { transform: scale(.97); }
+.btn.save.loading { opacity: .6; cursor: not-allowed; }
+.btn.save .spin { display: inline-block; width: 14px; height: 14px;
+  border: 2px solid color-mix(in srgb, var(--c) 30%, transparent 70%);
+  border-top-color: var(--c); border-radius: 50%;
+  animation: sp-spin .7s linear infinite; vertical-align: middle; }
+
+/* ============================================================
+   スケールの円を少し立体的に
+   ============================================================ */
 .qcard { background: linear-gradient(180deg, #ffffff, #fff6fb); }
 .dot { box-shadow: 0 4px 10px rgba(255,94,138,.08); }
 

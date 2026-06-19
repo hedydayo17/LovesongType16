@@ -152,41 +152,24 @@ const MX = (() => {
     if (!on) return false;
     if (lenis) { try { lenis.stop(); } catch {} }
     refresh();
-    // 本文リビールは CSS+IntersectionObserver(observeReveals)が担当。
-    // ここではGSAPの「飾り」だけ(失敗しても本文は見える設計)。
+    // 本文リビールは CSS+IntersectionObserver(observeReveals)が担当
     // ブロブを背景視差(スクロール量に追従)
     gsap.utils.toArray(".blob").forEach((b, i) => {
       gsap.to(b, { yPercent: (i % 2 ? -1 : 1) * (30 + i * 10), ease: "none",
         scrollTrigger: { trigger: "#app", start: "top top", end: "bottom bottom", scrub: 1 } });
     });
-    // タイプ名 char リビール + 紙吹雪 + パネル内パララックス
+    // タイプ名 char リビール(紙吹雪パーティクル削除)
     const chars = splitChars(document.querySelector(".w-parody"));
     if (chars.length) {
-      // from を onEnter 内で生成 → トリガー未発火でも名前は必ず見える
       ScrollTrigger.create({
         trigger: ".p-type", start: "top 60%", once: true,
-        onEnter: () => { gsap.from(chars, { opacity: 0, yPercent: 120, rotate: 8, stagger: .05, duration: .7, ease: "back.out(1.7)" }); confetti(); }
+        onEnter: () => { gsap.from(chars, { opacity: 0, yPercent: 80, stagger: .04, duration: .55, ease: "back.out(1.4)" }); }
       });
     }
-    gsap.to(".p-type .type-mascot", { yPercent: -60, ease: "none",
-      scrollTrigger: { trigger: ".p-type", start: "top bottom", end: "bottom top", scrub: true } });
-    // 恋愛傾向バーがスクロールで伸びる
-    ScrollTrigger.create({ trigger: ".p-traits", start: "top 65%", once: true,
-      onEnter: () => gsap.fromTo(".p-traits .trait-bar i", { width: 0 },
-        { width: (i, el) => el.dataset.w + "%", duration: 1, stagger: .1, ease: "power3.out" }) });
-    // "10" カウントアップ
-    const count = document.querySelector(".w-songs-count");
-    if (count) {
-      const obj = { v: 0 };
-      ScrollTrigger.create({ trigger: ".p-songs-intro", start: "top 60%", once: true,
-        onEnter: () => gsap.to(obj, { v: 10, duration: 1.1, ease: "power2.out", onUpdate: () => count.textContent = Math.round(obj.v) }) });
-    }
-    // 曲名の横マーキー(intro)
-    const mt = document.querySelector(".song-marquee-track");
-    if (mt) gsap.to(mt, { xPercent: -50, duration: 20, repeat: -1, ease: "none" });
-    // 曲リストを1件ずつ
-    ScrollTrigger.create({ trigger: ".p-songs", start: "top 65%", once: true,
-      onEnter: () => gsap.from(".songlist .song", { x: -30, opacity: 0, stagger: .06, duration: .5, ease: EASE, clearProps: "transform,opacity" }) });
+    // p-type マスコットの parallax は削除(他要素と被る原因)
+    // まとめ panel の曲リストを1件ずつ
+    ScrollTrigger.create({ trigger: ".p-songs-summary", start: "top 65%", once: true,
+      onEnter: () => gsap.from(".p-songs-summary .songlist .song", { x: -20, opacity: 0, stagger: .05, duration: .45, ease: EASE, clearProps: "transform,opacity" }) });
     magnetize(document);
     refresh();
     return true;
