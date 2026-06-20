@@ -638,6 +638,18 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
 .ps-artist { font-size: 14.5px; font-weight: 800; color: var(--muted);
   margin-top: 6px; letter-spacing: .01em; }
 
+.ps-reason { width: 100%; max-width: 320px;
+  padding: 14px 16px; border-radius: 16px;
+  background: color-mix(in srgb, var(--c) 8%, #fff 92%);
+  border: 1px solid color-mix(in srgb, var(--c) 22%, transparent 78%);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--c) 8%, transparent 92%);
+  text-align: center; }
+.ps-reason-label { display: block; font-size: 10.5px; font-weight: 900;
+  color: var(--c); letter-spacing: .12em; margin-bottom: 6px; }
+.ps-reason-text { display: block; font-size: 13.5px; font-weight: 700;
+  line-height: 1.55; color: #2a1830;
+  word-break: auto-phrase; overflow-wrap: anywhere; text-wrap: pretty;
+  hanging-punctuation: allow-end; }
 .ps-services { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
 .ps-svc { display: inline-flex; align-items: center;
   font-size: 11.5px; font-weight: 800; letter-spacing: -.01em;

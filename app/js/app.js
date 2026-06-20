@@ -298,6 +298,7 @@ function renderWrapped() {
             <div class="ps-title">${s.title}</div>
             <div class="ps-artist">${s.artist}</div>
           </div>
+          <div class="ps-reason"><span class="ps-reason-label">あなたの ${t.parody} に刺さる理由</span><span class="ps-reason-text">${getReason(s, state.result)}</span></div>
           <div class="ps-services">
             <a class="ps-svc sp" href="${spotify}" target="_blank" rel="noopener" aria-label="Spotifyでフル尺">Spotify</a>
             <a class="ps-svc am" href="${apple}" target="_blank" rel="noopener" aria-label="Apple Musicでフル尺">Apple</a>
@@ -563,6 +564,15 @@ function recommend(typeKey) {
 
 function buildSongsHTML() {
   return state.lastRecommend.map((s, i) => songRow(s, i)).join("");
+}
+
+// 「あなたの ○○ にこの曲が刺さる理由」を返す。専用reasonがあれば優先、なければタイプ別汎用 fallback
+function getReason(song, typeKey) {
+  if (!song || !typeKey) return "";
+  const key = `${song.title}|||${song.artist}`;
+  const SR = window.SONG_REASONS || {};
+  const FB = window.REASON_FALLBACK || {};
+  return (SR[key] && SR[key][typeKey]) || FB[typeKey] || "";
 }
 
 // 「あなたの中の他のタイプ」:メインタイプを除いた上位3つを 1行解説付きで並べる
