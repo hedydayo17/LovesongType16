@@ -645,8 +645,9 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
 
 /* 16タイプ図鑑 */
 .g-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 24px; }
-.g-card { position: relative; text-align: left; cursor: pointer; color: #fff; font-family: inherit; border: none; border-radius: 22px;
-  padding: 18px 16px 20px; min-height: 156px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
+.g-card { position: relative; text-align: center; cursor: pointer; color: #fff; font-family: inherit; border: none; border-radius: 22px;
+  padding: 18px 16px 20px; min-height: 156px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
   background:
     radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--c) 35%, #fff 65%) 0%, transparent 55%),
     linear-gradient(165deg, var(--c) 0%, color-mix(in srgb, var(--c) 78%, #ff5e8a 22%) 100%);
@@ -658,7 +659,7 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   width: 130px; height: 130px; border-radius: 50%;
   background: rgba(255,255,255,.18); filter: blur(8px); pointer-events: none; }
 .g-card:active { transform: scale(.97); }
-.g-mascot { position: relative; z-index: 1; width: 64px; height: 64px; margin-bottom: auto;
+.g-mascot { position: relative; z-index: 1; width: 64px; height: 64px;
   filter: drop-shadow(0 2px 6px rgba(0,0,0,.18)); }
 .g-parody { position: relative; z-index: 1; font-size: 16px; font-weight: 900; line-height: 1.25;
   letter-spacing: -.02em;
