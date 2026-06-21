@@ -289,6 +289,7 @@ async function fetchArtistSuggestions(query, sugEl, inp) {
     const data = await r.json();
     const items = (data.artists && data.artists.items) || [];
     const list = items.map(a => ({
+      id: a.id,            // top-tracks fetch 用(/v1/artists/{id}/top-tracks)
       name: a.name,
       img: (a.images && a.images[2] && a.images[2].url)   // 64px ≦
         || (a.images && a.images[1] && a.images[1].url)   // 320px
@@ -337,6 +338,8 @@ function renderSuggestions(list, sugEl, inp) {
     li.addEventListener("mousedown", e => {
       e.preventDefault();
       inp.value = a.name;
+      // 後続の top-tracks fetch 用に Spotify ID を input に紐付けて保持
+      inp.dataset.spotifyId = a.id || "";
       sugEl.hidden = true;
       while (sugEl.firstChild) sugEl.removeChild(sugEl.firstChild);
       if (navigator.vibrate) navigator.vibrate(8);
@@ -347,8 +350,62 @@ function renderSuggestions(list, sugEl, inp) {
 }
 
 function submitArtists() {
-  state.artists = ["a1", "a2", "a3"].map(id => $("#" + id).value.trim()).filter(Boolean);
+  const pairs = ["a1", "a2", "a3"].map(id => {
+    const el = $("#" + id);
+    return { name: (el && el.value || "").trim(), spotifyId: (el && el.dataset.spotifyId) || "" };
+  }).filter(p => p.name);
+  state.artists   = pairs.map(p => p.name);          // 既存ロジック互換(isFavArtist 等で使用)
+  state.artistIds = pairs.map(p => p.spotifyId).filter(Boolean); // 動的 top-tracks fetch 用
+  // 質問中に裏で fetch を走らせる。失敗しても診断は通常通り進行
+  prefetchDynamicSongs();
   startQuiz();
+}
+
+// ---- 好きアーティストの top tracks を動的 pool に追加 ----
+// Step 0b submit 後に裏で Spotify /v1/artists/{id}/top-tracks を取得し
+// state.dynamicSongs に貯める。重複(既存 SONGS とのタイトル一致)は除外。
+// 結果ページの recommend() は SONGS + dynamicSongs を統合して10曲抽出。
+state.dynamicSongs = [];
+async function prefetchDynamicSongs() {
+  if (!state.artistIds || !state.artistIds.length) return;
+  const token = await getSpotifyToken();
+  if (!token) return; // 取れなければ静的pool だけで運用
+  // 既存 SONGS との重複判定キー(正規化:小文字+記号除去)
+  const seen = new Set(SONGS.map(s => `${normArtist(s.title)}::${normArtist(s.artist)}`));
+  const collected = [];
+  await Promise.all(state.artistIds.map(async (aid) => {
+    try {
+      const r = await fetch(`https://api.spotify.com/v1/artists/${aid}/top-tracks?market=JP`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!r.ok) return;
+      const data = await r.json();
+      const tracks = data.tracks || [];
+      for (const t of tracks) {
+        if (!t || !t.name || !t.artists || !t.artists[0]) continue;
+        const title = t.name;
+        const artist = t.artists[0].name;
+        const key = `${normArtist(title)}::${normArtist(artist)}`;
+        if (seen.has(key)) continue; // 既存 SONGS と重複 → 静的スコアを優先するためスキップ
+        seen.add(key);
+        // ジャンルは Spotify には正確なものがないため J-POP デフォルト
+        // スコア:全タイプ均等 5、お気に入りアーティスト boost (+5) で十分競争可能
+        const scores = {};
+        ["バイブス警察","運命マジシャン","進撃のロマンチスト","一途ペンギン",
+         "ヤキモチモンスター","推し活ベビー","チル仙人","慎重うさぎ",
+         "同志の虎","マブダチエイリアン","ミステリアス狼","ド直球ザウルス",
+         "ときめきパパラッチ","情熱ラブゾンビ","沼っくま","ピュアエンジェル"]
+          .forEach(k => scores[k] = 5);
+        collected.push({
+          title, artist,
+          genre: "J-POP", // 仮置き(動的曲は genreBonus 対象外でも問題ない)
+          scores,
+          _dynamic: true, // デバッグ用マーカー
+        });
+      }
+    } catch (_) { /* graceful */ }
+  }));
+  state.dynamicSongs = collected;
 }
 
 // ---- Step 1: 15問 ----
@@ -778,7 +835,11 @@ function recommend(typeKey) {
   //   + ジャンル一致 +1.5 ブースト
   //   + 好きアーティスト一致 +5.0 ブースト(Step 0b の入力を本当に効かせる)
   //   + 旧 types[] レガシー互換(スコアがない曲のため)
-  const weighted = SONGS.map(song => {
+  // 静的 curated 100+ 曲 + 好きアーティスト由来の動的曲(あれば)を統合
+  const songPool = state.dynamicSongs && state.dynamicSongs.length
+    ? SONGS.concat(state.dynamicSongs)
+    : SONGS;
+  const weighted = songPool.map(song => {
     const sc = song.scores || {};
     let primary = sc[typeKey];
     if (primary == null && Array.isArray(song.types)) primary = song.types.includes(typeKey) ? 9 : 3;
