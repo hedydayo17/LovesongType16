@@ -380,7 +380,8 @@ async function prefetchDynamicSongs() {
       const aname = state.artists[i] || "";
       if (!aname) return;
       const q = encodeURIComponent(`artist:"${aname}"`);
-      const r = await fetch(`https://api.spotify.com/v1/search?q=${q}&type=track&limit=20&market=JP`, {
+      // Spotify 仕様変更で limit>10 だと 400 が返ることがあるため安全策で 10 固定
+      const r = await fetch(`https://api.spotify.com/v1/search?q=${q}&type=track&limit=10&market=JP`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!r.ok) return;
