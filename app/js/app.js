@@ -552,6 +552,7 @@ function renderWrapped() {
           </button>
           <div class="ps-meta">
             <span class="ps-genre">${s.genre}</span>
+            ${(() => { const m = moodOf(s); return m ? `<span class="ps-mood" style="--mc:${m.color}">${m.emoji} ${m.name}</span>` : ''; })()}
             ${isFavArtist(s.artist) ? '<span class="ps-fav-badge">♥ あなたの好きなアーティスト</span>' : ''}
             <div class="ps-title">${s.title}</div>
             <div class="ps-artist">${s.artist}</div>
@@ -677,6 +678,7 @@ function renderWrapped() {
       <section class="panel p-songs-summary">
         <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">10曲まとめ</span></div>
         <h2 class="reveal w-songs-head">あなたのラブソング10曲</h2>
+        <div class="reveal mood-breakdown" style="--d:.15s" id="moodBreakdown">${buildMoodBreakdownHTML()}</div>
         <div class="songlist" id="songlist">${buildSongsHTML()}</div>
         <button class="btn primary reveal" data-mag style="--d:.4s" onclick="reshuffleSongs()">別の10曲を見る ↻</button>
       </section>
@@ -835,6 +837,38 @@ function isFavArtist(songArtist) {
   });
 }
 
+// ---- Mood:5クラスタへの自動分類(既存 score パターンから無料で算出)----
+// 手動タグ付け不要・135曲全部に即適用。recommend は触らず、純粋に説明性UP用。
+const MOOD_DEFS = [
+  { name: "切ない",   types: ["沼っくま", "進撃のロマンチスト", "ミステリアス狼"], color: "#7C5CFF", emoji: "🌙" },
+  { name: "エモい",   types: ["情熱ラブゾンビ", "ヤキモチモンスター", "ド直球ザウルス"], color: "#FF4D6D", emoji: "🔥" },
+  { name: "前向き",   types: ["バイブス警察", "ときめきパパラッチ", "推し活ベビー"], color: "#FF8FB1", emoji: "✨" },
+  { name: "穏やか",   types: ["チル仙人", "慎重うさぎ", "マブダチエイリアン"], color: "#5CB8C4", emoji: "☁️" },
+  { name: "キラキラ", types: ["ピュアエンジェル", "運命マジシャン", "一途ペンギン", "同志の虎"], color: "#FFB347", emoji: "💖" },
+];
+function moodOf(song) {
+  if (!song || !song.scores) return null;
+  let best = null, bestSum = -1;
+  for (const def of MOOD_DEFS) {
+    const sum = def.types.reduce((s, t) => s + (song.scores[t] || 0), 0);
+    if (sum > bestSum) { bestSum = sum; best = def; }
+  }
+  return best;
+}
+function moodSummary(songs) {
+  // 結果10曲の mood 分布を「切ない 4 / 前向き 3 / 穏やか 3」形式で返す
+  const counts = new Map();
+  for (const s of songs) {
+    const m = moodOf(s);
+    if (!m) continue;
+    counts.set(m.name, (counts.get(m.name) || 0) + 1);
+  }
+  // MOOD_DEFS の宣言順 + 件数降順で並べる
+  return MOOD_DEFS.map(d => ({ name: d.name, color: d.color, emoji: d.emoji, n: counts.get(d.name) || 0 }))
+    .filter(x => x.n > 0)
+    .sort((a, b) => b.n - a.n);
+}
+
 function recommend(typeKey) {
   const t = TYPE_MAP[typeKey];
   // 100曲 × 16タイプ × 0-10 のキュレーション済みスコアから重み付け抽出
@@ -901,6 +935,18 @@ function buildSongsHTML() {
   return state.lastRecommend.map((s, i) => songRow(s, i)).join("");
 }
 
+function buildMoodBreakdownHTML() {
+  const summary = moodSummary(state.lastRecommend || []);
+  if (!summary.length) return "";
+  const pills = summary.map(m =>
+    `<span class="mb-pill" style="--mc:${m.color}">
+      <span class="mb-em">${m.emoji}</span>
+      <span class="mb-name">${m.name}</span>
+      <span class="mb-n">${m.n}</span>
+    </span>`).join("");
+  return `<div class="mb-label">10曲の雰囲気</div><div class="mb-pills">${pills}</div>`;
+}
+
 // 「あなたの ○○ にこの曲が刺さる理由」を返す。専用reasonがあれば優先、なければタイプ別汎用 fallback
 function getReason(song, typeKey) {
   if (!song || !typeKey) return "";
@@ -942,6 +988,8 @@ function reshuffleSongs() {
   state.lastRecommend = recommend(state.result);
   const list = document.getElementById("songlist");
   if (list) list.innerHTML = buildSongsHTML();
+  const mb = document.getElementById("moodBreakdown");
+  if (mb) mb.innerHTML = buildMoodBreakdownHTML();
   prefetchSongMeta(); // ジャケ写・preview を再取得して新しい行に流し込み
   const target = document.querySelector(".p-songs") || document.querySelector(".songs-summary");
   if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -964,7 +1012,14 @@ function songRow(s, i) {
         <span class="sp-icon" aria-hidden="true"></span>
       </button>
       <div class="song-meta">
-        ${isFavArtist(s.artist) ? '<span class="song-fav-badge">♥ 好きなアーティスト</span>' : ''}
+        ${(() => {
+          const m = moodOf(s);
+          const fav = isFavArtist(s.artist);
+          const pills = [];
+          if (m) pills.push(`<span class="song-mood" style="--mc:${m.color}">${m.emoji} ${m.name}</span>`);
+          if (fav) pills.push('<span class="song-fav-badge">♥ 好きなアーティスト</span>');
+          return pills.length ? `<div class="song-pills">${pills.join('')}</div>` : '';
+        })()}
         <div class="song-title">${s.title}</div>
         <div class="song-artist">${s.artist} ・ ${s.genre}</div>
         <div class="song-links">

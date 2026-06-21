@@ -850,6 +850,12 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   color: var(--c); letter-spacing: .14em;
   background: color-mix(in srgb, var(--c) 12%, transparent 88%);
   padding: 5px 12px; border-radius: 999px; margin-bottom: 12px; }
+/* mood pill(各曲の雰囲気)— --mc にタイプ色を流す */
+.ps-mood { display: inline-block; font-size: 11px; font-weight: 900;
+  color: var(--mc, var(--c)); letter-spacing: .04em;
+  background: color-mix(in srgb, var(--mc, var(--c)) 12%, transparent 88%);
+  border: 1.5px solid color-mix(in srgb, var(--mc, var(--c)) 35%, transparent 65%);
+  padding: 4px 10px; border-radius: 999px; margin: 0 6px 12px; }
 /* 好きなアーティスト一致バッジ(p-song panel)*/
 .ps-fav-badge { display: inline-block; font-size: 10.5px; font-weight: 900;
   color: #fff; letter-spacing: .08em;
@@ -858,12 +864,34 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   margin: 0 6px 12px;
   box-shadow: 0 4px 10px rgba(255,94,138,.35); }
 /* 同上、まとめlist用(コンパクト)*/
+.song-pills { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 4px; }
 .song-fav-badge { display: inline-block; font-size: 9.5px; font-weight: 900;
   color: #fff; letter-spacing: .04em;
   background: linear-gradient(135deg, #ff5e8a, #ff9bb8);
   padding: 2px 7px; border-radius: 999px;
-  margin-bottom: 4px;
   box-shadow: 0 2px 5px rgba(255,94,138,.3); }
+.song-mood { display: inline-block; font-size: 9.5px; font-weight: 900;
+  color: var(--mc, var(--c)); letter-spacing: .02em;
+  background: color-mix(in srgb, var(--mc, var(--c)) 12%, transparent 88%);
+  border: 1px solid color-mix(in srgb, var(--mc, var(--c)) 35%, transparent 65%);
+  padding: 2px 7px; border-radius: 999px; }
+
+/* ───── mood breakdown(10曲まとめpanel)──── */
+.mood-breakdown { margin: 4px 0 18px; }
+.mb-label { font-size: 11px; font-weight: 900; letter-spacing: .12em;
+  color: color-mix(in srgb, var(--c) 70%, #2a1830 30%);
+  margin-bottom: 10px; }
+.mb-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.mb-pill { display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12.5px; font-weight: 900;
+  color: var(--mc); letter-spacing: .02em;
+  background: color-mix(in srgb, var(--mc) 10%, #fff 90%);
+  border: 1.5px solid color-mix(in srgb, var(--mc) 40%, transparent 60%);
+  padding: 6px 10px; border-radius: 999px; }
+.mb-em { font-size: 13px; }
+.mb-n { font-size: 11px; font-weight: 900;
+  background: var(--mc); color: #fff;
+  padding: 1px 7px; border-radius: 999px; margin-left: 2px; }
 .ps-title { font-size: clamp(22px, 6.5vw, 26px); font-weight: 900;
   line-height: 1.25; letter-spacing: -.02em;
   word-break: keep-all; overflow-wrap: anywhere;
