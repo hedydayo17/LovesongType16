@@ -111,6 +111,28 @@ body {
   font-size: 16px; padding: 14px; border-radius: 14px; margin-bottom: 12px; }
 .text-in:focus { outline: none; border-color: var(--pink); }
 .text-in:last-child { margin-bottom: 0; }
+
+/* ============================================================
+   アーティスト autocomplete(Spotify Search API)
+   ============================================================ */
+.artist-ac { position: relative; }
+.artist-ac:not(:last-child) { margin-bottom: 0; } /* text-in margin で間隔取る */
+.artist-sug { position: absolute; top: calc(100% - 4px); left: 0; right: 0;
+  z-index: 30; margin: 0; padding: 6px;
+  background: #fff; border: 1.5px solid var(--line); border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(0,0,0,.14);
+  list-style: none; max-height: 280px; overflow-y: auto;
+  -webkit-overflow-scrolling: touch; }
+.artist-sug-item { display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  user-select: none; transition: background .12s; }
+.artist-sug-item:hover, .artist-sug-item:active { background: #fff0f6; }
+.asi-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+  background: var(--bg2); flex: none; }
+.asi-img.placeholder { background:
+  linear-gradient(135deg, #ffd6e4, #d6e0ff); }
+.asi-name { font-size: 14.5px; font-weight: 700; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .note { font-size: 12px; color: var(--muted); margin-top: 12px; }
 .err { color: #ff4d6d; font-size: 13px; margin-top: 10px; min-height: 16px; }
 
@@ -833,6 +855,20 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   color: var(--c); letter-spacing: .14em;
   background: color-mix(in srgb, var(--c) 12%, transparent 88%);
   padding: 5px 12px; border-radius: 999px; margin-bottom: 12px; }
+/* 好きなアーティスト一致バッジ(p-song panel)*/
+.ps-fav-badge { display: inline-block; font-size: 10.5px; font-weight: 900;
+  color: #fff; letter-spacing: .08em;
+  background: linear-gradient(135deg, #ff5e8a, #ff9bb8);
+  padding: 4px 10px; border-radius: 999px;
+  margin: 0 6px 12px;
+  box-shadow: 0 4px 10px rgba(255,94,138,.35); }
+/* 同上、まとめlist用(コンパクト)*/
+.song-fav-badge { display: inline-block; font-size: 9.5px; font-weight: 900;
+  color: #fff; letter-spacing: .04em;
+  background: linear-gradient(135deg, #ff5e8a, #ff9bb8);
+  padding: 2px 7px; border-radius: 999px;
+  margin-bottom: 4px;
+  box-shadow: 0 2px 5px rgba(255,94,138,.3); }
 .ps-title { font-size: clamp(22px, 6.5vw, 26px); font-weight: 900;
   line-height: 1.25; letter-spacing: -.02em;
   word-break: keep-all; overflow-wrap: anywhere;

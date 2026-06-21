@@ -228,11 +228,14 @@ function renderArtists() {
     <section class="screen">
       <div class="step-tag">Step 2 / 3</div>
       <h2 class="title">好きなアーティストは?</h2>
-      <p class="lead">最大3組まで(思いつかなければスキップでOK)。</p>
+      <p class="lead">最大3組まで(思いつかなければスキップでOK)。<br>入力するとSpotifyから候補が出ます。</p>
       <div class="card-input">
-        <input class="text-in" id="a1" type="text" placeholder="アーティスト 1">
-        <input class="text-in" id="a2" type="text" placeholder="アーティスト 2">
-        <input class="text-in" id="a3" type="text" placeholder="アーティスト 3">
+        ${[1,2,3].map(i => `
+          <div class="artist-ac">
+            <input class="text-in artist-in" id="a${i}" type="text" placeholder="アーティスト ${i}" autocomplete="off" data-idx="${i}">
+            <ul class="artist-sug" id="sug${i}" role="listbox" hidden></ul>
+          </div>
+        `).join("")}
       </div>
       <div class="btn-row">
         <button class="btn ghost" onclick="startQuiz()">スキップ</button>
@@ -240,8 +243,86 @@ function renderArtists() {
       </div>
     </section>
   `);
+  initArtistAC();
   MX.screenIn();
 }
+
+// ---- Spotify Artist Search autocomplete ----
+const _sugCache = new Map(); // クエリ → 候補配列(セッション内キャッシュ)
+let _sugAbort = {};          // 入力idx → AbortController(連打時に古いリクエスト中断)
+function initArtistAC() {
+  document.querySelectorAll(".artist-in").forEach(inp => {
+    const idx = inp.dataset.idx;
+    const sug = document.getElementById("sug" + idx);
+    let timer = null;
+    inp.addEventListener("input", () => {
+      clearTimeout(timer);
+      const q = inp.value.trim();
+      if (!q) { sug.hidden = true; sug.innerHTML = ""; return; }
+      timer = setTimeout(() => fetchArtistSuggestions(q, sug, inp), 280);
+    });
+    inp.addEventListener("blur", () => {
+      // クリックで sug を確定できるよう少し遅延
+      setTimeout(() => { sug.hidden = true; }, 180);
+    });
+    inp.addEventListener("focus", () => {
+      if (sug.children.length) sug.hidden = false;
+    });
+  });
+}
+async function fetchArtistSuggestions(query, sugEl, inp) {
+  const cached = _sugCache.get(query);
+  if (cached) { renderSuggestions(cached, sugEl, inp); return; }
+  // 連打時:同じ入力欄の古いリクエストを中断
+  const idx = inp.dataset.idx;
+  if (_sugAbort[idx]) _sugAbort[idx].abort();
+  const ac = new AbortController(); _sugAbort[idx] = ac;
+  const token = await getSpotifyToken();
+  if (!token) { sugEl.hidden = true; return; }
+  try {
+    const q = encodeURIComponent(query);
+    const r = await fetch(`https://api.spotify.com/v1/search?q=${q}&type=artist&limit=5&market=JP`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: ac.signal,
+    });
+    if (!r.ok) return;
+    const data = await r.json();
+    const items = (data.artists && data.artists.items) || [];
+    const list = items.map(a => ({
+      name: a.name,
+      img: (a.images && a.images[2] && a.images[2].url)   // 64px ≦
+        || (a.images && a.images[1] && a.images[1].url)   // 320px
+        || (a.images && a.images[0] && a.images[0].url)   // 640px
+        || null,
+      followers: (a.followers && a.followers.total) || 0,
+    }));
+    _sugCache.set(query, list);
+    renderSuggestions(list, sugEl, inp);
+  } catch (e) {
+    if (e.name !== "AbortError") console.warn("artist search failed:", e);
+  }
+}
+function renderSuggestions(list, sugEl, inp) {
+  if (!list.length) { sugEl.hidden = true; sugEl.innerHTML = ""; return; }
+  sugEl.innerHTML = list.map(a => `
+    <li class="artist-sug-item" role="option" data-name="${a.name.replace(/"/g, "&quot;")}">
+      ${a.img ? `<img class="asi-img" src="${a.img}" alt="" loading="lazy">` : '<span class="asi-img placeholder"></span>'}
+      <span class="asi-name">${a.name}</span>
+    </li>
+  `).join("");
+  sugEl.hidden = false;
+  // クリックで input に正規名を入れる(mousedown:blur より早く反応)
+  sugEl.querySelectorAll(".artist-sug-item").forEach(li => {
+    li.addEventListener("mousedown", e => {
+      e.preventDefault();
+      inp.value = li.dataset.name;
+      sugEl.hidden = true;
+      sugEl.innerHTML = "";
+      if (navigator.vibrate) navigator.vibrate(8);
+    });
+  });
+}
+
 function submitArtists() {
   state.artists = ["a1", "a2", "a3"].map(id => $("#" + id).value.trim()).filter(Boolean);
   startQuiz();
@@ -385,6 +466,7 @@ function renderWrapped() {
           </button>
           <div class="ps-meta">
             <span class="ps-genre">${s.genre}</span>
+            ${isFavArtist(s.artist) ? '<span class="ps-fav-badge">♥ あなたの好きなアーティスト</span>' : ''}
             <div class="ps-title">${s.title}</div>
             <div class="ps-artist">${s.artist}</div>
           </div>
@@ -652,12 +734,32 @@ function observeReveals() {
 }
 
 // ---- Step 3: 10曲レコメンド(モック) ----
+// アーティスト名の正規化(大文字小文字/スペース/記号/ピリオド差を吸収)
+// 「Mrs. GREEN APPLE」≒「mrs green apple」≒「mrsgreenapple」、
+// 「YOASOBI」≒「ヨアソビ」までは完全には無理だが、英字+一般的な揺れは吸収する
+function normArtist(s) {
+  return (s || "").toLowerCase()
+    .replace(/[\s.,\-_'"’、・。!?!?&\(\)（）\[\]【】]/g, "")
+    .trim();
+}
+function isFavArtist(songArtist) {
+  if (!state.artists || !state.artists.length) return false;
+  const n = normArtist(songArtist);
+  if (!n) return false;
+  return state.artists.some(a => {
+    const an = normArtist(a);
+    if (!an) return false;
+    return n === an || n.includes(an) || an.includes(n);
+  });
+}
+
 function recommend(typeKey) {
   const t = TYPE_MAP[typeKey];
   // 100曲 × 16タイプ × 0-10 のキュレーション済みスコアから重み付け抽出
   //   本人タイプスコア(0-10)を主軸 [二乗してメリハリ]
   //   + 相性タイプスコア合計の 25%
   //   + ジャンル一致 +1.5 ブースト
+  //   + 好きアーティスト一致 +5.0 ブースト(Step 0b の入力を本当に効かせる)
   //   + 旧 types[] レガシー互換(スコアがない曲のため)
   const weighted = SONGS.map(song => {
     const sc = song.scores || {};
@@ -676,8 +778,10 @@ function recommend(typeKey) {
     }
     // ジャンル一致でブースト
     const genreBonus = (state.genres && state.genres.includes(song.genre)) ? 1.5 : 0;
+    // 好きアーティスト一致で大きめブースト(タイプ最高スコア相当のメリハリ)
+    const favBonus = isFavArtist(song.artist) ? 5.0 : 0;
     // 二乗でメリハリ + 0.3 のベース(全曲ゼロ防止)
-    const w = Math.max(0.3, Math.pow(primary, 1.7) + compatBonus + genreBonus);
+    const w = Math.max(0.3, Math.pow(primary, 1.7) + compatBonus + genreBonus + favBonus);
     return { song, w };
   });
   // 重み付きランダム抽出(非復元)で10曲。再シャッフルで毎回変化
@@ -762,6 +866,7 @@ function songRow(s, i) {
         <span class="sp-icon" aria-hidden="true"></span>
       </button>
       <div class="song-meta">
+        ${isFavArtist(s.artist) ? '<span class="song-fav-badge">♥ 好きなアーティスト</span>' : ''}
         <div class="song-title">${s.title}</div>
         <div class="song-artist">${s.artist} ・ ${s.genre}</div>
         <div class="song-links">
