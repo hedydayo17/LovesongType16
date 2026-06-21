@@ -969,13 +969,23 @@ function buildMoodBreakdownHTML() {
   return `<div class="mb-label">10曲の雰囲気</div><div class="mb-pills">${pills}</div>`;
 }
 
-// 「あなたの ○○ にこの曲が刺さる理由」を返す。専用reasonがあれば優先、なければタイプ別汎用 fallback
+// 「あなたの ○○ にこの曲が刺さる理由」を返す。
+// 専用reasonがあれば優先、なければタイプ別 5バリアントから曲ハッシュで決定論的に選択。
+// 同じ曲は同じ文(stable)、違う曲は違う文(diversity)が両立し、
+// 10曲中 fallback でも自然に分散する(同文連発を回避)。
+function _strHash(s) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return h;
+}
 function getReason(song, typeKey) {
   if (!song || !typeKey) return "";
   const key = `${song.title}|||${song.artist}`;
   const SR = window.SONG_REASONS || {};
-  const FB = window.REASON_FALLBACK || {};
-  return (SR[key] && SR[key][typeKey]) || FB[typeKey] || "";
+  if (SR[key] && SR[key][typeKey]) return SR[key][typeKey];
+  const variants = (window.REASON_FALLBACK_VARIANTS || {})[typeKey];
+  if (variants && variants.length) return variants[_strHash(key) % variants.length];
+  return (window.REASON_FALLBACK || {})[typeKey] || "";
 }
 
 // 「あなたの中の他のタイプ」:メインタイプを除いた上位3つを 1行解説付きで並べる
@@ -1174,30 +1184,57 @@ function _setBtnState(btn, state) {
   btn.classList.remove("loading", "playing", "error");
   if (state !== "idle") btn.classList.add(state);
 }
+// 確実に音を止める:pause だけだと一部ブラウザ(iOS Safari等)で間に合わずバッファが残るため、
+// src を空にして load() で内部状態をリセット。古い Audio が「謎再生」しないよう参照を切る。
 function _stopAudio() {
-  if (_audio) { try { _audio.pause(); } catch {} _audio = null; }
+  if (_audio) {
+    try { _audio.pause(); _audio.src = ""; _audio.removeAttribute("src"); _audio.load(); } catch {}
+    _audio = null;
+  }
   if (_activeBtn) { _setBtnState(_activeBtn, "idle"); _activeBtn = null; }
 }
+
+// fetchSongMeta の await 中に別のボタンが押されると、古い fetch が後から resolve して
+// 「捨てたはずの曲」が新しい曲と並列再生される race condition があった。
+// token を毎回インクリメントし、await 復帰後に自分が最新か確認する。
+let _playToken = 0;
+
 async function togglePreview(btn, title, artist) {
-  if (btn.classList.contains("loading")) return; // 連打ガード
+  if (btn.classList.contains("loading")) return; // 連打ガード(同じボタン)
   if (navigator.vibrate) navigator.vibrate(10);
   // 同じボタン2度押し→停止
   if (_activeBtn === btn && _audio && !_audio.paused) { _stopAudio(); return; }
   _stopAudio();
+  const myToken = ++_playToken;       // この再生リクエストの ID
   let meta = _songMeta.get(`${title}|||${artist}`);
   if (meta === undefined) {
     _setBtnState(btn, "loading");
     meta = await fetchSongMeta(title, artist);
+    if (myToken !== _playToken) return;   // 待ってる間に別の再生が始まったので自分は破棄
   }
   const url = meta && meta.previewUrl;
   if (!url) { _setBtnState(btn, "error"); setTimeout(() => _setBtnState(btn, "idle"), 1800); return; }
-  _audio = new Audio(url);
-  _audio.preload = "auto";
+  if (myToken !== _playToken) return;
+  const a = new Audio(url);
+  a.preload = "auto";
+  _audio = a;
   _activeBtn = btn;
   _setBtnState(btn, "playing");
-  _audio.addEventListener("ended", () => { if (_activeBtn === btn) { _setBtnState(btn, "idle"); _activeBtn = null; _audio = null; } });
-  _audio.addEventListener("error", () => { _setBtnState(btn, "error"); _audio = null; _activeBtn = null; setTimeout(() => _setBtnState(btn, "idle"), 1800); });
-  try { await _audio.play(); } catch { _setBtnState(btn, "error"); _audio = null; _activeBtn = null; setTimeout(() => _setBtnState(btn, "idle"), 1800); }
+  a.addEventListener("ended", () => {
+    // 自分がまだ "現役" なら綺麗に終わらせる(別の再生が始まっていたら何もしない)
+    if (_audio === a) _stopAudio();
+  });
+  a.addEventListener("error", () => {
+    if (_audio === a) { _stopAudio(); _setBtnState(btn, "error"); setTimeout(() => _setBtnState(btn, "idle"), 1800); }
+  });
+  try {
+    await a.play();
+    if (myToken !== _playToken) { try { a.pause(); a.src = ""; a.load(); } catch {} }
+  } catch {
+    if (_audio === a) { _stopAudio(); }
+    _setBtnState(btn, "error");
+    setTimeout(() => _setBtnState(btn, "idle"), 1800);
+  }
 }
 // ページ遷移時に必ず止める
 window.addEventListener("beforeunload", _stopAudio);
