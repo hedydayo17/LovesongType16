@@ -489,6 +489,18 @@ function goBack() {
   if (state.qIndex > 0) { state.qIndex--; renderQuestion(); }
 }
 
+// 各タイプの「主役/脇役で出現する全質問の重み合計 × 最大回答倍率」=理論上の最大点。
+// これで割って正規化すると、主役質問数の多寡による構造的バイアスが消える。
+// 例: 進撃のロマンチスト(5問で計w=9)= 最大27点、同志の虎(1問w=2)= 最大6点。
+// 正規化前: 進撃が機械的に有利。正規化後: それぞれ 0..1 範囲で公平比較。
+const MAX_SCALE = Math.max(...SCALE_VALUES); // = 3
+const TYPE_MAX_RAW = (() => {
+  const m = {};
+  TYPES.forEach(t => m[t.key] = 0);
+  QUESTIONS.forEach(q => { for (const k in q.w) m[k] = (m[k] || 0) + q.w[k] * MAX_SCALE; });
+  return m;
+})();
+
 function finishQuiz() {
   // 集計: 各設問の回答位置 → スコア倍率 × タイプ重み
   TYPES.forEach(t => state.scores[t.key] = 0);
@@ -498,16 +510,27 @@ function finishQuiz() {
     const val = SCALE_VALUES[pos];
     for (const k in q.w) state.scores[k] += q.w[k] * val;
   });
+  // ★正規化スコア:各タイプの実スコアを「そのタイプの理論最大点」で割る(=−1..+1)
+  //   → 主役質問数が違っても公平に比較できる。判定にはこれを使う。
+  //   state.scores(生スコア)も traits/系判定で参照されるためそのまま保持。
+  const norm = {};
+  TYPES.forEach(t => {
+    const max = TYPE_MAX_RAW[t.key] || 1; // ゼロ除算ガード
+    norm[t.key] = (state.scores[t.key] || 0) / max;
+  });
+  state.normScores = norm;
+
   // 最高点 → 同点は TIE_PRIORITY で確定
-  const max = Math.max(...Object.values(state.scores));
-  const top = TYPES.map(t => t.key).filter(k => state.scores[k] === max);
+  const top1 = Math.max(...Object.values(norm));
+  const top = TYPES.map(t => t.key).filter(k => norm[k] === top1);
   state.result = top.length === 1 ? top[0]
     : TIE_PRIORITY.find(k => top.includes(k));
-  // 「系」を判定:各系のスコア合計が最大のもの(64通りのレア感)
-  let bestKei = null, bestSum = -Infinity;
+  // 「系」を判定:各系の正規化スコア平均が最大のもの(各系のタイプ数差も吸収)
+  let bestKei = null, bestAvg = -Infinity;
   for (const name in KEI) {
-    const sum = KEI[name].types.reduce((s, k) => s + (state.scores[k] || 0), 0);
-    if (sum > bestSum) { bestSum = sum; bestKei = name; }
+    const arr = KEI[name].types;
+    const avg = arr.reduce((s, k) => s + (norm[k] || 0), 0) / arr.length;
+    if (avg > bestAvg) { bestAvg = avg; bestKei = name; }
   }
   state.kei = bestKei;
   renderWrapped();
@@ -958,8 +981,9 @@ function getReason(song, typeKey) {
 
 // 「あなたの中の他のタイプ」:メインタイプを除いた上位3つを 1行解説付きで並べる
 function traitsHTML() {
-  const top = Object.entries(state.scores)
-    .sort((a, b) => b[1] - a[1]);
+  // 主役質問数の偏りを排除するため、ここも正規化スコアで Top3 を出す
+  const scoreMap = state.normScores || state.scores || {};
+  const top = Object.entries(scoreMap).sort((a, b) => b[1] - a[1]);
   const subs = top.filter(([k]) => k !== state.result).slice(0, 3);
   return subs.map(([k], i) => {
     const tt = TYPE_MAP[k];
