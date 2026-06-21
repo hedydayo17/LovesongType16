@@ -302,25 +302,48 @@ async function fetchArtistSuggestions(query, sugEl, inp) {
     if (e.name !== "AbortError") console.warn("artist search failed:", e);
   }
 }
+// 安全な画像URL判定(Spotify CDN 等の https のみ許可 — javascript: スキーム XSS 防止)
+function isSafeImgUrl(u) {
+  if (typeof u !== "string") return false;
+  try { const url = new URL(u); return url.protocol === "https:" || url.protocol === "http:"; }
+  catch { return false; }
+}
 function renderSuggestions(list, sugEl, inp) {
-  if (!list.length) { sugEl.hidden = true; sugEl.innerHTML = ""; return; }
-  sugEl.innerHTML = list.map(a => `
-    <li class="artist-sug-item" role="option" data-name="${a.name.replace(/"/g, "&quot;")}">
-      ${a.img ? `<img class="asi-img" src="${a.img}" alt="" loading="lazy">` : '<span class="asi-img placeholder"></span>'}
-      <span class="asi-name">${a.name}</span>
-    </li>
-  `).join("");
-  sugEl.hidden = false;
-  // クリックで input に正規名を入れる(mousedown:blur より早く反応)
-  sugEl.querySelectorAll(".artist-sug-item").forEach(li => {
+  // 外部 API レスポンス(Spotify)を扱うため、innerHTML 補間は使わず DOM APIs で構築
+  while (sugEl.firstChild) sugEl.removeChild(sugEl.firstChild);
+  if (!list.length) { sugEl.hidden = true; return; }
+  for (const a of list) {
+    const li = document.createElement("li");
+    li.className = "artist-sug-item";
+    li.setAttribute("role", "option");
+    li.dataset.name = a.name; // dataset は内部的にエスケープされる
+    let imgEl;
+    if (isSafeImgUrl(a.img)) {
+      imgEl = document.createElement("img");
+      imgEl.className = "asi-img";
+      imgEl.src = a.img;
+      imgEl.loading = "lazy";
+      imgEl.alt = "";
+    } else {
+      imgEl = document.createElement("span");
+      imgEl.className = "asi-img placeholder";
+    }
+    li.appendChild(imgEl);
+    const nameEl = document.createElement("span");
+    nameEl.className = "asi-name";
+    nameEl.textContent = a.name; // textContent で HTML として解釈されない
+    li.appendChild(nameEl);
+    // クリックで input に正規名を入れる(mousedown は blur より早く発火)
     li.addEventListener("mousedown", e => {
       e.preventDefault();
-      inp.value = li.dataset.name;
+      inp.value = a.name;
       sugEl.hidden = true;
-      sugEl.innerHTML = "";
+      while (sugEl.firstChild) sugEl.removeChild(sugEl.firstChild);
       if (navigator.vibrate) navigator.vibrate(8);
     });
-  });
+    sugEl.appendChild(li);
+  }
+  sugEl.hidden = false;
 }
 
 function submitArtists() {
