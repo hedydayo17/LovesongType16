@@ -114,12 +114,17 @@ const MX = (() => {
   // ---- ヒーロー入場 ----
   function hero() {
     if (!on) return;
-    gsap.timeline({ defaults: { ease: EASE } })
-      .from(".hero-title .ln > *", { yPercent: 115, opacity: 0, rotate: 4, stagger: .12, duration: .85, ease: "power4.out" })
-      .from(".hero-lead", { y: 20, opacity: 0, duration: .5 }, "-=.4")
-      .from(".hm", { y: 16, opacity: 0, scale: .8, stagger: .08, duration: .45, ease: "back.out(2)" }, "-=.3")
-      .from(".hero .btn", { y: 24, opacity: 0, stagger: .1, duration: .5 }, "-=.2")
-      .from(".hero-share, .marquee", { opacity: 0, duration: .6 }, "-=.3");
+    // 存在しない target を渡すと GSAP が "target not found" 警告を出すため、
+    // 各 selector の存在を確認してから animate する(リード文削除等の構造変更に強い)
+    const tl = gsap.timeline({ defaults: { ease: EASE } });
+    const safeFrom = (sel, props, pos) => {
+      if (document.querySelector(sel)) tl.from(sel, props, pos);
+    };
+    safeFrom(".hero-title .ln > *", { yPercent: 115, opacity: 0, rotate: 4, stagger: .12, duration: .85, ease: "power4.out" });
+    safeFrom(".hp-label",           { y: 16, opacity: 0, duration: .5 }, "-=.4");
+    safeFrom(".hm",                 { y: 16, opacity: 0, scale: .8, stagger: .08, duration: .45, ease: "back.out(2)" }, "-=.3");
+    safeFrom(".hero .btn",          { y: 24, opacity: 0, stagger: .1, duration: .5 }, "-=.2");
+    safeFrom(".hero-share, .marquee", { opacity: 0, duration: .6 }, "-=.3");
     const track = document.querySelector(".marquee-track");
     if (track) gsap.to(track, { x: -track.scrollWidth / 2, duration: 18, repeat: -1, ease: "none" });
     magnetize(document);

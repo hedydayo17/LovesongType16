@@ -605,7 +605,7 @@ function renderWrapped() {
           <span class="rs s7"></span><span class="rs s8"></span>
         </div>
         <div class="reveal-stack">
-          <div class="reveal rv-tag" style="--d:.05s">20問、おつかれさま。</div>
+          <div class="reveal rv-tag" style="--d:.05s">${QUESTIONS.length}問、おつかれさま。</div>
           <h1 class="reveal rv-you" style="--d:.25s">あなたは…</h1>
           <div class="reveal rv-sub" style="--d:.6s">あなたを最も表す<br><b>ラブソング型</b>は</div>
           <div class="reveal rv-dots" style="--d:.9s" aria-hidden="true">
