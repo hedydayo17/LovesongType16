@@ -870,15 +870,29 @@ function recommend(typeKey) {
     const w = Math.max(0.3, Math.pow(primary, 1.7) + compatBonus + genreBonus + favBonus);
     return { song, w };
   });
-  // 重み付きランダム抽出(非復元)で10曲。再シャッフルで毎回変化
-  const pool = [...weighted];
-  const picked = [];
-  while (picked.length < 10 && pool.length) {
-    const total = pool.reduce((s, x) => s + x.w, 0);
-    let r = Math.random() * total;
-    let idx = 0;
-    for (; idx < pool.length; idx++) { r -= pool[idx].w; if (r <= 0) break; }
-    picked.push(pool.splice(Math.min(idx, pool.length - 1), 1)[0].song);
+  // 重み付き非復元サンプリングのヘルパ
+  const sampleN = (arr, n) => {
+    const out = [];
+    while (out.length < n && arr.length) {
+      const total = arr.reduce((s, x) => s + x.w, 0);
+      let r = Math.random() * total;
+      let idx = 0;
+      for (; idx < arr.length; idx++) { r -= arr[idx].w; if (r <= 0) break; }
+      out.push(arr.splice(Math.min(idx, arr.length - 1), 1)[0].song);
+    }
+    return out;
+  };
+  // 好きアーティスト曲は最大3曲まで先取り保証(ユーザーが明示的に選んだ強い信号を優先)
+  const favPool = weighted.filter(x => isFavArtist(x.song.artist));
+  const otherPool = weighted.filter(x => !isFavArtist(x.song.artist));
+  const wantFav = Math.min(3, favPool.length);
+  const favPicks = sampleN(favPool, wantFav);
+  const otherPicks = sampleN(otherPool, 10 - favPicks.length);
+  // 結果は fav が頭・尻に偏らないよう挿入位置をシャッフルでばらす
+  const picked = [...favPicks, ...otherPicks];
+  for (let i = picked.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [picked[i], picked[j]] = [picked[j], picked[i]];
   }
   return picked;
 }
