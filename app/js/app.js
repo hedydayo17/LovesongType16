@@ -860,13 +860,15 @@ function isFavArtist(songArtist) {
 }
 
 // ---- Mood:5クラスタへの自動分類(既存 score パターンから無料で算出)----
-// 手動タグ付け不要・135曲全部に即適用。recommend は触らず、純粋に説明性UP用。
+// 手動タグ付け不要・全曲に即適用。recommend は触らず、純粋に説明性UP用。
+// バランス調整:王道ラブソングは複数タイプで高スコアになるため、moodクラスタが偏らないよう
+// 「キラキラ」を絞り、並走/友達/一途系は「穏やか」に統合(2026-06-22 監査結果)。
 const MOOD_DEFS = [
   { name: "切ない",   types: ["沼っくま", "進撃のロマンチスト", "ミステリアス狼"], color: "#7C5CFF", emoji: "🌙" },
   { name: "エモい",   types: ["情熱ラブゾンビ", "ヤキモチモンスター", "ド直球ザウルス"], color: "#FF4D6D", emoji: "🔥" },
   { name: "前向き",   types: ["バイブス警察", "ときめきパパラッチ", "推し活ベビー"], color: "#FF8FB1", emoji: "✨" },
-  { name: "穏やか",   types: ["チル仙人", "慎重うさぎ", "マブダチエイリアン"], color: "#5CB8C4", emoji: "☁️" },
-  { name: "キラキラ", types: ["ピュアエンジェル", "運命マジシャン", "一途ペンギン", "同志の虎"], color: "#FFB347", emoji: "💖" },
+  { name: "穏やか",   types: ["チル仙人", "慎重うさぎ", "マブダチエイリアン", "一途ペンギン", "同志の虎"], color: "#5CB8C4", emoji: "☁️" },
+  { name: "キラキラ", types: ["ピュアエンジェル", "運命マジシャン"], color: "#FFB347", emoji: "💖" },
 ];
 function moodOf(song) {
   if (!song || !song.scores) return null;
