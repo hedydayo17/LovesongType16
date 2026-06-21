@@ -30,12 +30,28 @@ function show(html) {
 // 画面遷移(ワイプ付き)。GSAP無ければ即実行
 function go(fn) { MX.wipe(fn); }
 
+// ---- parody名のフレーズ境界 <wbr> ヒント ----
+// 狭幅カード(図鑑/マーキュー)で2行に折る時、単語の途中ではなく
+// 意味の境界で切れるようにする。短い名前(<=6文字)はヒント不要 → 1行のまま。
+const PARODY_BREAKS = {
+  "進撃のロマンチスト": "進撃の<wbr>ロマンチスト",
+  "ヤキモチモンスター": "ヤキモチ<wbr>モンスター",
+  "ピュアエンジェル":   "ピュア<wbr>エンジェル",
+  "マブダチエイリアン": "マブダチ<wbr>エイリアン",
+  "ときめきパパラッチ": "ときめき<wbr>パパラッチ",
+  "ド直球ザウルス":     "ド直球<wbr>ザウルス",
+  "ミステリアス狼":     "ミステリアス<wbr>狼",
+  "情熱ラブゾンビ":     "情熱<wbr>ラブゾンビ",
+  "運命マジシャン":     "運命<wbr>マジシャン",
+};
+function parodyBR(name) { return PARODY_BREAKS[name] || name; }
+
 // ---- ランディング(ヒーロー):摩擦ゼロの入口。16P/ラブタイプ流に「即スタート」を強調 ----
 function renderLanding() {
   const marquee = TYPES.concat(TYPES).map(t =>
     `<span class="mq" style="--c:${t.color}">
       <span class="mq-mascot">${mascotSVG(t.parody)}</span>
-      <span class="mq-label">${t.parody}</span>
+      <span class="mq-label">${parodyBR(t.parody)}</span>
     </span>`).join("");
   show(`
     <section class="screen hero">
@@ -62,38 +78,110 @@ function renderLanding() {
   MX.hero();
 }
 
-// ---- Step 0: 生年月日 ----
+// ---- Step 0: 生年月日(iOS風 ホイールピッカー) ----
+const BIRTH_ITEM_H = 44; // .wheel-item の高さ(px)。CSSと一致必須
+
+function _wheelColHTML(id, vals, unit) {
+  const items = vals.map(v => `<div class="wheel-item" data-v="${v}">${v}</div>`).join("");
+  return `
+    <div class="wheel-col-wrap">
+      <div class="wheel-col" id="${id}" data-unit="${unit}">
+        <div class="wheel-pad"></div>
+        ${items}
+        <div class="wheel-pad"></div>
+      </div>
+      <span class="wheel-unit">${unit}</span>
+    </div>
+  `;
+}
+
 function renderBirth() {
+  const years  = []; for (let y = 1925; y <= 2025; y++) years.push(y);
+  const months = []; for (let m = 1; m <= 12; m++) months.push(m);
+  const days   = []; for (let d = 1; d <= 31; d++) days.push(d);
+
   show(`
     <section class="screen">
       <div class="step-tag">はじめに</div>
       <h2 class="title">生年月日を教えてください</h2>
-      <p class="lead">あなたの世代に響く選曲に使います。<br>結果カードには表示されません。</p>
+      <p class="lead">あなたの世代に響く選曲に使います。</p>
       <div class="card-input">
         <label class="field-label">生年月日</label>
-        <div class="birth-row">
-          <input id="by" class="birth-in" type="number" inputmode="numeric" placeholder="2000" min="1900" max="2025">
-          <span class="sep">/</span>
-          <input id="bm" class="birth-in sm" type="number" inputmode="numeric" placeholder="01" min="1" max="12">
-          <span class="sep">/</span>
-          <input id="bd" class="birth-in sm" type="number" inputmode="numeric" placeholder="01" min="1" max="31">
+        <div class="wheel-picker" id="bw">
+          <div class="wheel-mask" aria-hidden="true"></div>
+          ${_wheelColHTML("wy", years,  "年")}
+          ${_wheelColHTML("wm", months, "月")}
+          ${_wheelColHTML("wd", days,   "日")}
         </div>
-        <p class="note">診断の精度向上に使います。結果カードには表示されません。</p>
+        <p class="note">スクロールして選択。結果カードには表示しません。</p>
         <p id="birthErr" class="err"></p>
       </div>
       <button class="btn primary" onclick="submitBirth()">次へ</button>
     </section>
   `);
+
+  // デフォルト位置:2000 / 1 / 1
+  const def = (state.birth) || { y: 2000, m: 1, d: 1 };
+  initWheel("wy", def.y, years);
+  initWheel("wm", def.m, months);
+  initWheel("wd", def.d, days);
+
   MX.screenIn();
 }
 
+function initWheel(id, value, vals) {
+  const col = document.getElementById(id);
+  if (!col) return;
+  const idx = Math.max(0, vals.indexOf(value));
+  // 初期スクロール位置 = idx × itemH(scroll-snap-align: center で中央に来る)
+  col.scrollTop = idx * BIRTH_ITEM_H;
+  updateWheelHighlight(col);
+  // スクロール中央の項目をリアルタイムで強調
+  col.addEventListener("scroll", () => {
+    if (col._rafId) cancelAnimationFrame(col._rafId);
+    col._rafId = requestAnimationFrame(() => updateWheelHighlight(col));
+  }, { passive: true });
+  // タップで一発スクロール(中央に持ってくる)
+  col.addEventListener("click", e => {
+    const item = e.target.closest(".wheel-item");
+    if (!item) return;
+    const items = col.querySelectorAll(".wheel-item");
+    const i = Array.from(items).indexOf(item);
+    if (i >= 0) col.scrollTo({ top: i * BIRTH_ITEM_H, behavior: "smooth" });
+  });
+}
+
+function updateWheelHighlight(col) {
+  const sel = Math.round(col.scrollTop / BIRTH_ITEM_H);
+  col.querySelectorAll(".wheel-item").forEach((el, i) => {
+    el.classList.toggle("on", i === sel);
+    // 中央からの距離でフェード(±3まで段階)
+    const d = Math.min(3, Math.abs(i - sel));
+    el.style.opacity = (1 - d * 0.22).toFixed(2);
+  });
+}
+
+function readWheel(id) {
+  const col = document.getElementById(id);
+  if (!col) return NaN;
+  const idx = Math.round(col.scrollTop / BIRTH_ITEM_H);
+  const item = col.querySelectorAll(".wheel-item")[idx];
+  return item ? parseInt(item.dataset.v, 10) : NaN;
+}
+
 function submitBirth() {
-  const y = parseInt($("#by").value, 10);
-  const m = parseInt($("#bm").value, 10);
-  const d = parseInt($("#bd").value, 10);
+  const y = readWheel("wy");
+  const m = readWheel("wm");
+  const d = readWheel("wd");
   const err = $("#birthErr");
   if (!y || !m || !d || y < 1900 || y > 2025 || m < 1 || m > 12 || d < 1 || d > 31) {
-    err.textContent = "生年月日を正しく入力してください。";
+    err.textContent = "生年月日を正しく選択してください。";
+    return;
+  }
+  // 月ごとの日数バリデーション(2月31日などNG)
+  const maxD = new Date(y, m, 0).getDate();
+  if (d > maxD) {
+    err.textContent = `${m}月は${maxD}日までです。`;
     return;
   }
   state.birth = { y, m, d };
@@ -208,6 +296,7 @@ function renderQuestion() {
 let _answering = false;
 function answer(pos) {
   if (_answering) return;
+  if (state.qIndex >= QUESTIONS.length) return; // wipe遷移中の駆け込みクリックで answers が溢れるのを防止
   _answering = true;
   state.answers[state.qIndex] = pos;
   // 触覚フィードバック(対応モバイルのみ)— 中立は無音、外側ほど強め
@@ -235,9 +324,10 @@ function finishQuiz() {
   // 集計: 各設問の回答位置 → スコア倍率 × タイプ重み
   TYPES.forEach(t => state.scores[t.key] = 0);
   state.answers.forEach((pos, qIdx) => {
+    const q = QUESTIONS[qIdx];
+    if (!q || pos == null) return; // 念のため: スパース/オーバーラン保護
     const val = SCALE_VALUES[pos];
-    const w = QUESTIONS[qIdx].w;
-    for (const k in w) state.scores[k] += w[k] * val;
+    for (const k in q.w) state.scores[k] += q.w[k] * val;
   });
   // 最高点 → 同点は TIE_PRIORITY で確定
   const max = Math.max(...Object.values(state.scores));
@@ -313,18 +403,59 @@ function renderWrapped() {
     `;
   }).join("");
 
+  const typeIdx = TYPES.findIndex(x => x.key === state.result) + 1;
+  const typeNo  = typeIdx > 0 ? `No. ${String(typeIdx).padStart(2, "0")} / 16` : "";
+
   app().innerHTML = `
     <div class="wrapped" id="wrapped" style="--c:${t.color};--ac:${t.accent}">
 
+      <!-- 結果リビール:タイプ露出前の「あなたは…」溜め -->
+      <section class="panel p-reveal" style="background:
+        radial-gradient(120% 100% at 50% 30%, color-mix(in srgb, var(--c) 28%, #1a0a18 72%), #1a0a18 70%)">
+        <div class="reveal-stars" aria-hidden="true">
+          <span class="rs s1"></span><span class="rs s2"></span><span class="rs s3"></span>
+          <span class="rs s4"></span><span class="rs s5"></span><span class="rs s6"></span>
+          <span class="rs s7"></span><span class="rs s8"></span>
+        </div>
+        <div class="reveal-stack">
+          <div class="reveal rv-tag" style="--d:.05s">20問、おつかれさま。</div>
+          <h1 class="reveal rv-you" style="--d:.25s">あなたは…</h1>
+          <div class="reveal rv-sub" style="--d:.6s">あなたを最も表す<br><b>ラブソング型</b>は</div>
+          <div class="reveal rv-dots" style="--d:.9s" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="reveal scroll-hint light pulse" style="--d:1.2s">↓ スワイプで結果を見る</div>
+      </section>
+
       <section class="panel p-type" style="background:
-        linear-gradient(165deg, var(--c), color-mix(in srgb, var(--c) 45%, #000 55%))">
+        radial-gradient(120% 100% at 50% 0%, color-mix(in srgb, var(--c) 80%, #fff 20%) 0%, var(--c) 38%, color-mix(in srgb, var(--c) 50%, #1a0a18 50%) 100%)">
         <div class="hero-card reveal">
           <span class="sticker s1"></span><span class="sticker s2"></span><span class="sticker s3"></span>
-          <div class="hc-brand">ラブソング診断16</div>
-          <div class="hc-kei">${state.kei || ""}</div>
-          <div class="type-mascot">${mascotSVG(t.parody)}</div>
-          <h1 class="w-parody">${t.parody}</h1>
+          <span class="sticker s4"></span><span class="sticker s5"></span>
+
+          <div class="hc-topline">
+            <span class="hc-brand">ラブソング診断16</span>
+            <span class="hc-no">${typeNo}</span>
+          </div>
+
+          <div class="hc-kei-ribbon"><span class="hc-kei-text">${state.kei || ""}</span></div>
+
+          <div class="hc-mascot-frame">
+            <span class="hc-halo" aria-hidden="true"></span>
+            <span class="hc-sparkle sp1" aria-hidden="true">✦</span>
+            <span class="hc-sparkle sp2" aria-hidden="true">✦</span>
+            <span class="hc-sparkle sp3" aria-hidden="true">♡</span>
+            <div class="type-mascot">${mascotSVG(t.parody)}</div>
+          </div>
+
+          <div class="hc-type-label">正式タイプ — ${t.type}</div>
+          <h1 class="w-parody">${parodyBR(t.parody)}</h1>
+
+          <div class="hc-divider" aria-hidden="true"><span>♡</span></div>
           <p class="hc-catch handwrite">「${t.tagline}」</p>
+
+          <div class="hc-footline">あなたの定義 — ${t.definition}</div>
         </div>
         <div class="reveal scroll-hint light" style="--d:.3s">↓</div>
       </section>
@@ -392,7 +523,7 @@ function renderWrapped() {
           <div class="sc-brand">ラブソング診断16</div>
           <div class="sc-mascot">${mascotSVG(t.parody)}</div>
           <div class="sc-kei">${state.kei || ""}</div>
-          <div class="sc-parody">${t.parody}</div>
+          <div class="sc-parody">${parodyBR(t.parody)}</div>
           <div class="sc-tagline handwrite">「${t.tagline}」</div>
           <div class="sc-foot">あなたは何タイプ?<br><span class="sc-url">lovesong-type16.vercel.app</span></div>
         </div>
@@ -441,7 +572,7 @@ function renderGallery(from) {
   const cards = TYPES.map(t => `
     <button class="g-card" style="--c:${t.color}" onclick="go(()=>renderTypeDetail('${t.key}','${from}'))">
       <div class="g-mascot">${mascotSVG(t.parody)}</div>
-      <div class="g-parody">${t.parody}タイプ</div>
+      <div class="g-parody">${parodyBR(t.parody)}</div>
     </button>`).join("");
   const back = from === "result"
     ? `<button class="btn ghost" onclick="go(renderWrapped)">← 結果に戻る</button>`
@@ -468,7 +599,7 @@ function renderTypeDetail(key, from) {
         linear-gradient(165deg, var(--c), color-mix(in srgb, var(--c) 45%, #000 55%));--c:${t.color}">
         <div class="td-mascot">${mascotSVG(t.parody)}</div>
         <div class="td-type">${t.type}</div>
-        <h1 class="td-parody">${t.parody}</h1>
+        <h1 class="td-parody">${parodyBR(t.parody)}</h1>
         <p class="td-tagline">「${t.tagline}」</p>
       </div>
       <div class="td-body" style="--c:${t.color}">
@@ -588,7 +719,7 @@ function traitsHTML() {
         <div class="alsome-mascot">${mascotSVG(tt.parody)}</div>
         <div class="alsome-body">
           <div class="alsome-rank">No.${i + 2}</div>
-          <div class="alsome-name">${tt.parody}タイプ</div>
+          <div class="alsome-name">${parodyBR(tt.parody)}</div>
           <div class="alsome-line">${tt.tagline}</div>
         </div>
       </div>`;
