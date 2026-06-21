@@ -489,15 +489,14 @@ function goBack() {
   if (state.qIndex > 0) { state.qIndex--; renderQuestion(); }
 }
 
-// 各タイプの「主役/脇役で出現する全質問の重み合計 × 最大回答倍率」=理論上の最大点。
+// 各タイプの「主役/脇役で出現する全質問の重みの絶対値合計 × 最大回答倍率」=理論上の最大点。
 // これで割って正規化すると、主役質問数の多寡による構造的バイアスが消える。
-// 例: 進撃のロマンチスト(5問で計w=9)= 最大27点、同志の虎(1問w=2)= 最大6点。
-// 正規化前: 進撃が機械的に有利。正規化後: それぞれ 0..1 範囲で公平比較。
+// abs(w) で算出する理由:逆方向重み(-1)も最大スコアに寄与する(同意=減点 / 反対=加点)。
 const MAX_SCALE = Math.max(...SCALE_VALUES); // = 3
 const TYPE_MAX_RAW = (() => {
   const m = {};
   TYPES.forEach(t => m[t.key] = 0);
-  QUESTIONS.forEach(q => { for (const k in q.w) m[k] = (m[k] || 0) + q.w[k] * MAX_SCALE; });
+  QUESTIONS.forEach(q => { for (const k in q.w) m[k] = (m[k] || 0) + Math.abs(q.w[k]) * MAX_SCALE; });
   return m;
 })();
 
