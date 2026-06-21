@@ -468,8 +468,6 @@ function renderWrapped() {
 
   // 各曲フルスクリーン panel(scroll-snap で1曲1ページ・スクショ前提)
   const songPanels = state.lastRecommend.map((s, i) => {
-    const id = fbId(s);
-    const fb = getFeedback(id);
     const q = encodeURIComponent(`${s.title} ${s.artist}`);
     const spotify = `https://open.spotify.com/search/${q}`;
     const apple = `https://music.apple.com/jp/search?term=${q}`;
@@ -477,7 +475,7 @@ function renderWrapped() {
     const safeT_ = (s.title || "").replace(/'/g, "\\'");
     const safeA_ = (s.artist || "").replace(/'/g, "\\'");
     return `
-      <section class="panel p-song" data-song-id="${id}">
+      <section class="panel p-song" data-song-id="${s.title}|||${s.artist}">
         <div class="ps-num"><span class="ps-num-n">${i + 1}</span><span class="ps-num-of">/10</span></div>
         <div class="ps-card reveal">
           <button class="ps-play song-play" type="button" style="--jc:${t.color}"
@@ -498,10 +496,6 @@ function renderWrapped() {
             <a class="ps-svc sp" href="${spotify}" target="_blank" rel="noopener" aria-label="Spotifyでフル尺">Spotify</a>
             <a class="ps-svc am" href="${apple}" target="_blank" rel="noopener" aria-label="Apple Musicでフル尺">Apple</a>
             <a class="ps-svc yt" href="${yt}" target="_blank" rel="noopener" aria-label="YouTubeでフル尺">YouTube</a>
-          </div>
-          <div class="ps-fb">
-            <button class="fb up ${fb === 'up' ? 'on' : ''}" onclick="vote('${id}','up',this)" aria-label="good">good</button>
-            <button class="fb down ${fb === 'down' ? 'on' : ''}" onclick="vote('${id}','down',this)" aria-label="bad">bad</button>
           </div>
         </div>
       </section>
@@ -783,15 +777,12 @@ function recommend(typeKey) {
   //   + 相性タイプスコア合計の 25%
   //   + ジャンル一致 +1.5 ブースト
   //   + 好きアーティスト一致 +5.0 ブースト(Step 0b の入力を本当に効かせる)
-  //   + 学習補正(全ユーザーの👍👎集計)を primary に加算
   //   + 旧 types[] レガシー互換(スコアがない曲のため)
   const weighted = SONGS.map(song => {
     const sc = song.scores || {};
     let primary = sc[typeKey];
     if (primary == null && Array.isArray(song.types)) primary = song.types.includes(typeKey) ? 9 : 3;
     if (primary == null) primary = 3;
-    // 学習補正(0-10 にクランプ、ベースのメリハリは維持)
-    primary = Math.max(0, Math.min(10, primary + scoreDelta(song, typeKey)));
     // 相性タイプの平均ボーナス
     let compatBonus = 0;
     if (t.compatible && t.compatible.length) {
@@ -874,8 +865,6 @@ function reshuffleSongs() {
 }
 
 function songRow(s, i) {
-  const id = fbId(s);
-  const fb = getFeedback(id);
   const q = encodeURIComponent(`${s.title} ${s.artist}`);
   const spotify = `https://open.spotify.com/search/${q}`;
   const apple = `https://music.apple.com/jp/search?term=${q}`;
@@ -884,7 +873,7 @@ function songRow(s, i) {
   const safeA = (s.artist || "").replace(/'/g, "\\'");
   const typeColor = TYPE_MAP[state.result] ? TYPE_MAP[state.result].color : "#ff5e8a";
   return `
-    <div class="song reveal" data-song-id="${id}" style="--d:${Math.min(i, 8) * .05}s">
+    <div class="song reveal" data-song-id="${s.title}|||${s.artist}" style="--d:${Math.min(i, 8) * .05}s">
       <button class="song-play" type="button" aria-label="30秒試聴して再生" style="--jc:${typeColor}" onclick="togglePreview(this, '${safeT}', '${safeA}')">
         <span class="sp-jacket" aria-hidden="true"></span>
         <span class="sp-overlay" aria-hidden="true"></span>
@@ -900,10 +889,6 @@ function songRow(s, i) {
           <a class="song-link am" href="${apple}" target="_blank" rel="noopener" aria-label="Apple Musicでフル尺">Apple</a>
           <a class="song-link yt" href="${yt}" target="_blank" rel="noopener" aria-label="YouTubeでフル尺">YouTube</a>
         </div>
-      </div>
-      <div class="song-fb">
-        <button class="fb up ${fb === 'up' ? 'on' : ''}" onclick="vote('${id}','up',this)">good</button>
-        <button class="fb down ${fb === 'down' ? 'on' : ''}" onclick="vote('${id}','down',this)">bad</button>
       </div>
     </div>`;
 }
@@ -1001,7 +986,7 @@ async function prefetchSongMeta() {
   await Promise.all(state.lastRecommend.map(async (s) => {
     const meta = await fetchSongMeta(s.title, s.artist);
     if (!meta) return;
-    const id = fbId(s);
+    const id = `${s.title}|||${s.artist}`;
     const rows = document.querySelectorAll(`[data-song-id="${CSS.escape(id)}"]`);
     rows.forEach((row) => {
       // ジャケ写
@@ -1055,69 +1040,6 @@ async function togglePreview(btn, title, artist) {
 }
 // ページ遷移時に必ず止める
 window.addEventListener("beforeunload", _stopAudio);
-
-// ---- Feedback(localStorage + /api/feedback サーバ集計 → /api/scores-delta で配信)----
-// id 形式: `${typeKey}::${title}::${artist}` — type-scoped(タイプごとに分離集計)
-function fbId(s) { return `${state.result}::${s.title}::${s.artist}`; }
-function fbStore() {
-  try { return JSON.parse(localStorage.getItem("ongaku_fb") || "{}"); }
-  catch { return {}; }
-}
-function getFeedback(id) { return fbStore()[id] || null; }
-
-// fbId から songId(title|||artist)と typeKey を復元
-function _splitFbId(id) {
-  const parts = id.split("::");
-  if (parts.length < 3) return null;
-  return { typeKey: parts[0], songId: `${parts[1]}|||${parts.slice(2).join("::")}` };
-}
-async function _sendFeedback(songId, typeKey, vote, weight) {
-  try {
-    await fetch("/api/feedback", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ songId, typeKey, vote, weight }),
-    });
-  } catch (_) { /* graceful: localStorageは既に保存済 */ }
-}
-
-function vote(id, dir, el) {
-  const store = fbStore();
-  const prev = store[id] || null;
-  const next = prev === dir ? null : dir;  // 再タップで取り消し / 別方向タップで切替
-  store[id] = next;
-  localStorage.setItem("ongaku_fb", JSON.stringify(store));
-  const row = el.closest(".song-fb");
-  row.querySelectorAll(".fb").forEach(b => b.classList.remove("on"));
-  if (next) el.classList.add("on");
-
-  // サーバ集計に diff を送信(prev=null→up なら up+1、up→null なら up-1、up→down なら up-1 と down+1)
-  const split = _splitFbId(id);
-  if (!split) return;
-  if (prev && prev !== next) _sendFeedback(split.songId, split.typeKey, prev, -1);
-  if (next && prev !== next) _sendFeedback(split.songId, split.typeKey, next, +1);
-}
-
-// ---- スコア補正(全ユーザーの集計を反映)----
-// 起動時に /api/scores-delta を1回だけ取得して window.SCORE_DELTA にキャッシュ。
-// recommend() で primary スコアにこの delta を加算してメリハリ強化。
-window.SCORE_DELTA = {};
-let _deltaFetched = false;
-async function loadScoreDeltas() {
-  if (_deltaFetched) return;
-  _deltaFetched = true;
-  try {
-    const r = await fetch("/api/scores-delta");
-    if (!r.ok) return;
-    const j = await r.json();
-    window.SCORE_DELTA = j.delta || {};
-  } catch (_) { /* graceful: 補正なしで動作継続 */ }
-}
-function scoreDelta(song, typeKey) {
-  const songId = `${song.title}|||${song.artist}`;
-  const d = window.SCORE_DELTA[songId];
-  return (d && typeof d[typeKey] === "number") ? d[typeKey] : 0;
-}
 
 function shareResult() {
   const t = TYPE_MAP[state.result];
@@ -1222,5 +1144,3 @@ async function shareTo(targetName, ev) {
 // ---- 起動 ----
 MX.blobs();
 renderLanding();
-// 学習補正値を背景で取得(失敗しても無問題、補正なしで動作継続)
-loadScoreDeltas();

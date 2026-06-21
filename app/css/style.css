@@ -638,12 +638,7 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
 .song-link.yt { background: #ffe1e1; color: #d02525; border-color: #f6c2c2; }
 .song-link:active { transform: scale(.94); }
 .song { align-items: flex-start; }
-.song-num, .song-fb { padding-top: 2px; }
-.song-fb { display: flex; gap: 6px; flex: none; }
-.fb { border: 1.5px solid var(--line); background: #fff7fb; color: var(--muted); font-family: inherit;
-  font-size: 11px; font-weight: 800; padding: 7px 10px; border-radius: 10px; cursor: pointer; transition: .15s; }
-.fb.up.on { background: #2fcf8e; border-color: #2fcf8e; color: #fff; }
-.fb.down.on { background: #c9b8d0; border-color: #c9b8d0; color: #fff; }
+.song-num { padding-top: 2px; }
 
 /* p-share(スクショ用カード) */
 .share-card { width: 100%; border-radius: 26px; padding: 30px 22px; color: #fff;
@@ -898,9 +893,6 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
 .ps-svc.am { background: #ffe5ed; color: #d6294a; border-color: #f8c4d2; }
 .ps-svc.yt { background: #ffe1e1; color: #d02525; border-color: #f6c2c2; }
 .ps-svc:active { transform: scale(.94); }
-
-.ps-fb { display: flex; gap: 8px; margin-top: 2px; }
-.ps-fb .fb { font-size: 12px; padding: 7px 12px; }
 
 /* ============================================================
    p-share:シェア5社 + シェアカード強化
