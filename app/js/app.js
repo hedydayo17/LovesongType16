@@ -373,23 +373,30 @@ async function prefetchDynamicSongs() {
   // 既存 SONGS との重複判定キー(正規化:小文字+記号除去)
   const seen = new Set(SONGS.map(s => `${normArtist(s.title)}::${normArtist(s.artist)}`));
   const collected = [];
-  await Promise.all(state.artistIds.map(async (aid) => {
+  // 注:/v1/artists/{id}/top-tracks は Spotify 2024.11 公開アクセス制限で 403 になる。
+  //     代替で /v1/search?q=artist:NAME&type=track を使い、自前で artist.id 一致フィルタ
+  await Promise.all(state.artistIds.map(async (aid, i) => {
     try {
-      const r = await fetch(`https://api.spotify.com/v1/artists/${aid}/top-tracks?market=JP`, {
+      const aname = state.artists[i] || "";
+      if (!aname) return;
+      const q = encodeURIComponent(`artist:"${aname}"`);
+      const r = await fetch(`https://api.spotify.com/v1/search?q=${q}&type=track&limit=20&market=JP`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!r.ok) return;
       const data = await r.json();
-      const tracks = data.tracks || [];
-      for (const t of tracks) {
-        if (!t || !t.name || !t.artists || !t.artists[0]) continue;
+      const tracks = (data.tracks && data.tracks.items) || [];
+      // 同名別アーティスト混入防止:必ず ID 一致のものだけ採用
+      const mine = tracks.filter(t => t && t.artists && t.artists.some(a => a.id === aid));
+      // popularity 降順で上位 10 件
+      mine.sort((x, y) => (y.popularity || 0) - (x.popularity || 0));
+      for (const t of mine.slice(0, 10)) {
         const title = t.name;
-        const artist = t.artists[0].name;
+        const artist = (t.artists.find(a => a.id === aid) || t.artists[0]).name;
         const key = `${normArtist(title)}::${normArtist(artist)}`;
-        if (seen.has(key)) continue; // 既存 SONGS と重複 → 静的スコアを優先するためスキップ
+        if (seen.has(key)) continue; // 既存 SONGS と重複 → 静的スコアを優先
         seen.add(key);
-        // ジャンルは Spotify には正確なものがないため J-POP デフォルト
-        // スコア:全タイプ均等 5、お気に入りアーティスト boost (+5) で十分競争可能
+        // スコア:全タイプ均等 5、isFavArtist の +5 boost で十分競争可能
         const scores = {};
         ["バイブス警察","運命マジシャン","進撃のロマンチスト","一途ペンギン",
          "ヤキモチモンスター","推し活ベビー","チル仙人","慎重うさぎ",
@@ -400,7 +407,7 @@ async function prefetchDynamicSongs() {
           title, artist,
           genre: "J-POP", // 仮置き(動的曲は genreBonus 対象外でも問題ない)
           scores,
-          _dynamic: true, // デバッグ用マーカー
+          _dynamic: true,
         });
       }
     } catch (_) { /* graceful */ }
