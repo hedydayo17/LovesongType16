@@ -1165,8 +1165,11 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* 1曲panel(.ps-card)内の要素を、カードが画面に入った時に順次フェードアップ */
-.p-song .ps-card .sp-jacket,
+/* 1曲panel(.p-song)内の要素を、panelが画面に入った時に順次フェードアップ。
+   ※ observeReveals() は .panel だけ observe するため、トリガーは .p-song.in。
+      旧 .ps-card.in は IO 対象外で「永遠に opacity:0」になる事故があった
+      (2026-06-22 バグ修正)。
+   ※ .sp-jacket は art-loaded ベースの既存ロジックに任せる。 */
 .p-song .ps-card .ps-meta,
 .p-song .ps-card .ps-reason,
 .p-song .ps-card .ps-services {
@@ -1175,13 +1178,10 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   transition: opacity .55s cubic-bezier(.4, 0, .2, 1),
               transform .55s cubic-bezier(.4, 0, .2, 1);
 }
-.p-song .ps-card .sp-jacket { transform: scale(.85); }
-.p-song .ps-card.in .sp-jacket { opacity: 1; transform: scale(1); transition-delay: .05s; }
-.p-song .ps-card.in .ps-meta     { opacity: 1; transform: none; transition-delay: .25s; }
-.p-song .ps-card.in .ps-reason   { opacity: 1; transform: none; transition-delay: .42s; }
-.p-song .ps-card.in .ps-services { opacity: 1; transform: none; transition-delay: .58s; }
+.p-song.in .ps-meta     { opacity: 1; transform: none; transition-delay: .20s; }
+.p-song.in .ps-reason   { opacity: 1; transform: none; transition-delay: .35s; }
+.p-song.in .ps-services { opacity: 1; transform: none; transition-delay: .50s; }
 @media (prefers-reduced-motion: reduce) {
-  .p-song .ps-card .sp-jacket,
   .p-song .ps-card .ps-meta,
   .p-song .ps-card .ps-reason,
   .p-song .ps-card .ps-services { opacity: 1; transform: none; transition: none; }
