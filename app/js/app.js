@@ -921,15 +921,20 @@ const MOOD_DEFS = [
   { name: "切ない",   types: ["沼っくま", "進撃のロマンチスト", "ミステリアス狼"], color: "#7C5CFF", emoji: "🌙" },
   { name: "エモい",   types: ["情熱ラブゾンビ", "ヤキモチモンスター", "ド直球ザウルス"], color: "#FF4D6D", emoji: "🔥" },
   { name: "前向き",   types: ["バイブス警察", "ときめきパパラッチ", "推し活ベビー"], color: "#FF8FB1", emoji: "✨" },
-  { name: "穏やか",   types: ["チル仙人", "慎重うさぎ", "マブダチエイリアン", "一途ペンギン", "同志の虎"], color: "#5CB8C4", emoji: "☁️" },
-  { name: "キラキラ", types: ["ピュアエンジェル", "運命マジシャン"], color: "#FFB347", emoji: "💖" },
+  { name: "穏やか",   types: ["チル仙人", "慎重うさぎ", "マブダチエイリアン", "同志の虎"], color: "#5CB8C4", emoji: "☁️" },
+  { name: "キラキラ", types: ["ピュアエンジェル", "運命マジシャン", "一途ペンギン"], color: "#FFB347", emoji: "💖" },
 ];
 function moodOf(song) {
   if (!song || !song.scores) return null;
-  let best = null, bestSum = -1;
+  // mood内タイプ数で正規化した「平均スコア」で判定。
+  // 合計値だと「穏やか(5タイプ)」「キラキラ(2タイプ)」のように所属数の多い mood が
+  // 機械的に勝ってしまい、過半の曲が同じ mood に集中する(2026-06-22 監査で発覚)。
+  // 平均化で各mood が公平に競い、曲の感情キャラが正しくラベル付けされるように。
+  let best = null, bestAvg = -1;
   for (const def of MOOD_DEFS) {
     const sum = def.types.reduce((s, t) => s + (song.scores[t] || 0), 0);
-    if (sum > bestSum) { bestSum = sum; best = def; }
+    const avg = sum / Math.max(1, def.types.length);
+    if (avg > bestAvg) { bestAvg = avg; best = def; }
   }
   return best;
 }
