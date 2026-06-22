@@ -967,7 +967,7 @@ function renderWrapped() {
           <button class="btn sns line" onclick="shareLINE()" aria-label="LINEで送る">LINE</button>
         </div>
         <button class="btn ghost reveal" style="--d:.5s" onclick="go(()=>renderGallery('result'))">16タイプ図鑑を見る</button>
-        <button class="btn ghost reveal" style="--d:.6s" onclick="scrollWrappedTop()">最初から見る ↑</button>
+        <button class="btn ghost reveal" style="--d:.6s" onclick="go(renderLanding)">↑ TOPへ戻る</button>
         <button class="btn restart reveal" style="--d:.7s" onclick="restartDiagnosis()" aria-label="最初から診断をやり直す">↻ もう一度診断する</button>
       </section>
 
