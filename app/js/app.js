@@ -1531,16 +1531,14 @@ async function fetchSongMeta(title, artist) {
   return meta;
 }
 
-// 結果ページ初期化時に呼ぶ:ジャケ写/preview/Spotify URLを取得して各行に流し込む。
-// パフォーマンス最適化(A):
-//   1. 先頭5曲(画面に最初に出る順位)は即時取得(初期表示の体感が爆速に)
-//   2. 残り5曲はIntersectionObserverでpanelが画面に近づいたら遅延取得
-//      → 結果到達時のAPI同時要求が10→5に半減 / 全体トラフィックも分散
-//   3. 同時並列度は3まで(Vercel Serverless関数の同時実行を抑制)
+// 結果ページ初期化時に呼ぶ:全10曲分のジャケ写/preview/Spotify URLを取得し各行に流し込む。
+// (一度 lazy load 化したが、scroll-snap モードで IntersectionObserver が確実に発火しない
+// 環境があり 6-10曲目のメタが未取得→「視聴できない」「ジャケ写出ない」となるバグが
+// 発生。確実性を優先して全曲即時取得に戻し、並列度3制限だけ維持して
+// Vercel Serverless 関数への過負荷は抑える。2026-06-22 バグ修正)
 async function prefetchSongMeta() {
   if (!state.lastRecommend) return;
-  const songs = state.lastRecommend;
-  // 同時並列度を制限したマッパ(p-limit 軽量版)
+  // 並列度3で同時実行を制限する軽量p-limit
   const _limit = (concurrency) => {
     let active = 0;
     const queue = [];
@@ -1576,32 +1574,11 @@ async function prefetchSongMeta() {
       }
     });
   };
-  // 1. 先頭5曲は即時(並列度3で fetch)
-  const eager = songs.slice(0, 5);
-  await Promise.all(eager.map(s => limit(() => fetchSongMeta(s.title, s.artist).then(m => injectMeta(s, m)))));
-  // 2. 残り5曲は IntersectionObserver でon-demand
-  const lazy = songs.slice(5);
-  if (!lazy.length || !("IntersectionObserver" in window)) {
-    // フォールバック:全部即取得
-    await Promise.all(lazy.map(s => limit(() => fetchSongMeta(s.title, s.artist).then(m => injectMeta(s, m)))));
-    return;
-  }
-  const fetched = new Set();
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (!e.isIntersecting) return;
-      const id = e.target.getAttribute("data-song-id");
-      if (!id || fetched.has(id)) return;
-      fetched.add(id);
-      const [title, artist] = id.split("|||");
-      limit(() => fetchSongMeta(title, artist).then(m => injectMeta({ title, artist }, m)));
-      io.unobserve(e.target);
-    });
-  }, { rootMargin: "200px 0px" }); // 画面到達200px手前で先回り
-  lazy.forEach((s) => {
-    const id = `${s.title}|||${s.artist}`;
-    document.querySelectorAll(`[data-song-id="${CSS.escape(id)}"]`).forEach(el => io.observe(el));
-  });
+  await Promise.all(
+    state.lastRecommend.map((s) =>
+      limit(() => fetchSongMeta(s.title, s.artist).then((m) => injectMeta(s, m)))
+    )
+  );
 }
 
 function _setBtnState(btn, state) {
