@@ -21,10 +21,19 @@
   <meta name="twitter:title" content="ラブソング診断16 | あなたのタイプに合う10曲が見つかる">
   <meta name="twitter:description" content="3分の質問で16タイプからあなたを判定。748曲の中から、あなただけの10曲を選びます。">
   <meta name="twitter:image" content="https://lovesong-type16.vercel.app/og-image.png?v=2">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ラブソング診断16">
+  <meta name="mobile-web-app-capable" content="yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Yomogi&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=115">
+  <link rel="stylesheet" href="css/style.css?v=116">
 </head>
 <body>
   <!-- 背景:メッシュグラデ + 回転コニック + 浮遊ブロブ + 漂う粒子 + グレイン(全画面固定) -->
@@ -51,12 +60,21 @@
   <!-- 結果カードのPNG出力(シェア/保存) -->
   <script src="js/vendor/html2canvas.min.js"></script>
 
-  <script src="js/data.js?v=115"></script>
-  <script src="js/questions.js?v=115"></script>
-  <script src="js/song_reasons.js?v=115"></script>
-  <script src="js/songs.js?v=115"></script>
-  <script src="js/mascot.js?v=115"></script>
-  <script src="js/motion.js?v=115"></script>
-  <script src="js/app.js?v=115"></script>
+  <script src="js/data.js?v=116"></script>
+  <script src="js/questions.js?v=116"></script>
+  <script src="js/song_reasons.js?v=116"></script>
+  <script src="js/songs.js?v=116"></script>
+  <script src="js/mascot.js?v=116"></script>
+  <script src="js/motion.js?v=116"></script>
+  <script src="js/app.js?v=116"></script>
+  <!-- PWA: Service Worker 登録(本番のみ。ローカル http.server では起動するが意味なし) -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+          .catch((err) => console.warn("SW register failed:", err));
+      });
+    }
+  </script>
 </body>
 </html>
