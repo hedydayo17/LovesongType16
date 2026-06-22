@@ -1576,41 +1576,82 @@ async function getSpotifyToken() {
   } catch { return null; }
 }
 
+// Spotifyで日本語アーティスト名で検索ヒットしない場合の英語表記マップ
+// 必要に応じて随時拡充(2026-06-22 ファウンダー指摘:緑黄色社会 試聴できない)
+const ARTIST_ALT_NAMES = {
+  "緑黄色社会": "Ryokuoushoku Shakai",
+  "ずっと真夜中でいいのに。": "ZUTOMAYO",
+  "ヨルシカ": "Yorushika",
+  "米津玄師": "Kenshi Yonezu",
+  "藤井 風": "Fujii Kaze",
+  "King Gnu": "King Gnu",     // 既にラテン文字、影響なし
+  "ぼっちぼろまる": "BocchiBoromaru",
+  "もさを。": "mosawo",
+  "ヤマモトショウ": "Yamamoto Show",
+  "なとり": "natori",
+  "yama": "yama",
+  "りりあ。": "lilia",
+};
+
+async function _searchSpotifyOnce(title, artist, token) {
+  // limit=3 で取って title一致check で正しいトラックを選ぶ
+  const q = encodeURIComponent(`track:${title} artist:${artist}`);
+  const r = await _fetchWithTimeout(
+    `https://api.spotify.com/v1/search?q=${q}&type=track&limit=3&market=JP`,
+    { headers: { Authorization: `Bearer ${token}` } },
+    5000
+  );
+  return r;
+}
+// title 一致確認:Spotifyが「KING」検索で「虹」を返したり、「ありがとう」検索で
+// 「しわあわせ」を返したりするケースを防ぐ。正規化して完全一致 or 包含で判定。
+function _normTitleForMatch(s) {
+  return (s || "").toLowerCase()
+    .replace(/[\s　()()【】\[\]「」、・。,.!?!?#\-_'"’]/g, "");
+}
+function _titleMatchOK(query, found) {
+  const a = _normTitleForMatch(query);
+  const b = _normTitleForMatch(found);
+  if (!a || !b) return false;
+  return a === b || a.includes(b) || b.includes(a);
+}
+
 async function fetchSpotifyTrack(title, artist) {
   const token = await getSpotifyToken();
   if (!token) return null;
-  // E: 429 (rate limit) / 5xx を 1回まで silently retry(token expireも吸収)
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const q = encodeURIComponent(`track:${title} artist:${artist}`);
-      const r = await _fetchWithTimeout(
-        `https://api.spotify.com/v1/search?q=${q}&type=track&limit=1&market=JP`,
-        { headers: { Authorization: `Bearer ${token}` } },
-        5000
-      );
-      // 401:token失効 → tokenクリア+1回retry
-      if (r.status === 401 && attempt === 0) {
-        _spToken = null; _spTokenExp = 0;
-        const newToken = await getSpotifyToken();
-        if (!newToken) return null;
-        continue;
-      }
-      // 429/5xx:1回だけリトライ(短い backoff)
-      if ((r.status === 429 || r.status >= 500) && attempt === 0) {
-        await new Promise(r2 => setTimeout(r2, 800));
-        continue;
-      }
-      if (!r.ok) return null;
-      const data = await r.json();
-      const t = data.tracks && data.tracks.items && data.tracks.items[0];
-      if (!t) return null;
-      return {
-        spotifyId: t.id,
-        previewUrl: t.preview_url || null,
-        artworkUrl: (t.album && t.album.images && t.album.images[0] && t.album.images[0].url) || null,
-        spotifyUrl: t.external_urls && t.external_urls.spotify,
-      };
-    } catch { /* timeout 等 → 次のattempt or null */ }
+  // 検索に使うアーティスト名候補(オリジナル → ALT表記 → titleのみ)
+  const altArtist = ARTIST_ALT_NAMES[artist];
+  const candidates = altArtist ? [artist, altArtist] : [artist];
+  for (const cand of candidates) {
+    // E: 429/5xx/401 リトライ
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const r = await _searchSpotifyOnce(title, cand, _spToken);
+        if (r.status === 401 && attempt === 0) {
+          _spToken = null; _spTokenExp = 0;
+          const newToken = await getSpotifyToken();
+          if (!newToken) return null;
+          continue;
+        }
+        if ((r.status === 429 || r.status >= 500) && attempt === 0) {
+          await new Promise(r2 => setTimeout(r2, 800));
+          continue;
+        }
+        if (!r.ok) break;
+        const data = await r.json();
+        const items = (data.tracks && data.tracks.items) || [];
+        if (!items.length) break; // 次の candidate へ
+        // title 一致する track を選ぶ。全部不一致なら別candidateへ
+        const t = items.find(it => _titleMatchOK(title, it.name));
+        if (!t) break;
+        return {
+          spotifyId: t.id,
+          previewUrl: t.preview_url || null,
+          artworkUrl: (t.album && t.album.images && t.album.images[0] && t.album.images[0].url) || null,
+          spotifyUrl: t.external_urls && t.external_urls.spotify,
+        };
+      } catch { break; }
+    }
   }
   return null;
 }
@@ -1619,12 +1660,14 @@ async function fetchITunesTrack(title, artist) {
   try {
     const term = encodeURIComponent(`${title} ${artist}`);
     const r = await _fetchWithTimeout(
-      `https://itunes.apple.com/search?term=${term}&country=jp&entity=song&limit=1`,
+      `https://itunes.apple.com/search?term=${term}&country=jp&entity=song&limit=5`,
       {}, 5000
     );
     if (!r.ok) return null;
     const j = await r.json();
-    const hit = j.results && j.results[0];
+    // iTunes 結果も title一致check で正しいトラック選定
+    const results = (j.results || []);
+    const hit = results.find(it => _titleMatchOK(title, it.trackName)) || null;
     if (!hit) return null;
     const art = (hit.artworkUrl100 || "").replace(/100x100/g, "600x600");
     return { previewUrl: hit.previewUrl || null, artworkUrl: art || null };
