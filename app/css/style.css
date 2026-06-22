@@ -1158,3 +1158,93 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   .p-song .ps-card .ps-reason,
   .p-song .ps-card .ps-services { opacity: 1; transform: none; transition: none; }
 }
+
+/* ─── E: 再シャッフルボタン演出 ─── */
+.songlist.reshuffle-out { opacity: 0; transform: translateY(6px) scale(.98); transition: all .22s ease; }
+.songlist.reshuffle-in .song,
+.songlist.reshuffle-in > * {
+  animation: songRowIn .55s cubic-bezier(.4, 0, .2, 1) both;
+}
+.songlist.reshuffle-in .song:nth-child(1)  { animation-delay: 0.00s; }
+.songlist.reshuffle-in .song:nth-child(2)  { animation-delay: 0.05s; }
+.songlist.reshuffle-in .song:nth-child(3)  { animation-delay: 0.10s; }
+.songlist.reshuffle-in .song:nth-child(4)  { animation-delay: 0.15s; }
+.songlist.reshuffle-in .song:nth-child(5)  { animation-delay: 0.20s; }
+.songlist.reshuffle-in .song:nth-child(6)  { animation-delay: 0.25s; }
+.songlist.reshuffle-in .song:nth-child(7)  { animation-delay: 0.30s; }
+.songlist.reshuffle-in .song:nth-child(8)  { animation-delay: 0.35s; }
+.songlist.reshuffle-in .song:nth-child(9)  { animation-delay: 0.40s; }
+.songlist.reshuffle-in .song:nth-child(10) { animation-delay: 0.45s; }
+@keyframes songRowIn {
+  from { opacity: 0; transform: translateY(18px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .songlist.reshuffle-out, .songlist.reshuffle-in .song { animation: none; transition: none; }
+}
+
+/* ─── F: 試聴ボタン演出強化 ─── */
+/* 再生中:jacket がゆっくり回転(LP盤っぽさ) */
+.song-play.playing .sp-jacket,
+.ps-play.playing .sp-jacket {
+  animation: jacketSpin 12s linear infinite;
+}
+@keyframes jacketSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+/* 再生中:周辺に波形 bar が踊る(SVG/疑似要素では複雑なので簡易の4本bar) */
+.song-play.playing::after,
+.ps-play.playing::after {
+  content: ""; position: absolute; right: -8px; bottom: -8px; width: 28px; height: 22px;
+  background:
+    linear-gradient(to top, currentColor 0%, currentColor 100%) center / 3px 100% no-repeat;
+  /* 4本のbarをbox-shadow疑似で */
+  color: var(--jc, #ff5e8a);
+  background-image:
+    linear-gradient(to top, currentColor, currentColor),
+    linear-gradient(to top, currentColor, currentColor),
+    linear-gradient(to top, currentColor, currentColor),
+    linear-gradient(to top, currentColor, currentColor);
+  background-size: 3px var(--b1, 40%), 3px var(--b2, 70%), 3px var(--b3, 55%), 3px var(--b4, 85%);
+  background-position: 2px bottom, 9px bottom, 16px bottom, 23px bottom;
+  background-repeat: no-repeat;
+  border-radius: 4px; opacity: .9;
+  animation: barDance 1.1s ease-in-out infinite;
+}
+@keyframes barDance {
+  0%,100% { --b1: 30%; --b2: 80%; --b3: 50%; --b4: 70%; }
+  25%     { --b1: 60%; --b2: 30%; --b3: 80%; --b4: 40%; }
+  50%     { --b1: 90%; --b2: 60%; --b3: 25%; --b4: 90%; }
+  75%     { --b1: 40%; --b2: 90%; --b3: 70%; --b4: 35%; }
+}
+@property --b1 { syntax: "<length-percentage>"; inherits: false; initial-value: 40%; }
+@property --b2 { syntax: "<length-percentage>"; inherits: false; initial-value: 70%; }
+@property --b3 { syntax: "<length-percentage>"; inherits: false; initial-value: 55%; }
+@property --b4 { syntax: "<length-percentage>"; inherits: false; initial-value: 85%; }
+
+/* ─── G: 質問panel演出(ステートメント文 + dots出現) ─── */
+.quiz .qtext {
+  animation: qFadeIn .45s cubic-bezier(.4, 0, .2, 1) both;
+}
+@keyframes qFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+.quiz .dots .dot {
+  animation: dotFlyIn .42s cubic-bezier(.5, 1.5, .6, 1) both;
+}
+.quiz .dots .dot:nth-child(1) { animation-delay: 0.05s; }
+.quiz .dots .dot:nth-child(2) { animation-delay: 0.10s; }
+.quiz .dots .dot:nth-child(3) { animation-delay: 0.15s; }
+.quiz .dots .dot:nth-child(4) { animation-delay: 0.20s; }
+.quiz .dots .dot:nth-child(5) { animation-delay: 0.25s; }
+.quiz .dots .dot:nth-child(6) { animation-delay: 0.30s; }
+.quiz .dots .dot:nth-child(7) { animation-delay: 0.35s; }
+@keyframes dotFlyIn {
+  from { opacity: 0; transform: translateY(14px) scale(.6); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quiz .qtext, .quiz .dots .dot { animation: none; }
+}

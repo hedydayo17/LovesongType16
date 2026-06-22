@@ -61,7 +61,7 @@ function renderLanding() {
         <span class="ln"><span class="grad">16の恋愛タイプ</span><span>から</span></span>
         <span class="ln"><span class="grad">ラブソング</span><span>診断。</span></span>
       </h1>
-      <p class="hero-sub">3分の質問で、あなたの恋愛サウンドが見える。</p>
+      <p class="hero-sub">あなたを表すラブソング、10曲。</p>
       <div class="hero-meta">
         <span class="hm">#16タイプ</span>
         <span class="hm">#28問</span>
@@ -69,7 +69,6 @@ function renderLanding() {
         <span class="hm">#会員登録なし</span>
       </div>
       <button class="btn primary big" data-mag onclick="go(renderBirth)">診断をはじめる</button>
-      <p class="hero-cta-sub">あなただけの<strong>10曲プレイリスト</strong>が手に入る</p>
       <button class="btn ghost" onclick="go(()=>renderGallery('landing'))">16タイプを見る</button>
       <p class="hero-share">診断結果は #ラブソング診断16 でシェア</p>
       <div class="hero-preview">
@@ -1202,14 +1201,31 @@ function songMarquee() {
 
 // 再シャッフル:曲リストを差し替えてジャケ写を取り直し、曲セクション先頭にスクロール
 function reshuffleSongs() {
-  state.lastRecommend = recommend(state.result);
+  navigator.vibrate?.([8, 18, 12]); // 触覚で「シャッフル」感
+  // 既存リストを fadeOut → 入れ替え → fadeIn(jacket だけ scale-in)
   const list = document.getElementById("songlist");
-  if (list) list.innerHTML = buildSongsHTML();
   const mb = document.getElementById("moodBreakdown");
-  if (mb) mb.innerHTML = buildMoodBreakdownHTML();
-  prefetchSongMeta(); // ジャケ写・preview を再取得して新しい行に流し込み
-  const target = document.querySelector(".p-songs") || document.querySelector(".songs-summary");
-  if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  const doSwap = () => {
+    state.lastRecommend = recommend(state.result);
+    if (list) {
+      list.innerHTML = buildSongsHTML();
+      list.classList.add("reshuffle-in");
+      // .reshuffle-in を一定時間後に外す(再アニメ可能に)
+      setTimeout(() => list.classList.remove("reshuffle-in"), 900);
+    }
+    if (mb) mb.innerHTML = buildMoodBreakdownHTML();
+    prefetchSongMeta();
+    const target = document.querySelector(".p-songs") || document.querySelector(".songs-summary");
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  // 短いフェードアウトを挟む(reduced-motion なら即時)
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (list && !reduced) {
+    list.classList.add("reshuffle-out");
+    setTimeout(() => { list.classList.remove("reshuffle-out"); doSwap(); }, 220);
+  } else {
+    doSwap();
+  }
 }
 
 function songRow(s, i) {
