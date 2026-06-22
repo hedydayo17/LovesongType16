@@ -109,9 +109,21 @@
 
 ## Phase 6:実装
 
-Web実装。技術選定はモバイル前提・軽量を優先。
+**完了形(2026-06-22)**:静的サイト+Vercel Serverless Functions(Spotify API)。
+モバイル前提、軽量、フォルダ `app/`、`cd app && python3 -m http.server 8765` で起動。
 
-候補スタック(暫定): Next.js + Tailwind / 静的サイト + Vanilla JS / Astro
+### 実装済みの中身
+- LP / Step 0(生年月日)/ Step 0a(ジャンル選択)/ Step 0b(好きアーティスト・Spotify autocomplete)
+- 質問28問(16P式7段階スケール × 逆方向重み)
+- 結果ページ:20panel(reveal/タイプカード/解説/強み/相性/曲panel×10/まとめ/share)
+- 748曲ライブラリ × 11リスナー層(cluster)レコメンドエンジン
+- 16タイプ図鑑 + 個別type詳細panel
+- PNG出力カード(html2canvas)+ 共有(X / LINE / Instagram / TikTok / BeReal / Web Share API)
+- Stories向け 9:16(1080×1920)縦長カード(Instagram Stories / TikTok 向け)
+- PWA対応(manifest + service worker + 「ホームに追加」standalone モード)
+- 検証スクリプト `scripts/audit-songs.py` で曲データ整合性チェック
+
+技術:Vanilla JS + GSAP + Lenis + html2canvas + Spotify API(Vercel Serverless)
 
 ---
 

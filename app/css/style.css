@@ -1399,3 +1399,46 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   border-style: solid;
 }
 .btn.restart:active { transform: scale(.97); }
+
+/* ─── T: タイプ別カラーを結果ページ全体に展開 ─── */
+/* 各panelの底部に、ほんのり「タイプ色」の光を漏らす(無印ピンク+タイプtone) */
+.wrapped .panel { position: relative; }
+.wrapped .panel::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at 50% 100%,
+    color-mix(in srgb, var(--c, #ff5e8a) 14%, transparent) 0%,
+    transparent 55%);
+  opacity: .85;
+}
+.wrapped .panel > * { position: relative; z-index: 1; }
+/* 強調要素にタイプ色をthread:label/divider/genre pill 等 */
+.wrapped .ps-genre {
+  color: color-mix(in srgb, var(--c, #ff5e8a) 70%, #2a1830 30%);
+  background: color-mix(in srgb, var(--c, #ff5e8a) 12%, #fff 88%);
+  border-color: color-mix(in srgb, var(--c, #ff5e8a) 35%, transparent 65%);
+}
+.wrapped .ps-reason-label {
+  color: color-mix(in srgb, var(--c, #ff5e8a) 65%, #2a1830 35%);
+}
+.wrapped .scroll-hint,
+.wrapped .panel-label {
+  color: color-mix(in srgb, var(--c, #ff5e8a) 70%, var(--muted, #888) 30%);
+}
+/* p-type の hero-card だけは既に --c フルパワーで描いているので除外 */
+.wrapped .panel.p-type::after { display: none; }
+/* リビールpanelは独自の暗背景なのでoverlay不要 */
+.wrapped .panel.p-reveal::after { display: none; }
+
+/* ─── V: Stories(9:16)保存ボタン ─── */
+.btn.stories {
+  background: linear-gradient(135deg, #f7e0ff, #e0d4ff);
+  color: #6b3aa0;
+  border: 1.5px solid rgba(107, 58, 160, .25);
+  font-weight: 800;
+}
+.btn.stories:hover {
+  background: linear-gradient(135deg, #eed0ff, #cfc0ff);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(107, 58, 160, .2);
+}
+.btn.stories:active { transform: scale(.97); }

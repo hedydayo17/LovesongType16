@@ -111,7 +111,23 @@ const PARODY_BREAKS = {
 function parodyBR(name) { return PARODY_BREAKS[name] || name; }
 
 // ---- ランディング(ヒーロー):摩擦ゼロの入口。16P/ラブタイプ流に「即スタート」を強調 ----
+// ─── S: 動的 document.title ───
+// 結果到達時に「私は◯◯系×× | ラブソング診断16」へ変える(ホーム履歴・タブ・
+// PWAアプリ切替で映える)。非結果ページでは元タイトルに戻す。
+const _DEFAULT_TITLE = "ラブソング診断16 | あなたのタイプに合う10曲が見つかる";
+function _updateDocTitle() {
+  try {
+    if (state.result) {
+      const t = TYPE_MAP[state.result];
+      const k = state.kei ? state.kei : "";
+      document.title = `私は「${k}${t.parody}」だった | ラブソング診断16`;
+    } else {
+      document.title = _DEFAULT_TITLE;
+    }
+  } catch {}
+}
 function renderLanding() {
+  _updateDocTitle();
   const marquee = TYPES.concat(TYPES).map(t =>
     `<span class="mq" style="--c:${t.color}">
       <span class="mq-mascot">${mascotSVG(t.parody)}</span>
@@ -669,6 +685,7 @@ function darken(hex, keep = 0.45) {
 // フルビューポートのパネルが scroll-snap で吸い付き、
 // IntersectionObserver で要素が順番にせり上がって表示される。
 function renderWrapped() {
+  _updateDocTitle();
   const t = TYPE_MAP[state.result];
   state.lastRecommend = recommend(state.result);
   const comp = t.compatible
@@ -852,6 +869,7 @@ function renderWrapped() {
           <div class="sc-foot">あなたは何タイプ?<br><span class="sc-url">lovesong-type16.vercel.app</span></div>
         </div>
         <button class="btn save reveal" data-mag style="--d:.2s" onclick="savePNG(event)">画像で保存</button>
+        <button class="btn stories reveal" data-mag style="--d:.25s" onclick="saveStoriesPNG(event)" aria-label="Instagram/TikTok Stories向け縦長画像で保存">▣ Stories用(9:16)</button>
         <div class="share-grid reveal" style="--d:.3s">
           <button class="btn sns ig" onclick="shareTo('instagram', event)" aria-label="Instagramでシェア">Instagram</button>
           <button class="btn sns tt" onclick="shareTo('tiktok', event)" aria-label="TikTokでシェア">TikTok</button>
@@ -1567,7 +1585,7 @@ function restartDiagnosis() {
 }
 
 // share-card を PNG Blob に変換(savePNG / shareTo の共通)
-async function createSharePNG() {
+async function createSharePNG(opts = {}) {
   const target = document.querySelector(".share-card");
   if (!target || typeof html2canvas === "undefined") return null;
   // reveal が in 状態じゃないと見えないので強制
@@ -1575,10 +1593,10 @@ async function createSharePNG() {
   target.style.opacity = "1"; target.style.transform = "none";
   try {
     const canvas = await html2canvas(target, {
-      backgroundColor: "#ffffff",  // 完全透明だとPNGが透ける環境あり
+      backgroundColor: opts.bg || "#ffffff",
       scale: Math.min(window.devicePixelRatio || 1, 2) * 1.5,
       useCORS: true,
-      allowTaint: true,            // CORS失敗時もキャプチャ続行
+      allowTaint: true,
       logging: false,
       windowWidth: document.documentElement.clientWidth,
     });
@@ -1592,12 +1610,100 @@ async function createSharePNG() {
   }
 }
 
+// ─── V: Stories向け 9:16 縦長シェアカード(1080×1920)───
+// shareカードをoff-screen DOM で 9:16 比に再構築 → html2canvas で撮影。
+// Instagram Stories / TikTok / LINE VOOM / Snapchat 等で全画面表示できる。
+async function createStoriesPNG() {
+  if (typeof html2canvas === "undefined") return null;
+  const t = TYPE_MAP[state.result];
+  if (!t) return null;
+  // 1080×1920 の off-screen コンテナを生成して html2canvasで撮る
+  const off = document.createElement("div");
+  off.className = "stories-card";
+  off.style.cssText = "position:fixed;left:-99999px;top:0;width:1080px;height:1920px;z-index:-1;";
+  const c = t.color || "#ff5e8a";
+  const ac = t.accent || "#ffc857";
+  const dark = darken(c, 0.35);
+  const kei = state.kei || "";
+  const tag = (t.tagline || "").replace(/"/g, "&quot;");
+  off.innerHTML = `
+    <div class="st-bg" style="background:linear-gradient(165deg, ${c} 0%, ${dark} 100%);
+      width:100%;height:100%;position:relative;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;color:#fff;
+      font-family:'Zen Maru Gothic',system-ui,sans-serif;text-align:center;
+      padding:120px 80px;overflow:hidden;font-feature-settings:'palt' 1;">
+      <div style="position:absolute;top:18%;left:8%;width:380px;height:380px;
+        background:${ac};border-radius:50%;filter:blur(80px);opacity:.55;"></div>
+      <div style="position:absolute;bottom:14%;right:6%;width:340px;height:340px;
+        background:#fff;border-radius:50%;filter:blur(90px);opacity:.18;"></div>
+      <div style="font-size:42px;font-weight:900;letter-spacing:.08em;opacity:.95;
+        margin-bottom:60px;">
+        ラブソング診断<span style="background:rgba(255,255,255,.22);padding:6px 18px;
+        border-radius:999px;margin-left:8px;font-size:36px;">16</span>
+      </div>
+      <div style="width:300px;height:300px;display:flex;align-items:center;
+        justify-content:center;margin-bottom:50px;">${mascotSVG(t.parody)}</div>
+      <div style="display:inline-block;font-size:36px;font-weight:900;
+        background:rgba(0,0,0,.32);padding:14px 50px;border-radius:999px;
+        border:1px solid rgba(255,255,255,.2);margin-bottom:40px;">${kei}</div>
+      <div style="font-size:144px;font-weight:900;line-height:1.12;letter-spacing:-.04em;
+        margin-bottom:60px;text-shadow:0 6px 24px rgba(0,0,0,.32);">${t.parody}</div>
+      <div style="font-size:46px;font-weight:800;line-height:1.55;opacity:.95;
+        padding:0 40px;margin-bottom:80px;text-shadow:0 3px 8px rgba(0,0,0,.28);
+        font-family:'Yomogi',cursive;">"${tag}"</div>
+      <div style="width:80px;height:2px;background:linear-gradient(90deg,transparent,
+        rgba(255,255,255,.6),transparent);margin:0 auto 40px;"></div>
+      <div style="font-size:32px;font-weight:800;opacity:.92;">あなたは何タイプ?</div>
+      <div style="font-size:28px;font-weight:800;opacity:.85;margin-top:14px;
+        letter-spacing:.04em;">lovesong-type16.vercel.app</div>
+    </div>
+  `;
+  document.body.appendChild(off);
+  try {
+    const canvas = await html2canvas(off.querySelector(".st-bg"), {
+      width: 1080, height: 1920, backgroundColor: c,
+      scale: 1, useCORS: true, allowTaint: true, logging: false,
+    });
+    return await new Promise(r => canvas.toBlob(r, "image/png", 0.95));
+  } catch (e) {
+    console.error("createStoriesPNG", e);
+    return null;
+  } finally {
+    off.remove();
+  }
+}
+
 function _btnLoading(btn, on) {
   if (!btn) return;
   if (on) { btn.dataset.label = btn.textContent; btn.classList.add("loading"); btn.disabled = true;
     const spin = document.createElement("span"); spin.className = "spin"; spin.style.marginRight = "8px";
     btn.textContent = ""; btn.appendChild(spin); btn.appendChild(document.createTextNode("画像を準備中…")); }
   else { btn.classList.remove("loading"); btn.disabled = false; btn.textContent = btn.dataset.label || ""; }
+}
+
+// V: Stories向け縦長(9:16)PNGを保存 + OS共有シート
+async function saveStoriesPNG(ev) {
+  navigator.vibrate?.(20);
+  const btn = ev?.currentTarget;
+  _btnLoading(btn, true);
+  try {
+    const blob = await createStoriesPNG();
+    if (!blob) { alert("画像の生成に失敗しました。スクショで保存してね。"); return; }
+    const t = TYPE_MAP[state.result];
+    const filename = `lovesong-${t.parody}-stories.png`;
+    const file = new File([blob], filename, { type: "image/png" });
+    if (navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: "ラブソング診断16", text: shareText() });
+        return;
+      } catch (e) { if (e.name === "AbortError") return; }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  } finally { _btnLoading(btn, false); }
 }
 
 // 結果カードを画像として保存 + OS共有シート(対応端末)

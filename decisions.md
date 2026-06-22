@@ -4,6 +4,109 @@
 
 ---
 
+## 2026-06-22(夜間自走→朝レビュー大型セッション:楽曲倍増 + cluster + 全面UI磨き + PWA)
+
+ファウンダー「CEOとして動いて、寝る間にも進めて」指示。28時間で 16本のフェーズに分けて
+楽曲・レコメンド・UI・PWA を全面強化。同曲 / mood偏重 / cluster未割当 のバグ3本も解消。
+
+### 楽曲ライブラリ拡張(バッチ11〜17で +243曲、505→748)
+- バッチ11(+40):aiko/中島美嘉/平井堅/福山/西野/嵐/米津/YOASOBI/髭男/藤井風/ヨルシカ 深掘り
+- バッチ12(+40):令和トレンド(Mrs.GREEN APPLE残/Vaundy残/Saucy Dog/ずとまよ等)
+- バッチ13(+40):K-POP残/洋楽残(TXT/ENHYPEN/Taylor残/Adele以外/Olivia残)
+- バッチ14(+40):平成シティポップ/R&B/歌姫(大滝/竹内/山下/SMAP/Ado/三浦大知)
+- バッチ15(+40):ラスト(FUNKY MONKEY/Aqua Timez/高橋優/SHISHAMO/EXILE/浜崎残/Oasis/Rihanna/EDM)
+- バッチ16(+30):**男性アイドルグループ補強**(Hey!Say!JUMP/King&Prince/Snow Man/SixTONES/
+  なにわ男子/BE:FIRST/JO1/INI)+ **女性アイドル**(日向坂46/櫻坂46/=LOVE/≠ME/STU48)
+- バッチ17(+13):IDOL_F追加補強(乃木坂46/AKB48名曲拡充/Perfume/ももクロ/FRUITS ZIPPER)
+
+### レコメンドエンジンの根本的進化:**リスナー層(cluster)概念**
+ファウンダー指摘「ミセスファンは Kroi 聴かない、K-POPファンはアニソン聴かない」を解決。
+
+- **11 cluster定義**:JPOP_MAIN / INDIE_ROCK / ROCK_CLASSIC / KPOP / ANISON_VOCALO /
+  HIPHOP_RNB / DIVA_BALLAD / CITYPOP / WPOP / JOHNNYS(男性アイドル) / IDOL_F(女性アイドル)
+- **234アーティスト全部手動振り分け**(複数所属可。Vaundy=JPOP+INDIE、藤井風=JPOP+CITY+HIPHOP等)
+- **GENRE_TO_CLUSTERS**:ジャンル選択→cluster補助投票(weight 0.5)
+  「ロック」選択 → ROCK_CLASSIC+INDIE_ROCK の2cluster boost(空振り解消)
+- **3層guarantee構成**:好きアーティスト2曲 + リスナー層一致3曲 + 残り5曲(mood多様化)
+- 全11cluster ≥30曲 確保 → guarantee 3曲方式でも被り発生せず
+- **検証結果**:ミセス入力 → JPOP_MAIN 8/10、羊文学+TOMOO → INDIE_ROCK 7/10、
+  Awich → HIPHOP_RNB 4/10、未入力 → 従来通り混合 — 「層越境ノイズ」が構造的に消える
+
+### mood 偏重バグ 2回連続発覚 → moodOf を「平均化判定」に再設計
+- **1回目**:キラキラに4タイプ(ピュア/運命/一途/同志)入れたら王道曲が全部キラキラに集中
+  → キラキラ=ピュア+運命の2タイプに絞り、穏やか=チル+慎重+マブダチ+一途+同志
+- **2回目(逆ブレ)**:合計値判定だと「タイプ数の多いmood」が機械的に勝つ。穏やか:611曲(81.7%)、
+  キラキラ:0曲(絶滅) の極端な偏りに
+- **解決**:moodOf を「タイプ数で正規化した平均スコア」判定に変更 + 「一途」をキラキラに移動
+  → キラキラ37.3% / 切ない36.4% / エモい11.8% / 前向き10.7% / 穏やか3.9%(自然な分布)
+
+### 拡張サンプリング:mood多様化 + genre→cluster自動補完
+- restPool のサンプリングで、同mood3+曲既出は0.5倍ペナ、未出現moodは1.5倍ボーナス
+  → 平均uniq mood/タイプ:2.5 → 3.94(+57%)、5/5 full-moodタイプも発生
+- songClusters() に genre fallback 追加:RADWIMPS「前前前世」が genre=アニソン →
+  ANISON_VOCALO cluster にも自動所属 → アニソン好きユーザーに boost されるように
+
+### 演出強化(15本立て:A〜Q)
+- **A**:結果リビールpanel(粒子12個 + aurora滲み + 「あなたは…」3点リーダーbounce)
+- **B**:**判定中ローディング演出 1.5s**(オーブ漂い + 4色ドット bounce spinner +
+  「64パターン照合中」)— 心理的に「ちゃんと計算してくれた」感
+- **C**:1曲panel内要素の順次出現(jacket scale-in → meta → reason → 3社buttons カスケード)
+- **D**:PNG出力カード磨き(✦粒子6個 + 引用符 + 分割線 + ブランドpill)
+- **E**:再シャッフル演出(vibrate触覚 + fadeOut→各曲0.05s stagger fadeIn)
+- **F**:試聴ボタン強化(jacket12秒回転=LP盤 + 4本波形bar dance)
+- **G**:質問panel演出(qtext fade-up + dots 順次fly-in)
+- **N**:質問panel UX(progress 3色グラデ+鼓動spark + 残数応援メッセージ「いいペース!」等)
+- **O**:タイプカードマスコット(welcome bounce + idle pulse 2.6s)
+- **P**:mood pill ホバー強調 + sequential pulse
+- **Q**:「↻ もう一度診断する」リセット動線(state全リセット+localStorage clear+触覚)
+- **S**:動的 document.title(「私は◯◯系×× | ラブソング診断16」)
+- **T**:タイプ別カラーパレットを結果ページ全panelに展開
+- **V**:**Stories向け 9:16(1080×1920)縦長シェアカード**(Instagram Stories/TikTok向け)
+
+### インフラ系
+- **H**:検証スクリプト `scripts/audit-songs.py`(重複/cluster/mood/flat/タイプ充足度)+
+  `package.json` で `npm run audit` / `npm run dev` を整備
+- **I**:OGP画像更新(「あなたを表す ラブソング、10曲。」+ 「748曲から選曲」ピル + ?v=2)
+- **J**:audit-songs.py 拡張(mood分布 + タイプ別7+曲数)
+- **K**:**診断ステート localStorage 保存/復元**(24h有効、LP上部「↻ 前回の続きから」バナー)
+- **L**:**sticky CTA bar**(ヒーロCTA画面外→下部固定「診断をはじめる →」、safe-area対応)
+- **M**:**A11y改善**(dot自然言語aria-label / role=radio/radiogroup/progressbar/status /
+  focus-visible全体スタイル整備)
+- **R**:**PWA対応**(manifest.json + service-worker.js + アイコン5サイズ。Android Chrome は
+  自動インストールプロンプト、iOS は手動「ホームに追加」で standalone モード起動)
+
+### シェア文言を口語+URL明示化(TikTok時代の流入設計)
+- 旧:「私の恋愛タイプは「○○」でした!」(堅い、URLなし)
+- 新:「『○○系××』だった…\n[tagline]\n\nあなたは何タイプ?▼\nlovesong-type16.vercel.app」
+
+### LP磨き(オープニング体験)
+- 副タイトル追加:「あなたを表すラブソング。」(最終形)
+- ピル拡張:#16タイプ #28問 #748曲から #会員登録なし(pill風背景)
+- リビール「20問」ハードコード → `${QUESTIONS.length}` に動的化
+- GSAP の `safeFrom()` 化で構造変更後も警告ゼロ
+
+### バグ修正
+- 平井堅 が ARTIST_CLUSTERS 未登録(7曲がcluster boost対象外)→ 修正
+- バッチ17 重複3曲(君の名は希望/365日の紙飛行機/制服のマネキン) → 別曲に置換
+- flat曲(std<0.8)4曲を個性化 rescore(ミスター/バランス/アバウト/unlock)
+
+### 数値サマリー
+- 楽曲:505 → **748** (+48%)
+- アーティスト振り分け:0 → **234**
+- Cluster:0 → **11層(全て30+曲)**
+- 平均uniq mood/タイプ:2.5 → **3.94/5**
+- mood偏重:穏やか81.7% / キラキラ0% → 穏やか3.9% / キラキラ37.3%
+- Cache version:90 → **116**
+- Phase 6 ほぼ完成形に到達
+
+### 未着手(ファウンダー判断必須)
+- 正式キャラAI生成(ファウンダー側で進行予定)
+- 監修者プロフ/実績バッジ
+- 法務(プラポリ/利用規約/楽曲著作権)
+- 独自ドメイン取得・本番公開時期
+
+---
+
 ## 2026-06-19(100万人ボトルネック磨き4本目:LPヒーロー再設計)
 
 ファウンダー「進む」→ LPヒーロー本体の磨き込み。現状の弱点を4点整理して全て対応。
