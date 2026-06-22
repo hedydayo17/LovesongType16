@@ -1655,3 +1655,12 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   z-index: 1;
 }
 .dot.d3::after { width: 48px; height: 48px; }
+
+/* scroll-hint.big = 結果リビールpanel下部の「↓ 下にスクロール」を目立たせる */
+.scroll-hint.big {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 9px 22px;
+  letter-spacing: .04em;
+  border: 1px solid rgba(255, 255, 255, .35);
+}

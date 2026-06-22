@@ -780,7 +780,7 @@ function renderJudging() {
         <div class="jd-spinner" aria-hidden="true">
           <span></span><span></span><span></span><span></span>
         </div>
-        <div class="jd-title">あなたの恋愛タイプを<br>判定中…</div>
+        <div class="jd-title">あなたの<br>恋愛タイプを<br>判定中…</div>
         <div class="jd-sub">${QUESTIONS.length}問の回答から、<br>16タイプ × 系 = 64パターンを照合中</div>
       </div>
     </section>
@@ -871,7 +871,7 @@ function renderWrapped() {
             <span></span><span></span><span></span>
           </div>
         </div>
-        <div class="reveal scroll-hint light pulse" style="--d:1.2s">↓ スワイプで結果を見る</div>
+        <div class="reveal scroll-hint light pulse big" style="--d:1.2s">↓ 下にスクロール</div>
       </section>
 
       <section class="panel p-type" style="background:
