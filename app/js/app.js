@@ -249,7 +249,6 @@ function renderLanding() {
       </div>
       <div class="hero-meta">
         <span class="hm">#16タイプ</span>
-        <span class="hm">#28問</span>
         <span class="hm">#748曲から</span>
         <span class="hm">#会員登録なし</span>
       </div>
