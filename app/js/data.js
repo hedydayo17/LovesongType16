@@ -415,7 +415,7 @@ const CLUSTERS = {
   DIVA_BALLAD:   "バラード歌姫",
   CITYPOP:       "シティポップ",
   WPOP:          "洋楽ポップ",
-  JOHNNYS:       "ジャニーズ・男性アイドル",
+  JOHNNYS:       "男性アイドルグループ",
   IDOL_F:        "女性アイドル"
 };
 
@@ -616,6 +616,7 @@ const ARTIST_CLUSTERS = {
   "小林明子": ["DIVA_BALLAD"],
   "イルカ": ["DIVA_BALLAD"],
   "福山雅治": ["DIVA_BALLAD", "JPOP_MAIN"],
+  "平井堅": ["DIVA_BALLAD", "JPOP_MAIN"],
 
   // ── シティポップ ──
   "竹内まりや": ["CITYPOP", "DIVA_BALLAD"],
@@ -661,12 +662,20 @@ const ARTIST_CLUSTERS = {
   "Jack Harlow": ["WPOP", "HIPHOP_RNB"],
   "Post Malone, Swae Lee": ["WPOP", "HIPHOP_RNB"],
 
-  // ── ジャニーズ ──
+  // ── 男性アイドルグループ(ジャニーズ + STARTO/LDH/ボーイズ系)──
   "嵐": ["JOHNNYS"],
   "KAT-TUN": ["JOHNNYS"],
   "関ジャニ∞": ["JOHNNYS"],
   "KinKi Kids": ["JOHNNYS"],
   "SMAP": ["JOHNNYS"],
+  "Hey!Say!JUMP": ["JOHNNYS"],
+  "King & Prince": ["JOHNNYS"],
+  "Snow Man": ["JOHNNYS"],
+  "SixTONES": ["JOHNNYS"],
+  "なにわ男子": ["JOHNNYS"],
+  "BE:FIRST": ["JOHNNYS", "JPOP_MAIN"],
+  "JO1": ["JOHNNYS", "JPOP_MAIN"],
+  "INI": ["JOHNNYS", "JPOP_MAIN"],
 
   // ── 女性アイドル ──
   "乃木坂46": ["IDOL_F"],
@@ -676,6 +685,11 @@ const ARTIST_CLUSTERS = {
   "Flower": ["IDOL_F", "JPOP_MAIN"],
   "SPEED": ["IDOL_F", "JPOP_MAIN"],
   "松浦亜弥": ["IDOL_F", "JPOP_MAIN"],
+  "日向坂46": ["IDOL_F"],
+  "櫻坂46": ["IDOL_F"],
+  "=LOVE": ["IDOL_F"],
+  "≠ME": ["IDOL_F"],
+  "STU48": ["IDOL_F"],
 
   // ── 三浦大知は男性ボーカル枠 ──
   "三浦大知": ["JPOP_MAIN", "HIPHOP_RNB"]
