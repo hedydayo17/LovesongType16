@@ -535,7 +535,31 @@ function finishQuiz() {
     if (avg > bestAvg) { bestAvg = avg; bestKei = name; }
   }
   state.kei = bestKei;
-  renderWrapped();
+  // 判定中ローディング演出(1.5s)を挟んで結果ページへ。
+  // ロジック自体は瞬時に終わるが、ユーザーが「ちゃんと計算してくれた」感を持てる
+  // よう、心理的にちょっと「待つ」体験を入れる。100万人向けの安心感UI。
+  renderJudging();
+  setTimeout(() => renderWrapped(), 1500);
+}
+
+// 判定中の画面(クイズ完了 → 結果表示の間に1.5s表示)
+function renderJudging() {
+  show(`
+    <section class="screen judging">
+      <div class="jd-bg">
+        <span class="jd-orb jd-o1"></span>
+        <span class="jd-orb jd-o2"></span>
+        <span class="jd-orb jd-o3"></span>
+      </div>
+      <div class="jd-content">
+        <div class="jd-spinner">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="jd-title">あなたの恋愛タイプを<br>判定中…</div>
+        <div class="jd-sub">${QUESTIONS.length}問の回答から、<br>16タイプ × 系 = 64パターンを照合中</div>
+      </div>
+    </section>
+  `);
 }
 
 // hex(#RRGGBB) を相対量で暗くした rgb 文字列(color-mix の代替。html2canvas が color-mix() を解釈できないため)
@@ -606,10 +630,16 @@ function renderWrapped() {
           <span class="rs s1"></span><span class="rs s2"></span><span class="rs s3"></span>
           <span class="rs s4"></span><span class="rs s5"></span><span class="rs s6"></span>
           <span class="rs s7"></span><span class="rs s8"></span>
+          <span class="rs s9"></span><span class="rs s10"></span><span class="rs s11"></span>
+          <span class="rs s12"></span>
+        </div>
+        <div class="reveal-aurora" aria-hidden="true">
+          <span class="ra ra1" style="background:var(--c)"></span>
+          <span class="ra ra2" style="background:var(--ac)"></span>
         </div>
         <div class="reveal-stack">
           <div class="reveal rv-tag" style="--d:.05s">${QUESTIONS.length}問、おつかれさま。</div>
-          <h1 class="reveal rv-you" style="--d:.25s">あなたは…</h1>
+          <h1 class="reveal rv-you" style="--d:.25s">あなたは<span class="rv-ellipsis"><i>.</i><i>.</i><i>.</i></span></h1>
           <div class="reveal rv-sub" style="--d:.6s">あなたを最も表す<br><b>ラブソング型</b>は</div>
           <div class="reveal rv-dots" style="--d:.9s" aria-hidden="true">
             <span></span><span></span><span></span>
@@ -711,11 +741,20 @@ function renderWrapped() {
       <section class="panel p-share">
         <div class="reveal share-card" style="background:
           linear-gradient(165deg, ${t.color}, ${darken(t.color, 0.45)})">
-          <div class="sc-brand">ラブソング診断16</div>
+          <div class="sc-deco" aria-hidden="true">
+            <span class="sc-d sc-d1">✦</span>
+            <span class="sc-d sc-d2">·</span>
+            <span class="sc-d sc-d3">✧</span>
+            <span class="sc-d sc-d4">✦</span>
+            <span class="sc-d sc-d5">·</span>
+            <span class="sc-d sc-d6">✧</span>
+          </div>
+          <div class="sc-brand">ラブソング診断<span class="sc-brand-n">16</span></div>
           <div class="sc-mascot">${mascotSVG(t.parody)}</div>
           <div class="sc-kei">${state.kei || ""}</div>
           <div class="sc-parody">${parodyBR(t.parody)}</div>
-          <div class="sc-tagline handwrite">「${t.tagline}」</div>
+          <div class="sc-tagline handwrite"><span class="sc-q-open">"</span>${t.tagline}<span class="sc-q-close">"</span></div>
+          <div class="sc-divider" aria-hidden="true"></div>
           <div class="sc-foot">あなたは何タイプ?<br><span class="sc-url">lovesong-type16.vercel.app</span></div>
         </div>
         <button class="btn save reveal" data-mag style="--d:.2s" onclick="savePNG(event)">画像で保存</button>
