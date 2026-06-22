@@ -61,12 +61,15 @@ function renderLanding() {
         <span class="ln"><span class="grad">16の恋愛タイプ</span><span>から</span></span>
         <span class="ln"><span class="grad">ラブソング</span><span>診断。</span></span>
       </h1>
+      <p class="hero-sub">3分の質問で、あなたの恋愛サウンドが見える。</p>
       <div class="hero-meta">
         <span class="hm">#16タイプ</span>
-        <span class="hm">#所要時間3分</span>
-        <span class="hm">#完全無料</span>
+        <span class="hm">#28問</span>
+        <span class="hm">#748曲から</span>
+        <span class="hm">#会員登録なし</span>
       </div>
       <button class="btn primary big" data-mag onclick="go(renderBirth)">診断をはじめる</button>
+      <p class="hero-cta-sub">あなただけの<strong>10曲プレイリスト</strong>が手に入る</p>
       <button class="btn ghost" onclick="go(()=>renderGallery('landing'))">16タイプを見る</button>
       <p class="hero-share">診断結果は #ラブソング診断16 でシェア</p>
       <div class="hero-preview">
@@ -803,7 +806,7 @@ function renderTypeDetail(key, from) {
       </div>
     </section>
   `);
-  MX.screenIn();
+  MX.typeDetailIn();
 }
 
 // 公開URL(本番固定)。シェア文言には必ず含めて流入を担保する。

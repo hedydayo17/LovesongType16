@@ -185,9 +185,16 @@ body {
 .hero-lead b { font-weight: 900; color: #ff5e8a;
   background: linear-gradient(180deg, transparent 70%, #ffe1ea 70%);
   padding: 0 2px; }
-.hero-meta { display: flex; gap: 14px; margin: 26px 0 30px; flex-wrap: wrap; }
-.hm { font-size: 13.5px; font-weight: 800; color: var(--pink); letter-spacing: .01em; }
+.hero-sub { font-size: 14.5px; line-height: 1.65; font-weight: 700; color: var(--text-soft, #5b3a4a);
+  margin: 8px 0 18px; letter-spacing: .01em; font-feature-settings: "palt" 1; }
+.hero-meta { display: flex; gap: 10px 14px; margin: 18px 0 26px; flex-wrap: wrap; }
+.hm { font-size: 13px; font-weight: 800; color: var(--pink); letter-spacing: .01em;
+  background: rgba(255, 143, 177, .08); padding: 5px 10px; border-radius: 999px;
+  border: 1px solid rgba(255, 143, 177, .18); }
 .hero .btn.ghost { margin-top: 12px; }
+.hero-cta-sub { text-align: center; font-size: 12.5px; font-weight: 700; color: #7a4256;
+  margin: 10px 0 4px; letter-spacing: .01em; opacity: .95; }
+.hero-cta-sub strong { color: var(--pink); font-weight: 900; }
 .hero-share { text-align: center; font-size: 12px; color: var(--muted); margin-top: 36px; font-weight: 600; }
 
 /* クイズ(16P式スケール) */

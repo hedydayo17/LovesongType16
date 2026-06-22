@@ -141,6 +141,38 @@ const MX = (() => {
     gsap.from(".g-card", { y: 30, opacity: 0, scale: .85, stagger: { each: .035, from: "start" }, duration: .5, ease: "back.out(1.7)", clearProps: "transform,opacity" });
   }
 
+  // ──── タイプ詳細panel(個別タイプの解説ページ)演出 ────
+  // 図鑑からタイプを開いた時に「カード1枚を見せられる」演出。
+  // マスコット bounce → タイプ名 reveal → 解説/強み順次 → chip pop の流れで
+  // 「このタイプは何者か」の体験を3秒間で完結させる。
+  function typeDetailIn() {
+    if (!on) return;
+    const tl = gsap.timeline({ defaults: { ease: EASE } });
+    const safe = (sel, props, pos) => {
+      if (document.querySelectorAll(sel).length) tl.from(sel, props, pos);
+    };
+    // 1. マスコット:bounce-in(scale + 軽い y)
+    safe(".td-mascot", { scale: .4, opacity: 0, y: 20, duration: .7, ease: "back.out(1.7)" });
+    // 2. タイプ名(型名) → パロディ名 → tagline:順次フェードアップ
+    safe(".td-type",    { y: 16, opacity: 0, duration: .35 }, "-=.4");
+    safe(".td-parody",  { y: 18, opacity: 0, duration: .45 }, "-=.25");
+    safe(".td-tagline", { y: 12, opacity: 0, duration: .4 },  "-=.3");
+    // 3. 解説:遅れて上から出る
+    safe(".td-desc", { y: 20, opacity: 0, duration: .5 }, "-=.2");
+    // 4. 強み3つ:stagger でリスト順に「効いてくる」感じ
+    safe(".w-list > li", {
+      y: 16, opacity: 0, stagger: .1, duration: .42, ease: "back.out(1.5)",
+      clearProps: "transform,opacity"
+    });
+    // 5. 相性 chip(◎/△):scale で pop
+    safe(".w-chips > .w-chip", {
+      scale: .5, opacity: 0, y: 8, stagger: .06, duration: .4,
+      ease: "back.out(2)", clearProps: "transform,opacity"
+    }, "-=.3");
+    // 6. ボタン:最後に
+    safe(".type-detail .btn", { y: 18, opacity: 0, stagger: .1, duration: .4 }, "-=.1");
+  }
+
   // 選択した円が弾ける
   function dotBurst(dot) {
     if (!on || !dot) return;
@@ -193,5 +225,5 @@ const MX = (() => {
     setTimeout(() => box.remove(), 2500);
   }
 
-  return { on, lenis, scrollTo, killScroll, refresh, lenisStart, hero, screenIn, galleryIn, dotBurst, result, wipe, magnetize, blobs, splitChars };
+  return { on, lenis, scrollTo, killScroll, refresh, lenisStart, hero, screenIn, galleryIn, typeDetailIn, dotBurst, result, wipe, magnetize, blobs, splitChars };
 })();
