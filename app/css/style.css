@@ -1664,3 +1664,15 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   letter-spacing: .04em;
   border: 1px solid rgba(255, 255, 255, .35);
 }
+
+/* 判定中→結果ページ「あなたは…」への遷移を fade で繋ぐ */
+.judging { animation: jdAppear .35s ease both; }
+.judging.leaving { animation: jdLeave .35s ease both; }
+@keyframes jdAppear {
+  from { opacity: 0; transform: scale(.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes jdLeave {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(1.02); }
+}

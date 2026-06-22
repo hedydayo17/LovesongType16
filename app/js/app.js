@@ -760,11 +760,16 @@ function finishQuiz() {
   state.kei = bestKei;
   bumpMyCount(); // F: 累計診断数(ローカル分)をインクリメント
   clearProgress(); // K: 結果到達でresume用ステートをクリア
-  // 判定中ローディング演出(1.5s)を挟んで結果ページへ。
+  // 判定中ローディング演出(1.0s)を挟んで結果ページへ。
   // ロジック自体は瞬時に終わるが、ユーザーが「ちゃんと計算してくれた」感を持てる
   // よう、心理的にちょっと「待つ」体験を入れる。100万人向けの安心感UI。
   renderJudging();
-  setTimeout(() => renderWrapped(), 1000);
+  // 850ms 経過時点で .leaving クラスを付けて fadeOut → 200ms後に結果ページへ
+  setTimeout(() => {
+    const j = document.querySelector(".judging");
+    if (j) j.classList.add("leaving");
+  }, 850);
+  setTimeout(() => renderWrapped(), 1100);
 }
 
 // 判定中の画面(クイズ完了 → 結果表示の間に1.5s表示)
