@@ -249,8 +249,8 @@ function renderLanding() {
       </div>
       <div class="hero-meta">
         <span class="hm">#16タイプ</span>
-        <span class="hm">#748曲から</span>
-        <span class="hm">#会員登録なし</span>
+        <span class="hm">#ラブソング</span>
+        <span class="hm">#完全無料</span>
       </div>
       <button class="btn primary big" id="heroCTA" data-mag onclick="go(renderBirth)">診断をはじめる</button>
       <button class="btn ghost" onclick="go(()=>renderGallery('landing'))">16タイプを見る</button>
