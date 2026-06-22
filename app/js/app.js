@@ -890,7 +890,6 @@ function renderWrapped() {
 
           <div class="hc-footline">あなたの定義 — ${t.definition}</div>
         </div>
-        <div class="reveal scroll-hint light" style="--d:.3s">↓</div>
       </section>
 
       <section class="panel p-desc">
@@ -1079,12 +1078,29 @@ function shareLINE() {
   window.open(url, "_blank", "noopener");
 }
 
-function shareCompat() {
+async function shareCompat() {
   navigator.vibrate?.(20);
   const t = TYPE_MAP[state.result];
   const text = `私「${t.parody}」だった!\n相性チェックしよ?\n${SITE_URL}`;
-  if (navigator.share) navigator.share({ title: "ラブソング診断16", text, url: SITE_URL }).catch(() => {});
-  else { navigator.clipboard?.writeText(text); alert("メッセージをコピーしました。気になる人に送ってみて。"); }
+  const payload = { title: "ラブソング診断16", text, url: SITE_URL };
+  // 1) Web Share API(対応端末)
+  if (navigator.share && (navigator.canShare?.(payload) ?? true)) {
+    try {
+      await navigator.share(payload);
+      return;
+    } catch (e) {
+      if (e?.name === "AbortError") return; // ユーザーが共有シートを閉じた
+      // それ以外(NotAllowedError等)は fallback へ
+    }
+  }
+  // 2) clipboard fallback
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("メッセージをコピーしました。気になる人に送ってみて。");
+  } catch {
+    // 3) clipboard も拒否(古いブラウザ)→ プロンプトで手動コピー誘導
+    prompt("以下のメッセージをコピーして送ってね:", text);
+  }
 }
 
 // パネルが見えたら .in を付与 → reveal 要素がせり上がる
@@ -1331,13 +1347,33 @@ function recommend(typeKey) {
   const restPool     = otherPool.concat(clusterPool).concat(favPool);
   // restPool は既選曲(fav+cluster)の mood を見て多様化される
   const otherPicks   = sampleNDiverse(restPool, need, [...favPicks, ...clusterPicks]);
-  // 結果は固定順だと頭・尻に偏るのでシャッフル
-  const picked = [...favPicks, ...clusterPicks, ...otherPicks];
-  for (let i = picked.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [picked[i], picked[j]] = [picked[j], picked[i]];
+  // ── 配置設計(2026-06-22:ファウンダー指示「好きアーティストが1番上だと微妙」) ──
+  // 1番目:cluster一致(タイプにハマる王道)= 「これだ」と思わせる
+  // 2-3番目:cluster + other
+  // 中盤:other(多様性)
+  // 8番目以降:fav(=自分が選んだやつ。サプライズで終盤に配置)
+  // 残り:other
+  const arranged = [];
+  const others = [...otherPicks];
+  const clusters = [...clusterPicks];
+  const favs = [...favPicks];
+  // 1位:cluster曲(or 無ければother)
+  if (clusters.length) arranged.push(clusters.shift());
+  else if (others.length) arranged.push(others.shift());
+  // 2-3位:cluster+other 1曲ずつ
+  if (others.length) arranged.push(others.shift());
+  if (clusters.length) arranged.push(clusters.shift());
+  // 4-7位:other を優先で埋める
+  while (arranged.length < 7 && others.length) arranged.push(others.shift());
+  while (arranged.length < 7 && clusters.length) arranged.push(clusters.shift());
+  // 8位以降:fav曲(あれば)→ 残りpool
+  while (favs.length) arranged.push(favs.shift());
+  while (arranged.length < 10 && (others.length || clusters.length)) {
+    if (others.length) arranged.push(others.shift());
+    else if (clusters.length) arranged.push(clusters.shift());
   }
-  return picked;
+  // 念のため10曲に揃える
+  return arranged.slice(0, 10);
 }
 
 function buildSongsHTML() {

@@ -310,7 +310,9 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
 @media (prefers-reduced-motion: reduce) { .reveal { transition: none; opacity: 1; transform: none; } .wrapped { scroll-behavior: auto; } }
 
 /* スクロールヒント:panel下部・中央寄せピル風。各panel共通の表記。
-   旧 left: 26px の左寄せはCTA/ボタンと被るため中央配置に変更(2026-06-22) */
+   .reveal クラスの transform:translateY(30px) で中央寄せの translateX が
+   打ち消されて「右寄り」表示になる問題があったため、.reveal併用時の
+   transform も中央寄せ維持版で上書き(2026-06-22 修正) */
 .scroll-hint { position: absolute;
   bottom: max(20px, env(safe-area-inset-bottom, 0px));
   left: 50%; transform: translateX(-50%);
@@ -322,6 +324,9 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   animation: bob 1.6s ease-in-out infinite; pointer-events: none; }
 .scroll-hint.light { color: rgba(255,255,255,.95);
   background: rgba(0, 0, 0, .28); }
+/* .reveal が併用された時の初期/完了transformを「中央寄せを維持した版」で上書き */
+.scroll-hint.reveal             { transform: translate(-50%, 30px); }
+.panel.in .scroll-hint.reveal   { transform: translate(-50%, 0); }
 @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 6px); } }
 
 /* p-intro */
