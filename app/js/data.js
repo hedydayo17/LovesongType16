@@ -7,7 +7,8 @@
 const GENRES = [
   "J-POP", "K-POP", "洋楽ポップ", "ロック", "邦ロック", "バンド",
   "R&B", "ヒップホップ/ラップ", "EDM/ダンス", "ボカロ", "アニソン",
-  "シティポップ", "インディー", "バラード", "アイドル",
+  "シティポップ", "インディー", "バラード",
+  "女性アイドル", "男性アイドル",  // 2026-06-22 分割(LDH/BMSG/JO1/INI系も「男性アイドル」に内包)
   "ジャズ/ソウル", "クラシック/インスト", "アコースティック/弾き語り"
 ];
 
@@ -450,8 +451,8 @@ const ARTIST_CLUSTERS = {
   "高橋優": ["JPOP_MAIN", "INDIE_ROCK"],
   "DREAMS COME TRUE": ["JPOP_MAIN", "DIVA_BALLAD"],
   "AAA": ["JPOP_MAIN", "DIVA_BALLAD"],
-  "EXILE": ["JPOP_MAIN"],
-  "三代目 J Soul Brothers": ["JPOP_MAIN"],
+  "EXILE": ["JPOP_MAIN", "JOHNNYS"],                      // LDH ボーイズグループも「男性アイドル」に内包
+  "三代目 J Soul Brothers": ["JPOP_MAIN", "JOHNNYS"],     // 同上
   "Novelbright": ["JPOP_MAIN", "INDIE_ROCK"],
   "瑛人": ["JPOP_MAIN", "INDIE_ROCK"],
   "菅田将暉": ["JPOP_MAIN", "INDIE_ROCK"],
@@ -716,7 +717,8 @@ const GENRE_TO_CLUSTERS = {
   "シティポップ": ["CITYPOP"],
   "インディー": ["INDIE_ROCK"],
   "バラード": ["DIVA_BALLAD"],
-  "アイドル": ["IDOL_F"],
+  "女性アイドル": ["IDOL_F"],
+  "男性アイドル": ["JOHNNYS"],  // ジャニーズ/STARTO/LDH/BMSG/JO1/INI 等の男性ボーイズグループ全般
   "ジャズ/ソウル": ["CITYPOP", "HIPHOP_RNB"],
   "クラシック/インスト": [],
   "アコースティック/弾き語り": ["INDIE_ROCK"]
