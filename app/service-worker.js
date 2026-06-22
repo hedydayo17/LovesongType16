@@ -12,7 +12,7 @@
 // 連動させて新デプロイで全更新したい時に使う。
 // ============================================================
 
-const CACHE_VERSION = "v140";  // index.html の ?v= と合わせる(更新時にbumpすれば旧キャッシュ全削除)
+const CACHE_VERSION = "v141";  // index.html の ?v= と合わせる(更新時にbumpすれば旧キャッシュ全削除)
 const STATIC_CACHE  = `lsd16-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `lsd16-runtime-${CACHE_VERSION}`;
 
