@@ -690,6 +690,9 @@ const ARTIST_CLUSTERS = {
   "=LOVE": ["IDOL_F"],
   "≠ME": ["IDOL_F"],
   "STU48": ["IDOL_F"],
+  "Perfume": ["IDOL_F", "JPOP_MAIN"],
+  "ももいろクローバーZ": ["IDOL_F"],
+  "FRUITS ZIPPER": ["IDOL_F"],
 
   // ── 三浦大知は男性ボーカル枠 ──
   "三浦大知": ["JPOP_MAIN", "HIPHOP_RNB"]
