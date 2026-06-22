@@ -111,6 +111,72 @@ const PARODY_BREAKS = {
 function parodyBR(name) { return PARODY_BREAKS[name] || name; }
 
 // ---- ランディング(ヒーロー):摩擦ゼロの入口。16P/ラブタイプ流に「即スタート」を強調 ----
+// ─── 16タイプ相性ピラミッド ─────────────────────────────────────
+// 自タイプと他15タイプそれぞれの「相性スコア(0-100)」を計算して上位順に並べる。
+// 共感(同Kei)・補完(compatible特定指名)・温度差(対角Kei)を組み合わせた
+// ロジック。ファウンダー指示「ラブタイプとの相性は共感できるように正確に」を、
+// data.js の compatible/Kei定義を信号源にして表現。
+const _ADJACENT_KEI = {
+  "溺愛系":     ["ピュア系", "アクティブ系"],
+  "ピュア系":   ["マイペース系", "溺愛系"],
+  "マイペース系": ["アクティブ系", "ピュア系"],
+  "アクティブ系": ["溺愛系", "マイペース系"],
+};
+function _keiOf(typeKey) {
+  return Object.keys(KEI).find(k => KEI[k].types.includes(typeKey));
+}
+// ペア固有の決定論的調整(同じスコア帯でも順位がブレないように)
+function _pairHashAdjust(a, b, range) {
+  let h = 0; const str = a + "|" + b;
+  for (let i = 0; i < str.length; i++) h = ((h * 31) + str.charCodeAt(i)) % 10000;
+  return (h % range) - Math.floor(range / 2);
+}
+function affinityScore(currentType, otherType) {
+  if (currentType === otherType) return 0;
+  const tA = TYPE_MAP[currentType];
+  // 1. 既定の compatible(parody名)に含まれる = 最強相性(90-98)
+  if (tA.compatible.includes(otherType)) return 90 + Math.abs(_pairHashAdjust(currentType, otherType, 9));
+  // 2. 同 Kei = 共感型(75-87)
+  const keiA = _keiOf(currentType);
+  const keiB = _keiOf(otherType);
+  if (keiA === keiB) return 75 + Math.abs(_pairHashAdjust(currentType, otherType, 13));
+  // 3. 隣接 Kei = 補完型(60-72)
+  if (_ADJACENT_KEI[keiA]?.includes(keiB)) return 60 + Math.abs(_pairHashAdjust(currentType, otherType, 13));
+  // 4. 対角 Kei = 温度差(35-50)
+  return 35 + Math.abs(_pairHashAdjust(currentType, otherType, 16));
+}
+// 16段ピラミッド(15タイプ並べ):1+2+3+4+5 = 15
+const _PYRAMID_ROWS = [1, 2, 3, 4, 5];
+function buildPyramidHTML() {
+  const me = state.result;
+  if (!me) return "";
+  // 他15タイプを相性スコア降順で
+  const ranked = TYPES.map(t => t.key)
+    .filter(k => k !== me)
+    .map(k => ({ key: k, score: affinityScore(me, k) }))
+    .sort((a, b) => b.score - a.score);
+  // 5段に流し込み
+  const rows = [];
+  let idx = 0;
+  for (let r = 0; r < _PYRAMID_ROWS.length; r++) {
+    const cells = [];
+    for (let c = 0; c < _PYRAMID_ROWS[r]; c++) {
+      const item = ranked[idx++];
+      if (!item) continue;
+      const t = TYPE_MAP[item.key];
+      const tier = r === 0 ? "tier-top" : r === _PYRAMID_ROWS.length - 1 ? "tier-low" : "";
+      const rank = idx;
+      cells.push(`<span class="cp-pill ${tier}" style="--c:${t.color}" title="${t.parody}・相性${item.score}">
+        <span class="cp-rank">No.${rank}</span>
+        <span class="cp-name">${t.parody}</span>
+        <span class="cp-score">${item.score}</span>
+      </span>`);
+    }
+    rows.push(`<div class="cp-row cp-r${r + 1}">${cells.join("")}</div>`);
+  }
+  return rows.join("");
+}
+
 // ─── F: 累計診断数の擬似カウンタ ────────────────────────────────────
 // 本物のサーバ集計はまだだが、「今日 ○人が診断した」をローカルで概算表示する。
 // 数値ソース:ローンチ日(2026-06-22)からの経過日 × 1日あたり擬似増加 +
@@ -601,7 +667,7 @@ function renderQuestion() {
         </div>
         <div class="dots">${dots}</div>
       </div>
-      ${i > 0 ? '<button class="back" onclick="goBack()">← 戻る</button>' : ''}
+      <button class="back" onclick="goBack()">← ${i > 0 ? '戻る' : 'アーティスト選択に戻る'}</button>
     </section>
   `);
   // クイズの入場はCSSアニメで実装(GSAPに依存させない=回答操作が絶対に固まらない)
@@ -633,6 +699,7 @@ function answer(pos) {
 }
 function goBack() {
   if (state.qIndex > 0) { state.qIndex--; saveProgress(); renderQuestion(); }
+  else { go(renderArtists); }  // Q1から戻る場合はアーティスト選択へ
 }
 
 // 各タイプの「主役/脇役で出現する全質問の重みの絶対値合計 × 最大回答倍率」=理論上の最大点。
@@ -831,12 +898,6 @@ function renderWrapped() {
         <p class="reveal w-desc" style="--d:.15s">${t.description}</p>
       </section>
 
-      <section class="panel p-traits">
-        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">あなたの中の他のタイプ</span></div>
-        <p class="reveal traits-lead" style="--d:.1s">メインは <b>${t.parody}</b>。<br>その奥にもう3つの顔がいる。</p>
-        <div class="alsome-list">${traitsHTML()}</div>
-      </section>
-
       <section class="panel p-strengths">
         <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">恋愛の強み</span></div>
         <ul class="w-list">
@@ -855,15 +916,9 @@ function renderWrapped() {
       </section>
 
       <section class="panel p-compat">
-        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">相性診断</span></div>
-        <div class="reveal compat-block good" style="--d:.1s">
-          <div class="cb-head">相性◎ 惹かれ合う</div>
-          <div class="w-chips">${comp}</div>
-        </div>
-        <div class="reveal compat-block caution" style="--d:.3s">
-          <div class="cb-head">相性△ ちょっと努力が必要</div>
-          <div class="w-chips">${t.cautionMatch.map(c => `<span class="w-chip ca">${c}</span>`).join("")}</div>
-        </div>
+        <div class="reveal w-section-label"><span class="wsl-bar"></span><span class="wsl-text">16タイプ相性ピラミッド</span></div>
+        <p class="reveal compat-lead" style="--d:.05s">上に行くほど<b>相性◎</b>。あなた以外の15タイプを並べました。</p>
+        <div class="reveal compat-pyramid" style="--d:.1s">${buildPyramidHTML()}</div>
         <button class="btn share reveal" style="--d:.5s" onclick="shareCompat()">気になる人に送って相性チェック</button>
       </section>
 

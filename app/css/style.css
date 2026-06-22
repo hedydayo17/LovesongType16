@@ -1520,3 +1520,52 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
 }
 @media (prefers-reduced-motion: reduce) { .hc-dot { animation: none; } }
+
+/* ─── 16タイプ相性ピラミッド(p-compat 再設計、5段=1+2+3+4+5タイプ) ─── */
+.compat-lead { font-size: 13px; line-height: 1.6; color: var(--muted);
+  margin: 8px 0 18px; font-weight: 700; }
+.compat-lead b { color: var(--pink); font-weight: 900; }
+.compat-pyramid { display: flex; flex-direction: column;
+  align-items: center; gap: 6px; margin: 4px 0 22px; }
+.cp-row { display: flex; gap: 6px; justify-content: center;
+  flex-wrap: wrap; width: 100%; }
+.cp-pill {
+  display: inline-flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 2px;
+  background: linear-gradient(165deg,
+    color-mix(in srgb, var(--c) 92%, #fff 8%),
+    color-mix(in srgb, var(--c) 55%, #000 45%));
+  color: #fff;
+  border-radius: 14px;
+  padding: 8px 10px 9px;
+  min-width: 0; flex: 1 1 0;
+  font-family: inherit; font-feature-settings: "palt" 1;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--c) 28%, transparent 72%),
+              inset 0 1px 0 rgba(255,255,255,.22);
+  border: 1px solid rgba(255,255,255,.18);
+  text-align: center; white-space: normal; word-break: keep-all;
+  overflow-wrap: anywhere; line-height: 1.15;
+  transition: transform .15s ease;
+}
+.cp-pill:active { transform: scale(.97); }
+.cp-rank { font-size: 9px; font-weight: 800; letter-spacing: .04em;
+  opacity: .85; line-height: 1; }
+.cp-name { font-size: 11px; font-weight: 900; letter-spacing: -.01em;
+  line-height: 1.2; text-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.cp-score { font-size: 9px; font-weight: 800; opacity: .85;
+  background: rgba(255,255,255,.22); padding: 1px 6px; border-radius: 999px;
+  margin-top: 1px; font-variant-numeric: tabular-nums; }
+/* 1段目(最相性)はワンランク大きく + 王冠的アクセント */
+.cp-r1 .cp-pill { padding: 12px 16px 14px; }
+.cp-r1 .cp-pill .cp-name { font-size: 14px; }
+.cp-r1 .cp-pill .cp-rank { font-size: 10px; }
+.cp-r1 .cp-pill .cp-score { font-size: 10px; }
+.cp-pill.tier-top {
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--c) 40%, transparent 60%),
+              inset 0 1px 0 rgba(255,255,255,.35);
+  border-color: rgba(255,255,255,.4);
+}
+.cp-pill.tier-low { opacity: .82; }
+/* 文字数の多いパロディ名(マブダチエイリアン等)が縦に伸びても破綻しないように */
+.cp-row .cp-pill { min-height: 56px; }
+.cp-r1 .cp-pill { min-height: 68px; max-width: 65%; }
