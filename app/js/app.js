@@ -111,6 +111,36 @@ const PARODY_BREAKS = {
 function parodyBR(name) { return PARODY_BREAKS[name] || name; }
 
 // ---- ランディング(ヒーロー):摩擦ゼロの入口。16P/ラブタイプ流に「即スタート」を強調 ----
+// ─── F: 累計診断数の擬似カウンタ ────────────────────────────────────
+// 本物のサーバ集計はまだだが、「今日 ○人が診断した」をローカルで概算表示する。
+// 数値ソース:ローンチ日(2026-06-22)からの経過日 × 1日あたり擬似増加 +
+//            このブラウザでの自分の診断回数(localStorage)。
+// 100万人スケールに到達したら、Vercel KV/Edge Config 等で本物のグローバル
+// カウンタに差し替える(同じ countSeed() 関数を上書き)。
+function countSeed() {
+  const LAUNCH = new Date(2026, 5, 22).getTime(); // 2026-06-22(0-indexedで5)
+  const now = Date.now();
+  const days = Math.max(0, Math.floor((now - LAUNCH) / 86400000));
+  // 日ごとに +120〜180 のレンジで擬似増加(日付ハッシュで決定論的、ランダムには見えるが固定)
+  let total = 1280; // 立ち上げ初期値
+  for (let d = 0; d <= days; d++) {
+    const noise = ((d * 17 + 31) % 60) + 120; // 120-180
+    total += noise;
+  }
+  // ローカルの自分の診断回数も足す(自分の貢献感)
+  try {
+    const myCount = parseInt(localStorage.getItem("lsd16:myCount") || "0", 10) || 0;
+    total += myCount;
+  } catch {}
+  return total;
+}
+function bumpMyCount() {
+  try {
+    const n = parseInt(localStorage.getItem("lsd16:myCount") || "0", 10) || 0;
+    localStorage.setItem("lsd16:myCount", String(n + 1));
+  } catch {}
+}
+
 // ─── S: 動的 document.title ───
 // 結果到達時に「私は◯◯系×× | ラブソング診断16」へ変える(ホーム履歴・タブ・
 // PWAアプリ切替で映える)。非結果ページでは元タイトルに戻す。
@@ -147,6 +177,10 @@ function renderLanding() {
         <span class="ln"><span class="grad">ラブソング</span><span>診断。</span></span>
       </h1>
       <p class="hero-sub">あなたを表すラブソング。</p>
+      <div class="hero-counter" aria-label="累計診断数">
+        <span class="hc-dot" aria-hidden="true"></span>
+        <span class="hc-text">すでに <b>${countSeed().toLocaleString("ja-JP")}人</b> が診断中</span>
+      </div>
       <div class="hero-meta">
         <span class="hm">#16タイプ</span>
         <span class="hm">#28問</span>
@@ -644,6 +678,7 @@ function finishQuiz() {
     if (avg > bestAvg) { bestAvg = avg; bestKei = name; }
   }
   state.kei = bestKei;
+  bumpMyCount(); // F: 累計診断数(ローカル分)をインクリメント
   clearProgress(); // K: 結果到達でresume用ステートをクリア
   // 判定中ローディング演出(1.5s)を挟んで結果ページへ。
   // ロジック自体は瞬時に終わるが、ユーザーが「ちゃんと計算してくれた」感を持てる
@@ -1388,10 +1423,22 @@ const _songMeta = new Map(); // key: "title|||artist" → { previewUrl, artworkU
 // Spotify アクセストークン(50分キャッシュ)
 let _spToken = null;
 let _spTokenExp = 0;
+
+// E: timeout 付き fetch(無限待ち防止。100万人スケールでネット遅延の人を救う)
+function _fetchWithTimeout(url, opts = {}, ms = 5000) {
+  return new Promise((resolve, reject) => {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => { ctrl.abort(); reject(new Error("timeout")); }, ms);
+    fetch(url, { ...opts, signal: ctrl.signal })
+      .then((r) => { clearTimeout(t); resolve(r); })
+      .catch((e) => { clearTimeout(t); reject(e); });
+  });
+}
+
 async function getSpotifyToken() {
   if (_spToken && Date.now() < _spTokenExp) return _spToken;
   try {
-    const r = await fetch("/api/spotify-token");
+    const r = await _fetchWithTimeout("/api/spotify-token", {}, 5000);
     if (!r.ok) return null;
     const d = await r.json();
     if (!d.access_token) return null;
@@ -1404,29 +1451,49 @@ async function getSpotifyToken() {
 async function fetchSpotifyTrack(title, artist) {
   const token = await getSpotifyToken();
   if (!token) return null;
-  try {
-    // フィールド指定検索でヒット率UP。market=JP で日本リージョン優先
-    const q = encodeURIComponent(`track:${title} artist:${artist}`);
-    const r = await fetch(`https://api.spotify.com/v1/search?q=${q}&type=track&limit=1&market=JP`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!r.ok) return null;
-    const data = await r.json();
-    const t = data.tracks && data.tracks.items && data.tracks.items[0];
-    if (!t) return null;
-    return {
-      spotifyId: t.id,
-      previewUrl: t.preview_url || null,
-      artworkUrl: (t.album && t.album.images && t.album.images[0] && t.album.images[0].url) || null,
-      spotifyUrl: t.external_urls && t.external_urls.spotify,
-    };
-  } catch { return null; }
+  // E: 429 (rate limit) / 5xx を 1回まで silently retry(token expireも吸収)
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const q = encodeURIComponent(`track:${title} artist:${artist}`);
+      const r = await _fetchWithTimeout(
+        `https://api.spotify.com/v1/search?q=${q}&type=track&limit=1&market=JP`,
+        { headers: { Authorization: `Bearer ${token}` } },
+        5000
+      );
+      // 401:token失効 → tokenクリア+1回retry
+      if (r.status === 401 && attempt === 0) {
+        _spToken = null; _spTokenExp = 0;
+        const newToken = await getSpotifyToken();
+        if (!newToken) return null;
+        continue;
+      }
+      // 429/5xx:1回だけリトライ(短い backoff)
+      if ((r.status === 429 || r.status >= 500) && attempt === 0) {
+        await new Promise(r2 => setTimeout(r2, 800));
+        continue;
+      }
+      if (!r.ok) return null;
+      const data = await r.json();
+      const t = data.tracks && data.tracks.items && data.tracks.items[0];
+      if (!t) return null;
+      return {
+        spotifyId: t.id,
+        previewUrl: t.preview_url || null,
+        artworkUrl: (t.album && t.album.images && t.album.images[0] && t.album.images[0].url) || null,
+        spotifyUrl: t.external_urls && t.external_urls.spotify,
+      };
+    } catch { /* timeout 等 → 次のattempt or null */ }
+  }
+  return null;
 }
 
 async function fetchITunesTrack(title, artist) {
   try {
     const term = encodeURIComponent(`${title} ${artist}`);
-    const r = await fetch(`https://itunes.apple.com/search?term=${term}&country=jp&entity=song&limit=1`);
+    const r = await _fetchWithTimeout(
+      `https://itunes.apple.com/search?term=${term}&country=jp&entity=song&limit=1`,
+      {}, 5000
+    );
     if (!r.ok) return null;
     const j = await r.json();
     const hit = j.results && j.results[0];
@@ -1464,33 +1531,77 @@ async function fetchSongMeta(title, artist) {
   return meta;
 }
 
-// 結果ページ初期化時に呼ぶ:全10曲分のジャケ写/preview/Spotify URLを並列取得し各行に流し込む
-// 1曲フルスクリーン panel と summary リスト両方の同じ曲に注入(data-song-id で照合)
+// 結果ページ初期化時に呼ぶ:ジャケ写/preview/Spotify URLを取得して各行に流し込む。
+// パフォーマンス最適化(A):
+//   1. 先頭5曲(画面に最初に出る順位)は即時取得(初期表示の体感が爆速に)
+//   2. 残り5曲はIntersectionObserverでpanelが画面に近づいたら遅延取得
+//      → 結果到達時のAPI同時要求が10→5に半減 / 全体トラフィックも分散
+//   3. 同時並列度は3まで(Vercel Serverless関数の同時実行を抑制)
 async function prefetchSongMeta() {
   if (!state.lastRecommend) return;
-  await Promise.all(state.lastRecommend.map(async (s) => {
-    const meta = await fetchSongMeta(s.title, s.artist);
+  const songs = state.lastRecommend;
+  // 同時並列度を制限したマッパ(p-limit 軽量版)
+  const _limit = (concurrency) => {
+    let active = 0;
+    const queue = [];
+    const next = () => {
+      if (active >= concurrency || !queue.length) return;
+      const { fn, resolve, reject } = queue.shift();
+      active++;
+      Promise.resolve().then(fn).then(
+        (r) => { active--; resolve(r); next(); },
+        (e) => { active--; reject(e); next(); }
+      );
+    };
+    return (fn) => new Promise((resolve, reject) => { queue.push({ fn, resolve, reject }); next(); });
+  };
+  const limit = _limit(3);
+  const injectMeta = (s, meta) => {
     if (!meta) return;
     const id = `${s.title}|||${s.artist}`;
     const rows = document.querySelectorAll(`[data-song-id="${CSS.escape(id)}"]`);
     rows.forEach((row) => {
-      // ジャケ写
       if (meta.artworkUrl) {
         const jacket = row.querySelector(".sp-jacket");
         if (jacket) {
           jacket.style.backgroundImage = `url("${meta.artworkUrl}")`;
-          const playBtn = row.querySelector(".song-play");
+          const playBtn = row.querySelector(".song-play, .ps-play");
           if (playBtn) playBtn.classList.add("art-loaded");
         }
       }
-      // Spotify 直リンクが取れたら検索URL→トラックURLに差し替え
       if (meta.spotifyUrl) {
         row.querySelectorAll("a.song-link.sp, a.ps-svc.sp").forEach((a) => {
           a.href = meta.spotifyUrl;
         });
       }
     });
-  }));
+  };
+  // 1. 先頭5曲は即時(並列度3で fetch)
+  const eager = songs.slice(0, 5);
+  await Promise.all(eager.map(s => limit(() => fetchSongMeta(s.title, s.artist).then(m => injectMeta(s, m)))));
+  // 2. 残り5曲は IntersectionObserver でon-demand
+  const lazy = songs.slice(5);
+  if (!lazy.length || !("IntersectionObserver" in window)) {
+    // フォールバック:全部即取得
+    await Promise.all(lazy.map(s => limit(() => fetchSongMeta(s.title, s.artist).then(m => injectMeta(s, m)))));
+    return;
+  }
+  const fetched = new Set();
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const id = e.target.getAttribute("data-song-id");
+      if (!id || fetched.has(id)) return;
+      fetched.add(id);
+      const [title, artist] = id.split("|||");
+      limit(() => fetchSongMeta(title, artist).then(m => injectMeta({ title, artist }, m)));
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: "200px 0px" }); // 画面到達200px手前で先回り
+  lazy.forEach((s) => {
+    const id = `${s.title}|||${s.artist}`;
+    document.querySelectorAll(`[data-song-id="${CSS.escape(id)}"]`).forEach(el => io.observe(el));
+  });
 }
 
 function _setBtnState(btn, state) {

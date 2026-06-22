@@ -238,7 +238,8 @@ body {
 .scale-end { font-size: 13px; font-weight: 800; }
 .scale-end.agree { color: var(--agree); }
 .scale-end.dis { color: var(--dis); }
-.dots { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.dots { display: flex; align-items: center; justify-content: center; gap: 14px;
+  padding: 8px 0; /* タップ判定エリアを縦方向にも余白で確保 */ }
 .dot { border-radius: 50%; background: #fff; cursor: pointer; flex: none;
   transition: transform .12s, background .15s, box-shadow .15s; }
 .dot.d3 { width: 44px; height: 44px; border: 3px solid; }
@@ -1442,3 +1443,52 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   box-shadow: 0 8px 22px rgba(107, 58, 160, .2);
 }
 .btn.stories:active { transform: scale(.97); }
+
+/* ─── D: 全画面 safe-area-inset(iPhone notch/ホームバー対応) ─── */
+#app {
+  padding-left:  max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+}
+.screen { padding-top: env(safe-area-inset-top); }
+.wrapped .panel {
+  /* 結果ページの各panelもsafe-area分パディング(底のホームバー回避) */
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+/* iOSのSafariで100vhが内側ツールバー込みで計算される問題 → svh使用済の補強 */
+@supports (height: 100svh) {
+  .panel { min-height: 100svh; }
+}
+/* iPad/タブレット幅で、コンテンツが横に広がりすぎないよう中央寄せ強化 */
+@media (min-width: 540px) {
+  #app { max-width: 460px; }
+}
+/* タップターゲットの最低保証:.dot 要素のクリック判定を周囲padding で擬似拡大 */
+.dot { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+/* iOS Safari の長押しコールアウト無効化(マスコット長押しで保存ダイアログ出ないように) */
+.mascot-svg, .ps-jacket, .sp-jacket { -webkit-touch-callout: none; user-select: none; }
+
+/* ─── F: 累計診断数 LP counter ─── */
+.hero-counter {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255, 94, 138, .08);
+  border: 1px solid rgba(255, 94, 138, .2);
+  border-radius: 999px;
+  padding: 7px 14px 7px 12px;
+  margin: 4px 0 18px;
+  font-size: 12px; font-weight: 700;
+  color: var(--text-soft, #5b3a4a);
+  font-feature-settings: "palt" 1;
+}
+.hero-counter b { color: var(--pink); font-weight: 900; font-size: 13px;
+  font-variant-numeric: tabular-nums; }
+.hc-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #4caf50; box-shadow: 0 0 0 0 rgba(76, 175, 80, .55);
+  animation: pulseLive 2s ease-out infinite;
+}
+@keyframes pulseLive {
+  0%   { box-shadow: 0 0 0 0 rgba(76, 175, 80, .55); }
+  70%  { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .hc-dot { animation: none; } }
