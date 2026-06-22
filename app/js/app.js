@@ -61,7 +61,7 @@ function renderLanding() {
         <span class="ln"><span class="grad">16の恋愛タイプ</span><span>から</span></span>
         <span class="ln"><span class="grad">ラブソング</span><span>診断。</span></span>
       </h1>
-      <p class="hero-sub">あなたを表すラブソング、10曲。</p>
+      <p class="hero-sub">あなたを表すラブソング。</p>
       <div class="hero-meta">
         <span class="hm">#16タイプ</span>
         <span class="hm">#28問</span>
