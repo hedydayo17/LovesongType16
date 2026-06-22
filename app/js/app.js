@@ -217,6 +217,17 @@ function _updateDocTitle() {
       const t = TYPE_MAP[state.result];
       const k = state.kei ? state.kei : "";
       document.title = `私は「${k}${t.parody}」だった | ラブソング診断16`;
+      // SNSクローラーには効かないが、ブックマーク・ブラウザ履歴では映える
+      const desc = `「${t.parody}」— ${t.tagline} あなたは何タイプ?`;
+      const setMeta = (selector, content) => {
+        const el = document.querySelector(selector);
+        if (el) el.setAttribute("content", content);
+      };
+      setMeta('meta[name="description"]', desc);
+      setMeta('meta[property="og:title"]', document.title);
+      setMeta('meta[property="og:description"]', desc);
+      setMeta('meta[name="twitter:title"]', document.title);
+      setMeta('meta[name="twitter:description"]', desc);
     } else {
       document.title = _DEFAULT_TITLE;
     }
@@ -753,7 +764,7 @@ function finishQuiz() {
   // ロジック自体は瞬時に終わるが、ユーザーが「ちゃんと計算してくれた」感を持てる
   // よう、心理的にちょっと「待つ」体験を入れる。100万人向けの安心感UI。
   renderJudging();
-  setTimeout(() => renderWrapped(), 1500);
+  setTimeout(() => renderWrapped(), 1000);
 }
 
 // 判定中の画面(クイズ完了 → 結果表示の間に1.5s表示)
@@ -959,18 +970,28 @@ function renderWrapped() {
           <div class="sc-divider" aria-hidden="true"></div>
           <div class="sc-foot">あなたは何タイプ?<br><span class="sc-url">lovesong-type16.vercel.app</span></div>
         </div>
-        <button class="btn save reveal" data-mag style="--d:.2s" onclick="savePNG(event)">画像で保存</button>
-        <button class="btn stories reveal" data-mag style="--d:.25s" onclick="saveStoriesPNG(event)" aria-label="Instagram/TikTok Stories向け縦長画像で保存">▣ Stories用(9:16)</button>
-        <div class="share-grid reveal" style="--d:.3s">
-          <button class="btn sns ig" onclick="shareTo('instagram', event)" aria-label="Instagramでシェア">Instagram</button>
-          <button class="btn sns tt" onclick="shareTo('tiktok', event)" aria-label="TikTokでシェア">TikTok</button>
-          <button class="btn sns br" onclick="shareTo('bereal', event)" aria-label="BeRealでシェア">BeReal</button>
-          <button class="btn sns x" onclick="shareX()" aria-label="Xでシェア">X</button>
-          <button class="btn sns line" onclick="shareLINE()" aria-label="LINEで送る">LINE</button>
+        <!-- [グループA] 主要アクション:画像保存(目立たせる) -->
+        <div class="share-group share-primary reveal" style="--d:.2s">
+          <button class="btn save" data-mag onclick="savePNG(event)">画像で保存</button>
+          <button class="btn stories" data-mag onclick="saveStoriesPNG(event)" aria-label="Stories向け縦長画像">Stories用(9:16)</button>
         </div>
-        <button class="btn ghost reveal" style="--d:.5s" onclick="go(()=>renderGallery('result'))">16タイプ図鑑を見る</button>
-        <button class="btn ghost reveal" style="--d:.6s" onclick="go(renderLanding)">↑ TOPへ戻る</button>
-        <button class="btn restart reveal" style="--d:.7s" onclick="restartDiagnosis()" aria-label="最初から診断をやり直す">↻ もう一度診断する</button>
+        <!-- [グループB] SNSシェア:5サービス並列 -->
+        <div class="share-group share-sns reveal" style="--d:.3s">
+          <div class="share-group-label">SNSでシェア</div>
+          <div class="share-grid">
+            <button class="btn sns ig"   onclick="shareTo('instagram', event)" aria-label="Instagram">Instagram</button>
+            <button class="btn sns tt"   onclick="shareTo('tiktok', event)"    aria-label="TikTok">TikTok</button>
+            <button class="btn sns br"   onclick="shareTo('bereal', event)"    aria-label="BeReal">BeReal</button>
+            <button class="btn sns x"    onclick="shareX()"                    aria-label="Xでポスト">X</button>
+            <button class="btn sns line" onclick="shareLINE()"                 aria-label="LINEで送る">LINE</button>
+          </div>
+        </div>
+        <!-- [グループC] ナビゲーション:図鑑/TOP/再診断 -->
+        <div class="share-group share-nav reveal" style="--d:.4s">
+          <button class="btn ghost" onclick="go(()=>renderGallery('result'))">16タイプ図鑑を見る</button>
+          <button class="btn ghost" onclick="go(renderLanding)">↑ TOPへ戻る</button>
+          <button class="btn restart" onclick="restartDiagnosis()" aria-label="もう一度診断する">↻ もう一度診断する</button>
+        </div>
       </section>
 
     </div>
@@ -1678,6 +1699,19 @@ function _setBtnState(btn, state) {
   // state: idle | loading | playing | error
   btn.classList.remove("loading", "playing", "error");
   if (state !== "idle") btn.classList.add(state);
+  // 再生終了時は progress を 0% に戻す
+  if (state !== "playing") btn.style.removeProperty("--prog");
+}
+// 試聴プログレス:audio の timeupdate に合わせて btn の --prog を更新
+function _attachProgress(btn, audio) {
+  if (!btn || !audio) return;
+  const upd = () => {
+    if (!audio.duration || isNaN(audio.duration)) return;
+    const pct = Math.min(100, (audio.currentTime / audio.duration) * 100);
+    btn.style.setProperty("--prog", pct.toFixed(2) + "%");
+  };
+  audio.addEventListener("timeupdate", upd);
+  audio.addEventListener("loadedmetadata", upd);
 }
 // 確実に音を止める:pause だけだと一部ブラウザ(iOS Safari等)で間に合わずバッファが残るため、
 // src を空にして load() で内部状態をリセット。古い Audio が「謎再生」しないよう参照を切る。
@@ -1715,6 +1749,8 @@ async function togglePreview(btn, title, artist) {
   _audio = a;
   _activeBtn = btn;
   _setBtnState(btn, "playing");
+  // 試聴シークバー:プログレスを ::before の width で表現(prev要素にdata-bind経由)
+  _attachProgress(btn, a);
   a.addEventListener("ended", () => {
     // 自分がまだ "現役" なら綺麗に終わらせる(別の再生が始まっていたら何もしない)
     if (_audio === a) _stopAudio();

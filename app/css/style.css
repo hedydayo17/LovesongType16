@@ -1572,3 +1572,86 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
 /* 文字数の多いパロディ名(マブダチエイリアン等)が縦に伸びても破綻しないように */
 .cp-row .cp-pill { min-height: 56px; }
 .cp-r1 .cp-pill { min-height: 68px; max-width: 65%; }
+
+/* ─── デザイナー監査 修正パック(2026-06-22) ─── */
+
+/* [1] share panel 3グループ化 */
+.share-group { margin-bottom: 14px; }
+.share-group + .share-group { margin-top: 6px; padding-top: 14px;
+  border-top: 1px dashed rgba(255, 94, 138, .18); }
+.share-group-label { font-size: 11px; font-weight: 800; color: var(--muted);
+  letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px;
+  text-align: center; }
+.share-primary .btn { margin-bottom: 8px; }
+.share-nav .btn { margin-bottom: 8px; }
+.share-nav .btn:last-child { margin-bottom: 0; }
+
+/* [2] 試聴シークバー:song-play / ps-play の .playing 時に下端 progress */
+.song-play.playing::before,
+.ps-play.playing::before {
+  content: ""; position: absolute; left: 6%; right: 6%; bottom: 6px;
+  height: 3px; border-radius: 999px;
+  background: rgba(255, 255, 255, .25);
+  z-index: 4; pointer-events: none;
+}
+.song-play.playing::before {
+  background: linear-gradient(90deg, var(--jc, #ff5e8a) 0%,
+              var(--jc, #ff5e8a) var(--prog, 0%),
+              rgba(255, 255, 255, .25) var(--prog, 0%),
+              rgba(255, 255, 255, .25) 100%);
+}
+.ps-play.playing::before {
+  background: linear-gradient(90deg, #fff 0%, #fff var(--prog, 0%),
+              rgba(255, 255, 255, .25) var(--prog, 0%),
+              rgba(255, 255, 255, .25) 100%);
+  box-shadow: 0 0 6px rgba(255,255,255,.4);
+}
+
+/* [4] mood pulse 削除(過剰演出スリム化) */
+.mood-bd .mood-bd-item { animation: none !important; }
+
+/* [5] panel間「次の予告」:各panel下端に次panel色のうっすらしたフェード */
+.wrapped .panel:not(:last-child)::after {
+  content: ""; position: absolute; left: 0; right: 0;
+  bottom: -1px; height: 24px;
+  background: linear-gradient(180deg, transparent 0%,
+              rgba(255, 245, 248, .35) 70%,
+              rgba(255, 245, 248, .55) 100%);
+  pointer-events: none; z-index: 2;
+}
+.wrapped .panel.p-reveal::after,
+.wrapped .panel.p-type::after { display: none; } /* 暗背景panelには出さない */
+
+/* [7] 相性ピラミッド5段目を簡略化:より小さく、グレー寄せ */
+.cp-r5 .cp-pill {
+  background: linear-gradient(165deg,
+    color-mix(in srgb, var(--c) 50%, #888 50%),
+    color-mix(in srgb, var(--c) 30%, #555 70%));
+  opacity: .7;
+  padding: 5px 7px 6px;
+  min-height: 42px;
+}
+.cp-r5 .cp-pill .cp-name { font-size: 9.5px; }
+.cp-r5 .cp-pill .cp-rank { font-size: 8.5px; }
+.cp-r5 .cp-pill .cp-score { font-size: 8.5px; padding: 0 4px; }
+
+/* [8] qcard 余白増 + qtext 読みやすさUP */
+.qcard {
+  padding: 44px 24px !important;
+}
+.qtext {
+  max-width: 320px; margin-left: auto; margin-right: auto;
+  line-height: 1.55 !important;
+}
+
+/* [9] dot タップ判定 44x44 を ::after で確保(視覚は維持) */
+.dot { position: relative; }
+.dot::after {
+  content: ""; position: absolute;
+  /* 視覚dot中心から外周44pxまでをタップ判定領域に */
+  left: 50%; top: 50%;
+  width: 44px; height: 44px;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.dot.d3::after { width: 48px; height: 48px; }
