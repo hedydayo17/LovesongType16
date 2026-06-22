@@ -1234,16 +1234,7 @@ html.snap-mode .panel { scroll-snap-align: start; scroll-snap-stop: always; }
   .songlist.reshuffle-out, .songlist.reshuffle-in .song { animation: none; transition: none; }
 }
 
-/* ─── F: 試聴ボタン演出強化 ─── */
-/* 再生中:jacket がゆっくり回転(LP盤っぽさ) */
-.song-play.playing .sp-jacket,
-.ps-play.playing .sp-jacket {
-  animation: jacketSpin 12s linear infinite;
-}
-@keyframes jacketSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+/* ─── F: 試聴ボタン演出強化(jacket回転はファウンダー指示で廃止) ─── */
 /* 再生中:周辺に波形 bar が踊る(SVG/疑似要素では複雑なので簡易の4本bar) */
 .song-play.playing::after,
 .ps-play.playing::after {
