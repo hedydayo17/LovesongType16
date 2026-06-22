@@ -315,6 +315,7 @@ function renderBirth() {
         <p id="birthErr" class="err"></p>
       </div>
       <button class="btn primary" onclick="submitBirth()">次へ</button>
+      <button class="btn ghost" onclick="go(renderLanding)">← トップに戻る</button>
     </section>
   `);
 
@@ -401,6 +402,7 @@ function renderGenres() {
         <button class="btn ghost" onclick="renderArtists()">スキップ</button>
         <button class="btn primary" onclick="submitGenres()">次へ</button>
       </div>
+      <button class="btn ghost" onclick="go(renderBirth)">← 戻る</button>
     </section>
   `);
   syncGenreUI();
@@ -439,6 +441,7 @@ function renderArtists() {
         <button class="btn ghost" onclick="startQuiz()">スキップ</button>
         <button class="btn primary" onclick="submitArtists()">診断スタート</button>
       </div>
+      <button class="btn ghost" onclick="go(renderGenres)">← 戻る</button>
     </section>
   `);
   initArtistAC();
