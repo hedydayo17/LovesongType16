@@ -525,14 +525,21 @@ function renderQuestion() {
     const SR_LABELS = ["とてもそう思う", "そう思う", "少しそう思う", "どちらでもない", "少し思わない", "思わない", "全く思わない"];
     return `<button class="${cls}" role="radio" aria-checked="${prev === idx}" aria-label="${SR_LABELS[idx]}" onclick="answer(${idx})"></button>`;
   }).join("");
+  // 残り問数に応じた応援メッセージで「あと少し感」を醸成
+  const cheer = remain >= 20 ? "じっくり選んで" :
+                remain >= 10 ? "いいペース!" :
+                remain >= 5  ? "もうすぐ判定!" :
+                remain >= 2  ? "あと少し!" :
+                                "ラスト!";
   show(`
     <section class="screen quiz" aria-label="質問 ${i + 1} / ${QUESTIONS.length}">
       <div class="progress" role="progressbar" aria-valuenow="${i}" aria-valuemin="0" aria-valuemax="${QUESTIONS.length}" aria-label="診断進捗">
         <div class="bar" style="width:${pct}%"></div>
+        <div class="progress-spark" style="left:${pct}%" aria-hidden="true"></div>
       </div>
       <div class="qhead">
-        <div class="qcount">${i + 1} <span>/ ${QUESTIONS.length}</span></div>
-        <div class="qremain">あと${remain}問</div>
+        <div class="qcount"><span class="qc-q">Q</span><b>${i + 1}</b><span>/ ${QUESTIONS.length}</span></div>
+        <div class="qremain"><span class="qr-num">あと${remain}問</span><span class="qr-cheer">${cheer}</span></div>
       </div>
       <div class="qcard">
         <h2 class="qtext">${q.s}</h2>
@@ -854,6 +861,7 @@ function renderWrapped() {
         </div>
         <button class="btn ghost reveal" style="--d:.5s" onclick="go(()=>renderGallery('result'))">16タイプ図鑑を見る</button>
         <button class="btn ghost reveal" style="--d:.6s" onclick="scrollWrappedTop()">最初から見る ↑</button>
+        <button class="btn restart reveal" style="--d:.7s" onclick="restartDiagnosis()" aria-label="最初から診断をやり直す">↻ もう一度診断する</button>
       </section>
 
     </div>
@@ -1534,6 +1542,28 @@ function shareResult() {
     navigator.clipboard?.writeText(shareText());
     alert("結果テキストをコピーしました。");
   }
+}
+
+// Q: もう一度診断する(state を全リセット → LP へ)
+function restartDiagnosis() {
+  navigator.vibrate?.(14);
+  // 進行中ステートも結果もクリア
+  clearProgress();
+  state.birth = null;
+  state.genres = [];
+  state.artists = [];
+  state.artistIds = [];
+  state.qIndex = 0;
+  state.answers = [];
+  state.scores = {};
+  state.result = null;
+  state.kei = null;
+  state.lastRecommend = [];
+  state.normScores = null;
+  // 結果ページ用 lenis を止めていた可能性があるので解除
+  document.documentElement.classList.remove("snap-mode");
+  if (MX.lenisStart) MX.lenisStart();
+  go(renderLanding);
 }
 
 // share-card を PNG Blob に変換(savePNG / shareTo の共通)
