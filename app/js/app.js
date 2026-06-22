@@ -806,15 +806,26 @@ function renderTypeDetail(key, from) {
   MX.screenIn();
 }
 
+// 公開URL(本番固定)。シェア文言には必ず含めて流入を担保する。
+const SITE_URL = "https://lovesong-type16.vercel.app/";
+
+// X(旧Twitter)向け:文字数を抑えて、タイプ名+tagline+URLで完結。
+// 「自虐じゃない口語」を意識(「○○だった笑」「出た」)。
+function shareTextX() {
+  const t = TYPE_MAP[state.result];
+  const kei = state.kei ? state.kei : "";
+  return `「${kei}${t.parody}」だった…\n${t.tagline}\n\nあなたは何タイプ?▼\n${SITE_URL}`;
+}
+// LINE/汎用(Web Share API)向け:URLを明示して、リンクで流入させる。
 function shareText() {
   const t = TYPE_MAP[state.result];
   const kei = state.kei ? state.kei : "";
-  return `私の恋愛タイプは「${kei}${t.parody}」でした!\n${t.tagline}\nラブソング診断16`;
+  return `「${kei}${t.parody}」だった…\n${t.tagline}\n\nあなたの恋愛タイプは?\n${SITE_URL}`;
 }
 function shareX() {
   navigator.vibrate?.(16);
   const url = "https://twitter.com/intent/tweet?text=" +
-    encodeURIComponent(shareText()) + "&hashtags=" + encodeURIComponent("ラブソング診断16");
+    encodeURIComponent(shareTextX()) + "&hashtags=" + encodeURIComponent("ラブソング診断16");
   window.open(url, "_blank", "noopener");
 }
 function shareLINE() {
@@ -826,8 +837,8 @@ function shareLINE() {
 function shareCompat() {
   navigator.vibrate?.(20);
   const t = TYPE_MAP[state.result];
-  const text = `私の恋愛タイプは「${t.parody}」。あなたは何タイプ?一緒に相性チェックしよ\nラブソング診断16`;
-  if (navigator.share) navigator.share({ title: "ラブソング診断16", text }).catch(() => {});
+  const text = `私「${t.parody}」だった!\n相性チェックしよ?\n${SITE_URL}`;
+  if (navigator.share) navigator.share({ title: "ラブソング診断16", text, url: SITE_URL }).catch(() => {});
   else { navigator.clipboard?.writeText(text); alert("メッセージをコピーしました。気になる人に送ってみて。"); }
 }
 
@@ -1371,12 +1382,10 @@ async function togglePreview(btn, title, artist) {
 window.addEventListener("beforeunload", _stopAudio);
 
 function shareResult() {
-  const t = TYPE_MAP[state.result];
-  const text = `私の恋愛タイプは「${t.parody}」でした!\nラブソング診断16`;
   if (navigator.share) {
-    navigator.share({ title: "ラブソング診断16", text }).catch(() => {});
+    navigator.share({ title: "ラブソング診断16", text: shareText(), url: SITE_URL }).catch(() => {});
   } else {
-    navigator.clipboard?.writeText(text);
+    navigator.clipboard?.writeText(shareText());
     alert("結果テキストをコピーしました。");
   }
 }
