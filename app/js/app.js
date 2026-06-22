@@ -1282,9 +1282,22 @@ function recommend(typeKey) {
   const userClus = userClusters();
   const hasClus = Object.keys(userClus).length > 0;
   // 静的 curated 700+ 曲 + 好きアーティスト由来の動的曲(あれば)を統合
-  const songPool = state.dynamicSongs && state.dynamicSongs.length
+  let songPool = state.dynamicSongs && state.dynamicSongs.length
     ? SONGS.concat(state.dynamicSongs)
     : SONGS;
+  // ★ファウンダー指示「アニメ+ボカロ+アイドル選択で K-POP混入は最悪」を構造解決:
+  //   ユーザーがcluster(ジャンル or アーティスト経由)を明示している場合、
+  //   そのcluster + favArtist の曲だけに強制絞り込み。タイプスコアに押されて
+  //   ユーザー興味外の曲が混入することを防ぐ。
+  //   ただし絞った結果10曲未満になる場合は全体プールにフォールバック。
+  if (hasClus) {
+    const userClusKeys = Object.keys(userClus);
+    const filtered = songPool.filter(s =>
+      isFavArtist(s.artist) ||
+      songClusters(s).some(c => userClusKeys.includes(c))
+    );
+    if (filtered.length >= 10) songPool = filtered;
+  }
   const weighted = songPool.map(song => {
     const sc = song.scores || {};
     let primary = sc[typeKey];
@@ -1375,32 +1388,28 @@ function recommend(typeKey) {
   const restPool     = otherPool.concat(clusterPool).concat(favPool);
   // restPool は既選曲(fav+cluster)の mood を見て多様化される
   const otherPicks   = sampleNDiverse(restPool, need, [...favPicks, ...clusterPicks]);
-  // ── 配置設計(2026-06-22:ファウンダー指示「好きアーティストが1番上だと微妙」) ──
-  // 1番目:cluster一致(タイプにハマる王道)= 「これだ」と思わせる
-  // 2-3番目:cluster + other
-  // 中盤:other(多様性)
-  // 8番目以降:fav(=自分が選んだやつ。サプライズで終盤に配置)
-  // 残り:other
+  // ── 配置設計(2026-06-22 v2:ファウンダー指示「記入したアーティストが
+  //    後半だと微妙、興味ないジャンルが入ると最悪」)──
+  // 1-2番目:fav(=ユーザーが入力した好きアーティスト曲)を最優先表示。
+  //   「ちゃんと入力反映されてる」感を真っ先に伝える。
+  // 3-5番目:cluster一致(同じ層のサウンド)
+  // 6-10番目:other(タイプ親和度+mood多様性)
   const arranged = [];
-  const others = [...otherPicks];
-  const clusters = [...clusterPicks];
   const favs = [...favPicks];
-  // 1位:cluster曲(or 無ければother)
-  if (clusters.length) arranged.push(clusters.shift());
-  else if (others.length) arranged.push(others.shift());
-  // 2-3位:cluster+other 1曲ずつ
-  if (others.length) arranged.push(others.shift());
-  if (clusters.length) arranged.push(clusters.shift());
-  // 4-7位:other を優先で埋める
-  while (arranged.length < 7 && others.length) arranged.push(others.shift());
-  while (arranged.length < 7 && clusters.length) arranged.push(clusters.shift());
-  // 8位以降:fav曲(あれば)→ 残りpool
-  while (favs.length) arranged.push(favs.shift());
-  while (arranged.length < 10 && (others.length || clusters.length)) {
-    if (others.length) arranged.push(others.shift());
-    else if (clusters.length) arranged.push(clusters.shift());
+  const clusters = [...clusterPicks];
+  const others = [...otherPicks];
+  // 1-2位:fav曲(あれば最大2曲)
+  while (favs.length && arranged.length < 2) arranged.push(favs.shift());
+  // 3-5位:cluster一致曲(最大3曲)
+  while (clusters.length && arranged.length < 5) arranged.push(clusters.shift());
+  // 6-10位:other(残り全部)
+  while (others.length && arranged.length < 10) arranged.push(others.shift());
+  // 不足時は cluster/fav 余剰で補完
+  while (arranged.length < 10 && (clusters.length || favs.length || others.length)) {
+    if (clusters.length) arranged.push(clusters.shift());
+    else if (favs.length) arranged.push(favs.shift());
+    else if (others.length) arranged.push(others.shift());
   }
-  // 念のため10曲に揃える
   return arranged.slice(0, 10);
 }
 
