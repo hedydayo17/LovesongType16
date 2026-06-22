@@ -894,9 +894,26 @@ function userClusters() {
   }
   return counts;
 }
+// 曲がどのリスナー層に属するかの判定。
+// 第一根拠はアーティスト(ARTIST_CLUSTERS)だが、ジャンルが明確にcluster
+// と紐づく場合は自動で補完する(2026-06-22 監査:RADWIMPS「前前前世」が
+// genre=アニソン なのに ANISON_VOCALO に boost されてない問題を解消)。
+const _GENRE_AUTO_CLUSTER = {
+  "アニソン":   ["ANISON_VOCALO"],
+  "ボカロ":     ["ANISON_VOCALO"],
+  "シティポップ": ["CITYPOP"],
+  "K-POP":      ["KPOP"],
+  "洋楽ポップ":   ["WPOP"],
+  "EDM/ダンス":  []
+};
 function songClusters(song) {
   if (typeof ARTIST_CLUSTERS === "undefined") return [];
-  return ARTIST_CLUSTERS[song.artist] || [];
+  const fromArtist = ARTIST_CLUSTERS[song.artist] || [];
+  const fromGenre = _GENRE_AUTO_CLUSTER[song.genre] || [];
+  if (!fromGenre.length) return fromArtist;
+  // 集合演算で重複除去
+  const merged = new Set([...fromArtist, ...fromGenre]);
+  return [...merged];
 }
 function clusterMatchScore(song, userClus) {
   // user の cluster と song の cluster の重なりに応じて bonus。
@@ -1005,10 +1022,44 @@ function recommend(typeKey) {
     }
     return out;
   };
+  // mood多様性つきサンプリング:既に選ばれた曲と同じ mood の曲には pen を、
+  // 違う mood の曲には boost をかけてからサンプリングする。
+  // 結果10曲が同じ mood に偏らないようにするための仕組み(2026-06-22 監査)。
+  const sampleNDiverse = (arr, n, alreadyPicked) => {
+    const out = [];
+    const usedMoods = new Map();
+    (alreadyPicked || []).forEach(s => {
+      const m = moodOf(s); if (!m) return;
+      usedMoods.set(m.name, (usedMoods.get(m.name) || 0) + 1);
+    });
+    while (out.length < n && arr.length) {
+      const total = arr.reduce((s, x) => {
+        const xm = (moodOf(x.song) || {}).name;
+        const dup = xm ? (usedMoods.get(xm) || 0) : 0;
+        // 同じmood3曲以上で 0.5倍ペナ、未出現moodは1.5倍ボーナス
+        const mult = dup >= 3 ? 0.5 : (dup === 0 && xm ? 1.5 : 1.0);
+        return s + (x.w * mult);
+      }, 0);
+      let r = Math.random() * total;
+      let idx = 0;
+      for (; idx < arr.length; idx++) {
+        const xm = (moodOf(arr[idx].song) || {}).name;
+        const dup = xm ? (usedMoods.get(xm) || 0) : 0;
+        const mult = dup >= 3 ? 0.5 : (dup === 0 && xm ? 1.5 : 1.0);
+        r -= arr[idx].w * mult;
+        if (r <= 0) break;
+      }
+      const picked = arr.splice(Math.min(idx, arr.length - 1), 1)[0].song;
+      out.push(picked);
+      const m = moodOf(picked);
+      if (m) usedMoods.set(m.name, (usedMoods.get(m.name) || 0) + 1);
+    }
+    return out;
+  };
   // ── 3層保証で 10曲を構成 ──
   // 1. 好きアーティスト一致曲を 2曲 guarantee(本人の確信信号)
   // 2. リスナー層(cluster)一致曲を 3曲 guarantee(同じ層のサウンドを必ず混ぜる)
-  // 3. 残り 5曲は通常の重み付きランダム(タイプ親和+多様性)
+  // 3. 残り 5曲は mood多様化付きサンプリング(同mood偏重を抑制)
   // 重複は filter で完全排除。pool 不足時は自動でフォールバック。
   const isFav      = x => isFavArtist(x.song.artist);
   const isInClus   = x => hasClus && songClusters(x.song).some(c => userClus[c] > 0);
@@ -1022,7 +1073,8 @@ function recommend(typeKey) {
   const need         = 10 - favPicks.length - clusterPicks.length;
   // other が足りない場合は cluster 余剰や fav 余剰から補充
   const restPool     = otherPool.concat(clusterPool).concat(favPool);
-  const otherPicks   = sampleN(restPool, need);
+  // restPool は既選曲(fav+cluster)の mood を見て多様化される
+  const otherPicks   = sampleNDiverse(restPool, need, [...favPicks, ...clusterPicks]);
   // 結果は固定順だと頭・尻に偏るのでシャッフル
   const picked = [...favPicks, ...clusterPicks, ...otherPicks];
   for (let i = picked.length - 1; i > 0; i--) {
