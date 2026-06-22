@@ -14,7 +14,7 @@
 const GENRES = [
   "昭和歌謡曲", "平成ソング", "令和J-POP",   // 世代別3つを先頭に
   "K-POP", "洋楽", "邦ロック",
-  "シティポップ/R&B", "ラップ/HIPHOP", "EDM/ダンスミュージック",
+  "シティポップ/R&B", "日本語ラップ/HIPHOP", "EDM/ダンスミュージック",
   "ボカロ", "アニソン", "バラード",
   "女性アイドル", "男性アイドル"
 ];
@@ -717,7 +717,7 @@ const GENRE_TO_CLUSTERS = {
   "洋楽": ["WPOP"],
   "邦ロック": ["ROCK_CLASSIC", "INDIE_ROCK"],
   "シティポップ/R&B": ["HIPHOP_RNB", "CITYPOP"],  // R&B(分かりにくい)とシティポップ(リバイバル)を統合
-  "ラップ/HIPHOP": ["HIPHOP_RNB"],
+  "日本語ラップ/HIPHOP": ["HIPHOP_RNB"],
   "EDM/ダンスミュージック": ["WPOP"],
   "ボカロ": ["ANISON_VOCALO"],
   "アニソン": ["ANISON_VOCALO"],
