@@ -15,6 +15,70 @@ const state = {
   lastRecommend: []   // 直近10曲
 };
 
+// ─── K: 診断ステート保存/復元(localStorage、24h有効)─────────
+// ユーザーがブラウザを閉じても/誤ってリロードしても、診断途中なら
+// LPに「↗ 前回の続きから」バナーを出して resume できる。
+// 結果確定時にclear。24h経過分は自動破棄。
+const PROGRESS_KEY = "lsd16:progress:v1";
+function saveProgress() {
+  try {
+    if (state.result) { localStorage.removeItem(PROGRESS_KEY); return; }
+    // 何も入力されてなければ保存しない
+    const hasInput = state.birth || state.qIndex > 0 ||
+                     (state.genres && state.genres.length) ||
+                     (state.artists && state.artists.length);
+    if (!hasInput) return;
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({
+      birth: state.birth,
+      genres: state.genres || [],
+      artists: state.artists || [],
+      artistIds: state.artistIds || [],
+      qIndex: state.qIndex,
+      answers: state.answers || [],
+      ts: Date.now(),
+    }));
+  } catch {}
+}
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (!p.ts || Date.now() - p.ts > 24 * 60 * 60 * 1000) {
+      localStorage.removeItem(PROGRESS_KEY);
+      return null;
+    }
+    return p;
+  } catch { return null; }
+}
+function clearProgress() {
+  try { localStorage.removeItem(PROGRESS_KEY); } catch {}
+}
+// 「前回の続きから」リジューム
+function resumeProgress() {
+  const p = loadProgress();
+  if (!p) return;
+  state.birth = p.birth || null;
+  state.genres = p.genres || [];
+  state.artists = p.artists || [];
+  state.artistIds = p.artistIds || [];
+  state.qIndex = p.qIndex || 0;
+  state.answers = p.answers || [];
+  // どの step まで進んでいたかで分岐
+  if (state.qIndex > 0 && state.qIndex < QUESTIONS.length) {
+    renderQuestion();
+  } else if (state.artists.length || state.genres.length) {
+    // アーティスト入力済 → そこから
+    renderArtists();
+  } else if (state.genres.length) {
+    renderGenres();
+  } else if (state.birth) {
+    renderGenres();
+  } else {
+    renderBirth();
+  }
+}
+
 const $ = (sel) => document.querySelector(sel);
 const app = () => $("#app");
 
@@ -54,6 +118,11 @@ function renderLanding() {
       <span class="mq-label">${parodyBR(t.parody)}</span>
     </span>`).join("");
   show(`
+    ${loadProgress() ? `<button class="resume-banner" onclick="resumeProgress()" aria-label="前回の続きから再開">
+      <span class="rb-icon">↻</span>
+      <span class="rb-text"><b>前回の続きから</b><small>Q${(loadProgress().qIndex || 0) + 1} / ${QUESTIONS.length} まで進めていました</small></span>
+      <span class="rb-arrow">→</span>
+    </button>` : ""}
     <section class="screen hero">
       <div class="hero-brand">ラブソング診断<span class="hero-brand-num">16</span></div>
       <h1 class="hero-title">
@@ -68,7 +137,7 @@ function renderLanding() {
         <span class="hm">#748曲から</span>
         <span class="hm">#会員登録なし</span>
       </div>
-      <button class="btn primary big" data-mag onclick="go(renderBirth)">診断をはじめる</button>
+      <button class="btn primary big" id="heroCTA" data-mag onclick="go(renderBirth)">診断をはじめる</button>
       <button class="btn ghost" onclick="go(()=>renderGallery('landing'))">16タイプを見る</button>
       <p class="hero-share">診断結果は #ラブソング診断16 でシェア</p>
       <div class="hero-preview">
@@ -76,8 +145,20 @@ function renderLanding() {
         <div class="marquee"><div class="marquee-track">${marquee}</div></div>
       </div>
     </section>
+    <div id="stickyCTA" class="sticky-cta" role="region" aria-label="診断をはじめる">
+      <button class="btn primary" onclick="go(renderBirth)" data-mag>診断をはじめる →</button>
+    </div>
   `);
   MX.hero();
+  // ヒーロCTAが画面外に出たら、下部 sticky CTA bar をフェードイン
+  const heroBtn = document.getElementById("heroCTA");
+  const sticky = document.getElementById("stickyCTA");
+  if (heroBtn && sticky && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver(([e]) => {
+      sticky.classList.toggle("show", !e.isIntersecting);
+    }, { threshold: 0, rootMargin: "0px 0px -10% 0px" });
+    io.observe(heroBtn);
+  }
 }
 
 // ---- Step 0: 生年月日(iOS風 ホイールピッカー) ----
@@ -424,6 +505,7 @@ function startQuiz() {
   state.answers = [];
   state.scores = {};
   TYPES.forEach(t => state.scores[t.key] = 0);
+  saveProgress();
   renderQuestion();
 }
 
@@ -439,11 +521,15 @@ function renderQuestion() {
     const dist = Math.abs(3 - idx);                 // 中心からの距離 0..3
     const side = idx < 3 ? "agree" : idx > 3 ? "dis" : "neu";
     const cls = `dot d${dist} ${side}${prev === idx ? " sel" : ""}`;
-    return `<button class="${cls}" aria-label="${SCALE_VALUES[idx]}" onclick="answer(${idx})"></button>`;
+    // SR用ラベル: 数値だけだと「3」「2」のみ読まれて意味不明なので、回答の含意を明示
+    const SR_LABELS = ["とてもそう思う", "そう思う", "少しそう思う", "どちらでもない", "少し思わない", "思わない", "全く思わない"];
+    return `<button class="${cls}" role="radio" aria-checked="${prev === idx}" aria-label="${SR_LABELS[idx]}" onclick="answer(${idx})"></button>`;
   }).join("");
   show(`
-    <section class="screen quiz">
-      <div class="progress"><div class="bar" style="width:${pct}%"></div></div>
+    <section class="screen quiz" aria-label="質問 ${i + 1} / ${QUESTIONS.length}">
+      <div class="progress" role="progressbar" aria-valuenow="${i}" aria-valuemin="0" aria-valuemax="${QUESTIONS.length}" aria-label="診断進捗">
+        <div class="bar" style="width:${pct}%"></div>
+      </div>
       <div class="qhead">
         <div class="qcount">${i + 1} <span>/ ${QUESTIONS.length}</span></div>
         <div class="qremain">あと${remain}問</div>
@@ -451,7 +537,7 @@ function renderQuestion() {
       <div class="qcard">
         <h2 class="qtext">${q.s}</h2>
       </div>
-      <div class="scale">
+      <div class="scale" role="radiogroup" aria-label="この設問に対するあなたの考え">
         <div class="scale-labels">
           <span class="scale-end agree">${SCALE_LABEL_LEFT}</span>
           <span class="scale-end dis">${SCALE_LABEL_RIGHT}</span>
@@ -482,13 +568,14 @@ function answer(pos) {
     setTimeout(() => {
       _answering = false;
       state.qIndex++;
+      saveProgress(); // 各回答ごとに進捗保存(K: resume対応)
       if (state.qIndex >= QUESTIONS.length) go(finishQuiz);
       else renderQuestion();
     }, 170);
   }, 220);
 }
 function goBack() {
-  if (state.qIndex > 0) { state.qIndex--; renderQuestion(); }
+  if (state.qIndex > 0) { state.qIndex--; saveProgress(); renderQuestion(); }
 }
 
 // 各タイプの「主役/脇役で出現する全質問の重みの絶対値合計 × 最大回答倍率」=理論上の最大点。
@@ -534,6 +621,7 @@ function finishQuiz() {
     if (avg > bestAvg) { bestAvg = avg; bestKei = name; }
   }
   state.kei = bestKei;
+  clearProgress(); // K: 結果到達でresume用ステートをクリア
   // 判定中ローディング演出(1.5s)を挟んで結果ページへ。
   // ロジック自体は瞬時に終わるが、ユーザーが「ちゃんと計算してくれた」感を持てる
   // よう、心理的にちょっと「待つ」体験を入れる。100万人向けの安心感UI。
@@ -544,14 +632,14 @@ function finishQuiz() {
 // 判定中の画面(クイズ完了 → 結果表示の間に1.5s表示)
 function renderJudging() {
   show(`
-    <section class="screen judging">
-      <div class="jd-bg">
+    <section class="screen judging" role="status" aria-live="polite" aria-label="診断中">
+      <div class="jd-bg" aria-hidden="true">
         <span class="jd-orb jd-o1"></span>
         <span class="jd-orb jd-o2"></span>
         <span class="jd-orb jd-o3"></span>
       </div>
       <div class="jd-content">
-        <div class="jd-spinner">
+        <div class="jd-spinner" aria-hidden="true">
           <span></span><span></span><span></span><span></span>
         </div>
         <div class="jd-title">あなたの恋愛タイプを<br>判定中…</div>
