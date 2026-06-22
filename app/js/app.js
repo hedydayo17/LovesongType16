@@ -859,6 +859,60 @@ function isFavArtist(songArtist) {
   });
 }
 
+// ---- リスナー層(cluster)推定 ----
+// ユーザーの「好きアーティスト」+「ジャンル選択」から推定リスナー層を多数決。
+// recommend() で曲が一致clusterに属していたら +3.0 boost。
+// 「ミセスファンに Kroi 出ない」「K-POPファンにアニソン出ない」を構造解決。
+function userClusters() {
+  if (typeof ARTIST_CLUSTERS === "undefined") return {};
+  const counts = {};
+  const AC = ARTIST_CLUSTERS;
+  // 好きアーティストからの投票(weight 1.0)
+  (state.artists || []).forEach(name => {
+    if (!name) return;
+    // 完全一致を最優先(辞書キー直接ヒット)
+    if (AC[name]) {
+      AC[name].forEach(c => counts[c] = (counts[c] || 0) + 1.0);
+      return;
+    }
+    // 正規化マッチでフォールバック(typo救済)
+    const n = normArtist(name);
+    if (!n) return;
+    for (const [artist, clusters] of Object.entries(AC)) {
+      const an = normArtist(artist);
+      if (n === an || an.includes(n) || n.includes(an)) {
+        clusters.forEach(c => counts[c] = (counts[c] || 0) + 1.0);
+        break;
+      }
+    }
+  });
+  // ジャンル選択からの補助投票(weight 0.5。アーティスト辞書スキップ層に効かせる)
+  if (typeof GENRE_TO_CLUSTERS !== "undefined") {
+    (state.genres || []).forEach(g => {
+      (GENRE_TO_CLUSTERS[g] || []).forEach(c => counts[c] = (counts[c] || 0) + 0.5);
+    });
+  }
+  return counts;
+}
+function songClusters(song) {
+  if (typeof ARTIST_CLUSTERS === "undefined") return [];
+  return ARTIST_CLUSTERS[song.artist] || [];
+}
+function clusterMatchScore(song, userClus) {
+  // user の cluster と song の cluster の重なりに応じて bonus。
+  // 強い重なり(投票数高)ほど大きく振る:max +3.0
+  if (!userClus || !Object.keys(userClus).length) return 0;
+  const sc = songClusters(song);
+  if (!sc.length) return 0;
+  let maxVote = 0;
+  for (const c of sc) {
+    if (userClus[c] && userClus[c] > maxVote) maxVote = userClus[c];
+  }
+  if (maxVote <= 0) return 0;
+  // 1票で +2.0、2票で +2.7、3票以上で +3.0(飽和)
+  return Math.min(3.0, 1.5 + maxVote * 0.6);
+}
+
 // ---- Mood:5クラスタへの自動分類(既存 score パターンから無料で算出)----
 // 手動タグ付け不要・全曲に即適用。recommend は触らず、純粋に説明性UP用。
 // バランス調整:王道ラブソングは複数タイプで高スコアになるため、moodクラスタが偏らないよう
@@ -895,13 +949,17 @@ function moodSummary(songs) {
 
 function recommend(typeKey) {
   const t = TYPE_MAP[typeKey];
-  // 100曲 × 16タイプ × 0-10 のキュレーション済みスコアから重み付け抽出
+  // 700+曲 × 16タイプ × 0-10 のキュレーション済みスコアから重み付け抽出
   //   本人タイプスコア(0-10)を主軸 [二乗してメリハリ]
   //   + 相性タイプスコア合計の 25%
   //   + ジャンル一致 +1.5 ブースト
-  //   + 好きアーティスト一致 +5.0 ブースト(Step 0b の入力を本当に効かせる)
-  //   + 旧 types[] レガシー互換(スコアがない曲のため)
-  // 静的 curated 100+ 曲 + 好きアーティスト由来の動的曲(あれば)を統合
+  //   + 好きアーティスト一致 +5.0 ブースト
+  //   + リスナー層(cluster)一致 +2-3 ブースト ← NEW
+  //     好きアーティスト+ジャンルから推定した層に属する曲を底上げ
+  //   + 旧 types[] レガシー互換
+  const userClus = userClusters();
+  const hasClus = Object.keys(userClus).length > 0;
+  // 静的 curated 700+ 曲 + 好きアーティスト由来の動的曲(あれば)を統合
   const songPool = state.dynamicSongs && state.dynamicSongs.length
     ? SONGS.concat(state.dynamicSongs)
     : SONGS;
@@ -924,8 +982,10 @@ function recommend(typeKey) {
     const genreBonus = (state.genres && state.genres.includes(song.genre)) ? 1.5 : 0;
     // 好きアーティスト一致で大きめブースト(タイプ最高スコア相当のメリハリ)
     const favBonus = isFavArtist(song.artist) ? 5.0 : 0;
+    // リスナー層(cluster)一致ブースト(同じ層のサウンドだけを底上げ)
+    const clusterBonus = hasClus ? clusterMatchScore(song, userClus) : 0;
     // 二乗でメリハリ + 0.3 のベース(全曲ゼロ防止)
-    const w = Math.max(0.3, Math.pow(primary, 1.7) + compatBonus + genreBonus + favBonus);
+    const w = Math.max(0.3, Math.pow(primary, 1.7) + compatBonus + genreBonus + favBonus + clusterBonus);
     return { song, w };
   });
   // 重み付き非復元サンプリングのヘルパ
@@ -940,14 +1000,26 @@ function recommend(typeKey) {
     }
     return out;
   };
-  // 好きアーティスト曲は最大3曲まで先取り保証(ユーザーが明示的に選んだ強い信号を優先)
-  const favPool = weighted.filter(x => isFavArtist(x.song.artist));
-  const otherPool = weighted.filter(x => !isFavArtist(x.song.artist));
-  const wantFav = Math.min(3, favPool.length);
-  const favPicks = sampleN(favPool, wantFav);
-  const otherPicks = sampleN(otherPool, 10 - favPicks.length);
-  // 結果は fav が頭・尻に偏らないよう挿入位置をシャッフルでばらす
-  const picked = [...favPicks, ...otherPicks];
+  // ── 3層保証で 10曲を構成 ──
+  // 1. 好きアーティスト一致曲を 2曲 guarantee(本人の確信信号)
+  // 2. リスナー層(cluster)一致曲を 3曲 guarantee(同じ層のサウンドを必ず混ぜる)
+  // 3. 残り 5曲は通常の重み付きランダム(タイプ親和+多様性)
+  // 重複は filter で完全排除。pool 不足時は自動でフォールバック。
+  const isFav      = x => isFavArtist(x.song.artist);
+  const isInClus   = x => hasClus && songClusters(x.song).some(c => userClus[c] > 0);
+  const favPool      = weighted.filter(x => isFav(x));
+  const clusterPool  = weighted.filter(x => !isFav(x) && isInClus(x));
+  const otherPool    = weighted.filter(x => !isFav(x) && !isInClus(x));
+  const wantFav      = Math.min(2, favPool.length);
+  const favPicks     = sampleN(favPool, wantFav);
+  const wantCluster  = Math.min(3, clusterPool.length);
+  const clusterPicks = sampleN(clusterPool, wantCluster);
+  const need         = 10 - favPicks.length - clusterPicks.length;
+  // other が足りない場合は cluster 余剰や fav 余剰から補充
+  const restPool     = otherPool.concat(clusterPool).concat(favPool);
+  const otherPicks   = sampleN(restPool, need);
+  // 結果は固定順だと頭・尻に偏るのでシャッフル
+  const picked = [...favPicks, ...clusterPicks, ...otherPicks];
   for (let i = picked.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [picked[i], picked[j]] = [picked[j], picked[i]];
