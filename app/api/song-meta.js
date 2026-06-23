@@ -49,14 +49,30 @@ async function getSpotifyToken() {
 }
 
 async function searchSpotify(title, artist, token) {
-  const q = encodeURIComponent(`track:${title} artist:${artist}`);
+  // 自由形式クエリ(フィールド指定なし)で検索ヒット率を最大化。
+  // 結果から title一致 + artist一致 を確認して採用。
+  // 旧:`track:${title} artist:${artist}` は Spotify登録名が厳密一致しないと hit しないため、
+  //    「ナイトダンサー/imase」「白雪姫/back number」等の実在曲も NOT FOUND になっていた。
+  const q = encodeURIComponent(`${title} ${artist}`);
   const r = await fetch(
-    `https://api.spotify.com/v1/search?q=${q}&type=track&limit=3&market=JP`,
+    `https://api.spotify.com/v1/search?q=${q}&type=track&limit=10&market=JP`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
   if (!r.ok) return { httpError: r.status };
   const d = await r.json();
   return { items: d.tracks?.items || [] };
+}
+
+// iTunes Search API(CORSはあるが、サーバから叩く分には問題なし)
+// 主に preview_url 取得用(Spotifyが2024年11月以降preview廃止傾向のため)
+async function searchITunes(title, artist) {
+  const term = encodeURIComponent(`${title} ${artist}`);
+  const r = await fetch(
+    `https://itunes.apple.com/search?term=${term}&country=jp&entity=song&limit=5`
+  );
+  if (!r.ok) return null;
+  const d = await r.json();
+  return d.results || [];
 }
 
 export default async function handler(req, res) {
@@ -71,7 +87,9 @@ export default async function handler(req, res) {
     return;
   }
 
-  const key = `meta:${title}|||${artist}`;
+  // v2 prefix:検索ロジック改修(自由形式クエリ+iTunes fallback)に合わせて
+  // 旧 v1 のキャッシュ(meta:title|||artist)を無効化。旧データは30日TTLで自動削除。
+  const key = `meta:v2:${title}|||${artist}`;
 
   // 1) KV check
   try {
@@ -87,38 +105,57 @@ export default async function handler(req, res) {
     console.warn("[song-meta] KV unavailable:", e?.message);
   }
 
-  // 2) Spotify検索
+  // 2) Spotify検索(自由形式クエリ + title一致 + artist一致 で正しい track選定)
   const token = await getSpotifyToken();
-  if (!token) {
-    res.status(500).json({ error: "spotify token unavailable" });
-    return;
-  }
-  let result;
-  try {
-    result = await searchSpotify(title, artist, token);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-    return;
-  }
-  if (result.httpError === 429) {
-    res.status(429).json({ error: "rate limited" });
-    return;
-  }
-  if (result.httpError) {
-    res.status(result.httpError).json({ error: `spotify http ${result.httpError}` });
-    return;
-  }
-  // title一致check + title一致するtrackを採用
-  const items = result.items || [];
-  const t = items.find((it) => titleMatchOK(title, it.name));
-  const meta = t
-    ? {
-        spotifyId: t.id,
-        previewUrl: t.preview_url || null,
-        artworkUrl: t.album?.images?.[0]?.url || null,
-        spotifyUrl: t.external_urls?.spotify || null,
+  const normArtist = (s) => (s||"").toLowerCase().replace(/[\s.,'"&\-_!?()]/g, "");
+  const userArtNorm = normArtist(artist);
+  let spotifyTrack = null;
+  if (token) {
+    try {
+      const result = await searchSpotify(title, artist, token);
+      if (result.httpError === 429) {
+        res.status(429).json({ error: "rate limited" });
+        return;
       }
-    : { spotifyId: null, previewUrl: null, artworkUrl: null, spotifyUrl: null };
+      const items = result.items || [];
+      // タイトル一致 + アーティスト一致(部分一致でOK)
+      spotifyTrack = items.find((it) => {
+        if (!titleMatchOK(title, it.name)) return false;
+        const arts = (it.artists || []).map(a => normArtist(a.name));
+        return arts.some(a => a.includes(userArtNorm) || userArtNorm.includes(a));
+      });
+    } catch (e) {
+      console.warn("[song-meta] spotify search failed:", e?.message);
+    }
+  }
+
+  let meta = spotifyTrack ? {
+    spotifyId: spotifyTrack.id,
+    previewUrl: spotifyTrack.preview_url || null,
+    artworkUrl: spotifyTrack.album?.images?.[0]?.url || null,
+    spotifyUrl: spotifyTrack.external_urls?.spotify || null,
+  } : { spotifyId: null, previewUrl: null, artworkUrl: null, spotifyUrl: null };
+
+  // 2b) iTunes fallback:preview_url または artworkUrl が空の場合 (Spotify が
+  //     2024年11月以降 preview を廃止傾向のため、サーバ側で iTunes も叩く)
+  if (!meta.previewUrl || !meta.artworkUrl) {
+    try {
+      const results = (await searchITunes(title, artist)) || [];
+      const it = results.find((r) => {
+        if (!titleMatchOK(title, r.trackName)) return false;
+        const a = normArtist(r.artistName || "");
+        return a.includes(userArtNorm) || userArtNorm.includes(a);
+      });
+      if (it) {
+        if (!meta.previewUrl && it.previewUrl) meta.previewUrl = it.previewUrl;
+        if (!meta.artworkUrl && it.artworkUrl100) {
+          meta.artworkUrl = (it.artworkUrl100 || "").replace(/100x100/g, "600x600");
+        }
+      }
+    } catch (e) {
+      console.warn("[song-meta] itunes search failed:", e?.message);
+    }
+  }
 
   // 3) KV保存(NOT FOUND も「キャッシュ済」として保存して再検索を避ける)
   try {
