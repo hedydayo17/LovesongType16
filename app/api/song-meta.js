@@ -158,16 +158,15 @@ export default async function handler(req, res) {
     if (!meta.spotifyUrl && cachedV1Partial.spotifyUrl) meta.spotifyUrl = cachedV1Partial.spotifyUrl;
   }
 
-  // 2b) iTunes fallback:preview_url または artworkUrl が空の場合 (Spotify が
-  //     2024年11月以降 preview を廃止傾向のため、サーバ側で iTunes も叩く)
+  // 2b) iTunes fallback:preview_url または artworkUrl が空の場合
+  //     iTunes日本ストアは artist が「エド・シーラン」のようにカタカナ登録のため、
+  //     artist一致check は緩めて title一致のみで採用(検索クエリに artist 含めるので、
+  //     Apple側のソート/フィルタリングで信頼できる)
   if (!meta.previewUrl || !meta.artworkUrl) {
     try {
       const results = (await searchITunes(title, artist)) || [];
-      const it = results.find((r) => {
-        if (!titleMatchOK(title, r.trackName)) return false;
-        const a = normArtist(r.artistName || "");
-        return a.includes(userArtNorm) || userArtNorm.includes(a);
-      });
+      // 最初に title一致するtrack(コラボ版・リミックス版は除外、plain version優先)
+      const it = results.find((r) => titleMatchOK(title, r.trackName));
       if (it) {
         if (!meta.previewUrl && it.previewUrl) meta.previewUrl = it.previewUrl;
         if (!meta.artworkUrl && it.artworkUrl100) {
