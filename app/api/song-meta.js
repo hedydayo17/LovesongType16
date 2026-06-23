@@ -120,25 +120,26 @@ export default async function handler(req, res) {
   }
   const key = keyV2;
 
-  // 2) Spotify検索(自由形式クエリ + title一致 + artist一致 で正しい track選定)
+  // 2) Spotify検索(rate limit中なら無視して iTunes だけで進める)
   const token = await getSpotifyToken();
   const normArtist = (s) => (s||"").toLowerCase().replace(/[\s.,'"&\-_!?()]/g, "");
   const userArtNorm = normArtist(artist);
   let spotifyTrack = null;
+  let spotifyRateLimited = false;
   if (token) {
     try {
       const result = await searchSpotify(title, artist, token);
       if (result.httpError === 429) {
-        res.status(429).json({ error: "rate limited" });
-        return;
+        spotifyRateLimited = true;
+        console.warn("[song-meta] spotify rate limited, falling back to iTunes only");
+      } else {
+        const items = result.items || [];
+        spotifyTrack = items.find((it) => {
+          if (!titleMatchOK(title, it.name)) return false;
+          const arts = (it.artists || []).map(a => normArtist(a.name));
+          return arts.some(a => a.includes(userArtNorm) || userArtNorm.includes(a));
+        });
       }
-      const items = result.items || [];
-      // タイトル一致 + アーティスト一致(部分一致でOK)
-      spotifyTrack = items.find((it) => {
-        if (!titleMatchOK(title, it.name)) return false;
-        const arts = (it.artists || []).map(a => normArtist(a.name));
-        return arts.some(a => a.includes(userArtNorm) || userArtNorm.includes(a));
-      });
     } catch (e) {
       console.warn("[song-meta] spotify search failed:", e?.message);
     }
@@ -178,12 +179,17 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3) KV保存(NOT FOUND も「キャッシュ済」として保存して再検索を避ける)
-  try {
-    // 30日 TTL(将来データ更新時に自動破棄)
-    await kv.set(key, meta, { ex: 60 * 60 * 24 * 30 });
-  } catch (e) {
-    console.warn("[song-meta] KV write failed:", e?.message);
+  // 3) KV保存
+  //    - Spotify rate limit中は保存しない(後で再試行できるよう)
+  //    - 全くheなしの場合も保存しない(将来 Spotify復活時に再検索)
+  //    - hit ありなら 30日TTL
+  const hasAnyContent = meta.spotifyId || meta.previewUrl || meta.artworkUrl;
+  if (!spotifyRateLimited && hasAnyContent) {
+    try {
+      await kv.set(key, meta, { ex: 60 * 60 * 24 * 30 });
+    } catch (e) {
+      console.warn("[song-meta] KV write failed:", e?.message);
+    }
   }
 
   res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate=604800");
