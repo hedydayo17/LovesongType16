@@ -94,21 +94,31 @@ export default async function handler(req, res) {
   const keyV1 = `meta:${title}|||${artist}`;
 
   // 1) KV check(v2優先 → v1 fallback)
+  //    v1 fallbackは preview が含まれてれば即返却、preview無しなら下の新ロジックに進む
+  //    (v1時代は preview なし、v2 で iTunes fallback で preview取得を試みる)
+  let cachedV1Partial = null;
   try {
-    let cached = await kv.get(keyV2);
-    if (!cached) {
-      const v1 = await kv.get(keyV1);
-      if (v1 && (v1.previewUrl || v1.artworkUrl)) cached = v1;
-    }
+    const cached = await kv.get(keyV2);
     if (cached) {
       res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate=604800");
       res.status(200).json({ ...cached, cached: true });
       return;
     }
+    const v1 = await kv.get(keyV1);
+    if (v1) {
+      if (v1.previewUrl) {
+        // v1 で preview もあれば即返却
+        res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate=604800");
+        res.status(200).json({ ...v1, cached: true });
+        return;
+      }
+      // preview無し v1 は artwork等を引き継ぎつつ、preview補完を試みる
+      cachedV1Partial = v1;
+    }
   } catch (e) {
     console.warn("[song-meta] KV unavailable:", e?.message);
   }
-  const key = keyV2; // 新規保存はv2へ
+  const key = keyV2;
 
   // 2) Spotify検索(自由形式クエリ + title一致 + artist一致 で正しい track選定)
   const token = await getSpotifyToken();
@@ -140,6 +150,12 @@ export default async function handler(req, res) {
     artworkUrl: spotifyTrack.album?.images?.[0]?.url || null,
     spotifyUrl: spotifyTrack.external_urls?.spotify || null,
   } : { spotifyId: null, previewUrl: null, artworkUrl: null, spotifyUrl: null };
+  // v1 partial があれば、空のフィールドだけ補完(Spotifyが再検索で見つけられなかった場合の保険)
+  if (cachedV1Partial) {
+    if (!meta.spotifyId && cachedV1Partial.spotifyId) meta.spotifyId = cachedV1Partial.spotifyId;
+    if (!meta.artworkUrl && cachedV1Partial.artworkUrl) meta.artworkUrl = cachedV1Partial.artworkUrl;
+    if (!meta.spotifyUrl && cachedV1Partial.spotifyUrl) meta.spotifyUrl = cachedV1Partial.spotifyUrl;
+  }
 
   // 2b) iTunes fallback:preview_url または artworkUrl が空の場合 (Spotify が
   //     2024年11月以降 preview を廃止傾向のため、サーバ側で iTunes も叩く)
