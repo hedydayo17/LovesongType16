@@ -489,30 +489,50 @@ async function fetchArtistSuggestions(query, sugEl, inp) {
   const idx = inp.dataset.idx;
   if (_sugAbort[idx]) _sugAbort[idx].abort();
   const ac = new AbortController(); _sugAbort[idx] = ac;
-  const token = await getSpotifyToken();
-  if (!token) { sugEl.hidden = true; return; }
+  let token = await getSpotifyToken();
+  if (!token) { console.warn("[artist-sug] no spotify token"); sugEl.hidden = true; return; }
   try {
     const q = encodeURIComponent(query);
-    const r = await fetch(`https://api.spotify.com/v1/search?q=${q}&type=artist&limit=5&market=JP`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: ac.signal,
-    });
-    if (!r.ok) return;
+    // 429/401対応:1回 backoff/retry
+    let r;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      r = await fetch(`https://api.spotify.com/v1/search?q=${q}&type=artist&limit=5&market=JP`, {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: ac.signal,
+      });
+      if (r.status === 401 && attempt === 0) {
+        // token失効 → 再取得
+        _spToken = null; _spTokenExp = 0;
+        token = await getSpotifyToken();
+        if (!token) return;
+        continue;
+      }
+      if (r.status === 429 && attempt === 0) {
+        // rate limit → 1.5s backoff
+        await new Promise(rr => setTimeout(rr, 1500));
+        continue;
+      }
+      break;
+    }
+    if (!r.ok) {
+      console.warn(`[artist-sug] http ${r.status} for "${query}"`);
+      return;
+    }
     const data = await r.json();
     const items = (data.artists && data.artists.items) || [];
     const list = items.map(a => ({
-      id: a.id,            // top-tracks fetch 用(/v1/artists/{id}/top-tracks)
+      id: a.id,
       name: a.name,
-      img: (a.images && a.images[2] && a.images[2].url)   // 64px ≦
-        || (a.images && a.images[1] && a.images[1].url)   // 320px
-        || (a.images && a.images[0] && a.images[0].url)   // 640px
+      img: (a.images && a.images[2] && a.images[2].url)
+        || (a.images && a.images[1] && a.images[1].url)
+        || (a.images && a.images[0] && a.images[0].url)
         || null,
       followers: (a.followers && a.followers.total) || 0,
     }));
     _sugCache.set(query, list);
     renderSuggestions(list, sugEl, inp);
   } catch (e) {
-    if (e.name !== "AbortError") console.warn("artist search failed:", e);
+    if (e.name !== "AbortError") console.warn("[artist-sug] failed:", e);
   }
 }
 // 安全な画像URL判定(Spotify CDN 等の https のみ許可 — javascript: スキーム XSS 防止)
@@ -1578,19 +1598,85 @@ async function getSpotifyToken() {
 
 // Spotifyで日本語アーティスト名で検索ヒットしない場合の英語表記マップ
 // 必要に応じて随時拡充(2026-06-22 ファウンダー指摘:緑黄色社会 試聴できない)
+// Spotifyの日本人アーティスト英語表記マップ(日本語名でヒットしない問題対策)
 const ARTIST_ALT_NAMES = {
+  // Z世代主戦場(令和)
   "緑黄色社会": "Ryokuoushoku Shakai",
   "ずっと真夜中でいいのに。": "ZUTOMAYO",
   "ヨルシカ": "Yorushika",
   "米津玄師": "Kenshi Yonezu",
   "藤井 風": "Fujii Kaze",
-  "King Gnu": "King Gnu",     // 既にラテン文字、影響なし
-  "ぼっちぼろまる": "BocchiBoromaru",
   "もさを。": "mosawo",
   "ヤマモトショウ": "Yamamoto Show",
   "なとり": "natori",
-  "yama": "yama",
   "りりあ。": "lilia",
+  "n-buna": "n-buna",
+  "TOMOO": "TOMOO",
+  // 平成主戦場
+  "宇多田ヒカル": "Hikaru Utada",
+  "椎名林檎": "Sheena Ringo",
+  "星野源": "Hoshino Gen",
+  "中島みゆき": "Miyuki Nakajima",
+  "中島美嘉": "Mika Nakashima",
+  "玉置浩二": "Koji Tamaki",
+  "井上陽水": "Yosui Inoue",
+  "松任谷由実": "Yumi Matsutoya",
+  "桐谷健太": "Kentaro Kiritani",
+  "槇原敬之": "Noriyuki Makihara",
+  "福山雅治": "Masaharu Fukuyama",
+  "西野カナ": "Kana Nishino",
+  "大塚愛": "Ai Otsuka",
+  "倉木麻衣": "Mai Kuraki",
+  "倖田來未": "Koda Kumi",
+  "浜崎あゆみ": "Ayumi Hamasaki",
+  "安室奈美恵": "Namie Amuro",
+  "絢香": "Ayaka",
+  "一青窈": "Yo Hitoto",
+  "平井堅": "Ken Hirai",
+  "尾崎豊": "Yutaka Ozaki",
+  "山下達郎": "Tatsuro Yamashita",
+  "大滝詠一": "Eiichi Ohtaki",
+  "竹内まりや": "Mariya Takeuchi",
+  "杏里": "Anri",
+  "松原みき": "Miki Matsubara",
+  "松浦亜弥": "Aya Matsuura",
+  "広瀬香美": "Kohmi Hirose",
+  "三浦大知": "Daichi Miura",
+  "大原櫻子": "Sakurako Ohara",
+  "菅田将暉": "Suda Masaki",
+  "Tani Yuuki": "Tani Yuuki",
+  "瑛人": "Eito",
+  "優里": "Yuuri",
+  "imase": "imase",
+  "Eve": "Eve",
+  // 邦ロック・バンド
+  "King Gnu": "King Gnu",
+  "サザンオールスターズ": "Southern All Stars",
+  "スピッツ": "Spitz",
+  "ポルノグラフィティ": "Porno Graffitti",
+  "コブクロ": "Kobukuro",
+  // ボカロP・歌い手
+  "DECO*27": "DECO*27",
+  "40mP": "40mP",
+  "みきとP": "MikitoP",
+  "黒うさP": "KurousaP",
+  "Kikuo": "Kikuo",
+  // 男性アイドルグループ
+  "嵐": "Arashi",
+  "KinKi Kids": "KinKi Kids",
+  "King & Prince": "King & Prince",
+  "Snow Man": "Snow Man",
+  "SixTONES": "SixTONES",
+  "なにわ男子": "Naniwa Danshi",
+  "Hey!Say!JUMP": "Hey! Say! JUMP",
+  // 女性アイドル
+  "乃木坂46": "Nogizaka46",
+  "欅坂46": "Keyakizaka46",
+  "日向坂46": "Hinatazaka46",
+  "櫻坂46": "Sakurazaka46",
+  "AKB48": "AKB48",
+  "モーニング娘。": "Morning Musume.",
+  "Perfume": "Perfume",
 };
 
 async function _searchSpotifyOnce(title, artist, token) {
