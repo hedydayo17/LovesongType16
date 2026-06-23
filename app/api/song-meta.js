@@ -87,23 +87,28 @@ export default async function handler(req, res) {
     return;
   }
 
-  // v2 prefix:検索ロジック改修(自由形式クエリ+iTunes fallback)に合わせて
-  // 旧 v1 のキャッシュ(meta:title|||artist)を無効化。旧データは30日TTLで自動削除。
-  const key = `meta:v2:${title}|||${artist}`;
+  // v2(新ロジック)と v1(旧)両方をcheck:v2優先、なければ v1 fallback
+  // v1 にはartwork等は入ってるが旧検索ロジックの結果なので、preview/artworkが空でも
+  // 新ロジックで再検索する余地を残す。Spotify rate limit中も v1のartworkは使えるのが利点
+  const keyV2 = `meta:v2:${title}|||${artist}`;
+  const keyV1 = `meta:${title}|||${artist}`;
 
-  // 1) KV check
+  // 1) KV check(v2優先 → v1 fallback)
   try {
-    const cached = await kv.get(key);
+    let cached = await kv.get(keyV2);
+    if (!cached) {
+      const v1 = await kv.get(keyV1);
+      if (v1 && (v1.previewUrl || v1.artworkUrl)) cached = v1;
+    }
     if (cached) {
-      // ブラウザ側でも 1日キャッシュ(stale-while-revalidate で常に新鮮)
       res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate=604800");
       res.status(200).json({ ...cached, cached: true });
       return;
     }
   } catch (e) {
-    // KV未設定 or 接続エラー → 直接Spotifyに fallback
     console.warn("[song-meta] KV unavailable:", e?.message);
   }
+  const key = keyV2; // 新規保存はv2へ
 
   // 2) Spotify検索(自由形式クエリ + title一致 + artist一致 で正しい track選定)
   const token = await getSpotifyToken();
