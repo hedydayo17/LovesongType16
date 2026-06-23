@@ -482,18 +482,39 @@ function initArtistAC() {
     });
   });
 }
+// Spotify rate-limit 検出時、しばらく autocomplete を諦めるための時刻記録
+let _spotifyRateLimitedUntil = 0;
+function _isSpotifyRateLimited() {
+  return Date.now() < _spotifyRateLimitedUntil;
+}
+function _markSpotifyRateLimited(ms) {
+  _spotifyRateLimitedUntil = Date.now() + ms;
+  console.warn(`[spotify] rate limited, suspending autocomplete for ${Math.round(ms/1000)}s`);
+}
+function _renderSugMessage(sugEl, msg) {
+  sugEl.innerHTML = "";
+  const li = document.createElement("li");
+  li.className = "sug-msg";
+  li.textContent = msg;
+  sugEl.appendChild(li);
+  sugEl.hidden = false;
+}
+
 async function fetchArtistSuggestions(query, sugEl, inp) {
   const cached = _sugCache.get(query);
   if (cached) { renderSuggestions(cached, sugEl, inp); return; }
-  // 連打時:同じ入力欄の古いリクエストを中断
+  // rate limit 中なら静かに「手動入力OK」案内
+  if (_isSpotifyRateLimited()) {
+    _renderSugMessage(sugEl, `「${query}」のまま手動で入力できます ↓`);
+    return;
+  }
   const idx = inp.dataset.idx;
   if (_sugAbort[idx]) _sugAbort[idx].abort();
   const ac = new AbortController(); _sugAbort[idx] = ac;
   let token = await getSpotifyToken();
-  if (!token) { console.warn("[artist-sug] no spotify token"); sugEl.hidden = true; return; }
+  if (!token) { sugEl.hidden = true; return; }
   try {
     const q = encodeURIComponent(query);
-    // 429/401対応:1回 backoff/retry
     let r;
     for (let attempt = 0; attempt < 2; attempt++) {
       r = await fetch(`https://api.spotify.com/v1/search?q=${q}&type=artist&limit=5&market=JP`, {
@@ -501,18 +522,22 @@ async function fetchArtistSuggestions(query, sugEl, inp) {
         signal: ac.signal,
       });
       if (r.status === 401 && attempt === 0) {
-        // token失効 → 再取得
         _spToken = null; _spTokenExp = 0;
         token = await getSpotifyToken();
         if (!token) return;
         continue;
       }
       if (r.status === 429 && attempt === 0) {
-        // rate limit → 1.5s backoff
         await new Promise(rr => setTimeout(rr, 1500));
         continue;
       }
       break;
+    }
+    if (r.status === 429) {
+      // 連続 retry でも 429 → 5分間 autocomplete無効化
+      _markSpotifyRateLimited(5 * 60 * 1000);
+      _renderSugMessage(sugEl, `「${query}」のまま手動で入力できます ↓`);
+      return;
     }
     if (!r.ok) {
       console.warn(`[artist-sug] http ${r.status} for "${query}"`);
