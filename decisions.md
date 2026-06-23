@@ -4,6 +4,57 @@
 
 ---
 
+## 2026-06-23(Vercel KV メタキャッシュ実装 + 10000曲スケール ロードマップ)
+
+ファウンダー指示「Spotify有料化できる?」→ Spotify Web API に有料プランは無いため、
+Vercel KV(無料tier 1GB / 月3,000req)で曲メタ永続キャッシュ実装。同曲は Spotify を
+1回しか叩かない設計に切り替え、rate limit から構造的に脱出。
+
+### 実装
+- `/api/song-meta` Serverless Function 新設(@vercel/kv 使用)
+- 曲毎のメタ(previewUrl/artworkUrl/spotifyUrl/spotifyId)を `meta:title|||artist` キーで永続保存(30日TTL)
+- クライアント `fetchSongMeta()` を直接Spotify呼び → `/api/song-meta` 経由に切替
+- iTunes fallback は残す(KV/Spotify両方が NULL の場合の最終手段)
+- NOT FOUND もキャッシュ → 同曲の再検索を完全防止
+
+### 効果
+- 同曲のSpotify検索回数:**ユーザー数 × 1 → 全期間で1回のみ**
+- 710曲全部がキャッシュされれば、Spotify 呼出はほぼゼロ
+- audit script も `/api/song-meta` 経由で実行可能(rate limit影響なし)
+- Spotify ban 永久回避 + ユーザー体感数百ms→数msに高速化
+
+### ファウンダー操作必要
+- Vercel ダッシュボード → Storage → Create Database → KV を有効化
+- 環境変数 KV_REST_API_URL / KV_REST_API_TOKEN が自動付与される
+
+### 10,000曲スケール ロードマップ(将来計画)
+
+ファウンダー「10,000曲から選曲みたいにしたい、将来的に」指示。段階的に拡張。
+
+**段階1(現在、完了)**: 710曲 static + Vercel KV メタキャッシュ
+- songs.js 内に手動キュレーション、16タイプ × 0-10 スコア
+- メタ(preview/artwork)は KV で永続キャッシュ → Spotify rate limit回避
+
+**段階2(近未来 1-3ヶ月)**: songs.js → KV化(2,000-3,000曲規模)
+- songs.js をビルド時に KV にimport
+- KV から動的読み込み(クライアントは曲データを fetch)
+- ファウンダー手動キュレーション継続、ただし規模拡大
+
+**段階3(将来 6-12ヶ月)**: 10,000曲 + 自動スコアリング
+- Spotify Featured Playlists / Mood Playlist から大量取得
+- 歌詞APIで歌詞取得 → AI(Claude/GPT)で16タイプスコア自動付与
+- ファウンダー手動キュレーションは「トップヒット」「特別枠」のみ
+- 検索/フィルタは KV scan or Algolia / Meilisearch
+
+**段階4(本格スケール)**: Postgres + ベクトル検索
+- pgvector で曲のベクトル類似度検索
+- 「あなたのタイプに似てる10曲」を ベクトル空間で計算
+- AI で歌詞ベクトル化、リアルタイムレコメンド
+
+各段階で取捨選択は再判断。
+
+---
+
 ## 2026-06-23(ジャンル再設計 + 楽曲データクオリティ大検証セッション)
 
 ファウンダー実機検証で「アニメ+ボカロ+アイドル選んでも K-POPがレコメンドされる、

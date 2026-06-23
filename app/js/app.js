@@ -1789,15 +1789,22 @@ async function fetchSongMeta(title, artist) {
   const key = `${title}|||${artist}`;
   if (_songMeta.has(key)) return _songMeta.get(key);
   const meta = { previewUrl: null, artworkUrl: null, spotifyUrl: null, spotifyId: null };
-  // 1) Spotify Search(優先)
-  const sp = await fetchSpotifyTrack(title, artist);
-  if (sp) {
-    meta.previewUrl = sp.previewUrl;
-    meta.artworkUrl = sp.artworkUrl;
-    meta.spotifyUrl = sp.spotifyUrl;
-    meta.spotifyId = sp.spotifyId;
-  }
-  // 2) iTunes fallback(Spotifyに無い・preview_urlがnull・artworkが取れない場合)
+  // 1) サーバ /api/song-meta(Vercel KV永続キャッシュ + Spotify検索)
+  //    → 同曲はサーバ側で1回しか Spotify を叩かない。rate limit から永久脱出。
+  try {
+    const r = await _fetchWithTimeout(
+      `/api/song-meta?t=${encodeURIComponent(title)}&a=${encodeURIComponent(artist)}`,
+      {}, 5000
+    );
+    if (r.ok) {
+      const sp = await r.json();
+      meta.previewUrl = sp.previewUrl || null;
+      meta.artworkUrl = sp.artworkUrl || null;
+      meta.spotifyUrl = sp.spotifyUrl || null;
+      meta.spotifyId  = sp.spotifyId  || null;
+    }
+  } catch { /* timeout等 → 次の fallback へ */ }
+  // 2) iTunes fallback(Spotifyに無い・previewが空・artworkが取れない場合)
   if (!meta.previewUrl || !meta.artworkUrl) {
     const it = await fetchITunesTrack(title, artist);
     if (it) {

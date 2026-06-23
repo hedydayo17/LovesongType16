@@ -2,10 +2,13 @@
   "name": "lovesong-type16",
   "version": "0.1.0",
   "private": true,
-  "description": "ラブソング診断16 — 16タイプ恋愛診断+10曲レコメンド(静的+Vercel Serverless)",
+  "description": "ラブソング診断16 — 16タイプ恋愛診断+10曲レコメンド(静的+Vercel Serverless+KV)",
   "scripts": {
     "dev": "cd app && python3 -m http.server 8765",
     "audit": "python3 scripts/audit-songs.py",
     "audit:songs": "python3 scripts/audit-songs.py"
+  },
+  "dependencies": {
+    "@vercel/kv": "^3.0.0"
   }
 }
