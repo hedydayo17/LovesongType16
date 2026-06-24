@@ -1,0 +1,500 @@
+{
+  "renameable": [
+    {
+      "title": "Plastic Love",
+      "artist": "竹内まりや",
+      "newTitle": "Plastic Love (Mixed)",
+      "itunesArtist": "竹内まりや"
+    },
+    {
+      "title": "ラブレター",
+      "artist": "HoneyWorks",
+      "newTitle": null,
+      "itunesArtist": "YOASOBI"
+    },
+    {
+      "title": "丸の内サディスティック",
+      "artist": "椎名林檎",
+      "newTitle": null,
+      "itunesArtist": "UNCHAIN"
+    },
+    {
+      "title": "白雪姫",
+      "artist": "back number",
+      "newTitle": "白雪姫 - From THE FIRST TAKE",
+      "itunesArtist": "鷲尾伶菜"
+    },
+    {
+      "title": "CAN YOU CELEBRATE?",
+      "artist": "安室奈美恵",
+      "newTitle": "Can You Celebrate ? (安室奈美恵)",
+      "itunesArtist": "YASU"
+    },
+    {
+      "title": "Love Story",
+      "artist": "安室奈美恵",
+      "newTitle": "Love Story (原曲歌手:安室奈美恵)",
+      "itunesArtist": "歌っちゃ王"
+    },
+    {
+      "title": "LOVE AFFAIR〜秘密のデート",
+      "artist": "サザンオールスターズ",
+      "newTitle": "LOVE AFFAIR〜秘密のデート〜 (Marimbaと〜優しい波音〜 Cover) [サザンオールスターズより]",
+      "itunesArtist": "目覚し時計"
+    },
+    {
+      "title": "愛し",
+      "artist": "RADWIMPS",
+      "newTitle": null,
+      "itunesArtist": "EVE OF THE LAIN"
+    },
+    {
+      "title": "渡月橋〜君想ふ〜",
+      "artist": "倉木麻衣",
+      "newTitle": "渡月橋 〜君 想ふ〜(オリジナルアーティスト:倉木麻衣) [オルゴール]",
+      "itunesArtist": "ヒーリング・オルゴール・ラボラトリー"
+    },
+    {
+      "title": "ナイトダンサー",
+      "artist": "imase",
+      "newTitle": null,
+      "itunesArtist": "秋山黄色"
+    },
+    {
+      "title": "Slow Down",
+      "artist": "Vaundy",
+      "newTitle": null,
+      "itunesArtist": "Laufey"
+    },
+    {
+      "title": "EUPHORIA",
+      "artist": "Jung Kook",
+      "newTitle": null,
+      "itunesArtist": "BTS"
+    },
+    {
+      "title": "はじまりのうた",
+      "artist": "GReeeeN",
+      "newTitle": null,
+      "itunesArtist": "GLAY"
+    },
+    {
+      "title": "ループ&ループ",
+      "artist": "ASIAN KUNG-FU GENERATION",
+      "newTitle": null,
+      "itunesArtist": "ASIAN KUNG-FU GENERATION"
+    },
+    {
+      "title": "プロポーズ",
+      "artist": "クリープハイプ",
+      "newTitle": null,
+      "itunesArtist": "なとり"
+    },
+    {
+      "title": "アイラブユー",
+      "artist": "Mrs. GREEN APPLE",
+      "newTitle": null,
+      "itunesArtist": "back number"
+    },
+    {
+      "title": "君に出会えてよかった",
+      "artist": "TUBE",
+      "newTitle": null,
+      "itunesArtist": "井上苑子"
+    }
+  ],
+  "deletable": [
+    {
+      "title": "愛している",
+      "artist": "マルシィ"
+    },
+    {
+      "title": "はじまりの歌",
+      "artist": "Tele"
+    },
+    {
+      "title": "ともだち",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "怪盗",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "シネマ",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "主人公",
+      "artist": "DECO*27"
+    },
+    {
+      "title": "シャワー",
+      "artist": "yama"
+    },
+    {
+      "title": "やわらかな日",
+      "artist": "Lamp"
+    },
+    {
+      "title": "ボトルシップ",
+      "artist": "Lamp"
+    },
+    {
+      "title": "Slowly",
+      "artist": "Bonobos"
+    },
+    {
+      "title": "4月の永遠",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "スポットライト",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "セツナレンサ",
+      "artist": "GReeeeN"
+    },
+    {
+      "title": "キミガタメ",
+      "artist": "GARNiDELiA"
+    },
+    {
+      "title": "ロウワー",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "もう一度",
+      "artist": "中島美嘉"
+    },
+    {
+      "title": "アイ",
+      "artist": "SIRUP"
+    },
+    {
+      "title": "Cure",
+      "artist": "SIRUP"
+    },
+    {
+      "title": "シャイニング",
+      "artist": "iri"
+    },
+    {
+      "title": "君に幸あれ",
+      "artist": "iri"
+    },
+    {
+      "title": "midnight stranger",
+      "artist": "Friday Night Plans"
+    },
+    {
+      "title": "都心",
+      "artist": "Friday Night Plans"
+    },
+    {
+      "title": "夜光",
+      "artist": "Awich"
+    },
+    {
+      "title": "君となら",
+      "artist": "関ジャニ∞"
+    },
+    {
+      "title": "何度でも歌おう",
+      "artist": "関ジャニ∞"
+    },
+    {
+      "title": "ジュピター",
+      "artist": "平原綾香"
+    },
+    {
+      "title": "抱きしめてあげる",
+      "artist": "阿部真央"
+    },
+    {
+      "title": "太陽が見ている",
+      "artist": "平井大"
+    },
+    {
+      "title": "アイのうた",
+      "artist": "GReeeeN"
+    },
+    {
+      "title": "旅の途中",
+      "artist": "槇原敬之"
+    },
+    {
+      "title": "AISHITERU",
+      "artist": "mihimaru GT"
+    },
+    {
+      "title": "ハロー",
+      "artist": "ナオト・インティライミ"
+    },
+    {
+      "title": "才能人応援歌",
+      "artist": "BUMP OF CHICKEN"
+    },
+    {
+      "title": "忘れてた",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "ハロハロ",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "クラクラ",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "別世界",
+      "artist": "amazarashi"
+    },
+    {
+      "title": "ラストダンス",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "月の大きさ",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "KING",
+      "artist": "菅田将暉"
+    },
+    {
+      "title": "桜のような恋でした",
+      "artist": "wacci"
+    },
+    {
+      "title": "メリーゴーランド",
+      "artist": "HoneyWorks"
+    },
+    {
+      "title": "ハートビート",
+      "artist": "GReeeeN"
+    },
+    {
+      "title": "Honey",
+      "artist": "Suchmos"
+    },
+    {
+      "title": "もしも命が描けたなら",
+      "artist": "YOASOBI"
+    },
+    {
+      "title": "異常気象",
+      "artist": "Official髭男dism"
+    },
+    {
+      "title": "同じ夜",
+      "artist": "Official髭男dism"
+    },
+    {
+      "title": "倍倍FIGHT!",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "バランス",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "spread",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "真夏の夜の夢",
+      "artist": "Saucy Dog"
+    },
+    {
+      "title": "ぷれぜんと",
+      "artist": "Hump Back"
+    },
+    {
+      "title": "シニカルナイトプラン",
+      "artist": "ずっと真夜中でいいのに。"
+    },
+    {
+      "title": "ジレンマ",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "ジムノペティ",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "アバウト",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "オレンジ",
+      "artist": "SMAP"
+    },
+    {
+      "title": "Diamond Days",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "月の踊り",
+      "artist": "TENDRE"
+    },
+    {
+      "title": "風通る丘",
+      "artist": "Lamp"
+    },
+    {
+      "title": "NOBODY ELSE BUT YOU",
+      "artist": "ONE OK ROCK"
+    },
+    {
+      "title": "シャンディ・ガフ",
+      "artist": "カネヨリマサル"
+    },
+    {
+      "title": "アタラシイヒカリ",
+      "artist": "マルシィ"
+    },
+    {
+      "title": "XOXO",
+      "artist": "ENHYPEN"
+    },
+    {
+      "title": "Set Me Free Pt.2",
+      "artist": "TWICE"
+    },
+    {
+      "title": "SPARKLE",
+      "artist": "山下達郎"
+    },
+    {
+      "title": "Loveland Island",
+      "artist": "山下達郎"
+    },
+    {
+      "title": "ボトルシップ",
+      "artist": "sumika"
+    },
+    {
+      "title": "メッセージ",
+      "artist": "福山雅治"
+    },
+    {
+      "title": "戦友",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "オリジナルスマイル",
+      "artist": "SMAP"
+    },
+    {
+      "title": "ライオンハート",
+      "artist": "SMAP"
+    },
+    {
+      "title": "夜空ノムコウ",
+      "artist": "SMAP"
+    },
+    {
+      "title": "Make me happy",
+      "artist": "西野カナ"
+    },
+    {
+      "title": "ナンバーナイン",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "ハングリースパイダー",
+      "artist": "槇原敬之"
+    },
+    {
+      "title": "ピノ",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "SAY YEAH!",
+      "artist": "Aqua Timez"
+    },
+    {
+      "title": "君のままで",
+      "artist": "高橋優"
+    },
+    {
+      "title": "名前",
+      "artist": "SHISHAMO"
+    },
+    {
+      "title": "すごい人",
+      "artist": "SHISHAMO"
+    },
+    {
+      "title": "unlock",
+      "artist": "SEKAI NO OWARI"
+    },
+    {
+      "title": "ライムライト",
+      "artist": "EXILE"
+    },
+    {
+      "title": "PURE",
+      "artist": "浜崎あゆみ"
+    },
+    {
+      "title": "君に会いたいんだ。",
+      "artist": "FUNKY MONKEY BABYS"
+    },
+    {
+      "title": "鏡",
+      "artist": "sumika"
+    },
+    {
+      "title": "君と僕の歌",
+      "artist": "≠ME"
+    },
+    {
+      "title": "思い出せる恋をしよう",
+      "artist": "STU48"
+    },
+    {
+      "title": "サヨナラの意味",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "インフルエンサー",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "夜明けまで強がらなくてもいい",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "裸足でSummer",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "ヘビーローテーション",
+      "artist": "AKB48"
+    },
+    {
+      "title": "願いごとの持ち腐れ",
+      "artist": "AKB48"
+    },
+    {
+      "title": "恋するフォーチュンクッキー",
+      "artist": "AKB48"
+    },
+    {
+      "title": "JOYFUL LOVE",
+      "artist": "日向坂46"
+    },
+    {
+      "title": "何度でも何度でも",
+      "artist": "櫻坂46"
+    },
+    {
+      "title": "わたしの一番かわいいところ",
+      "artist": "FRUITS ZIPPER"
+    }
+  ]
+}

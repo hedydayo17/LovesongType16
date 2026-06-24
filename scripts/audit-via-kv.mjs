@@ -53,7 +53,9 @@ async function main() {
         continue;
       }
       const d = await r.json();
-      if (!d.spotifyId) {
+      // 判定:preview or artwork が取れていれば OK(Spotify hit不要、iTunes fallback でもOK)
+      const hasAny = d.previewUrl || d.artworkUrl;
+      if (!hasAny) {
         notFound.push({ title, artist });
         console.log(`${i+1}/${songs.length} [NOT FOUND] ${title}/${artist}`);
       } else {

@@ -177,8 +177,32 @@
       "artist": "Awesome City Club"
     },
     {
+      "title": "真夜中のドア",
+      "artist": "松原みき"
+    },
+    {
+      "title": "きらり",
+      "artist": "藤井 風"
+    },
+    {
       "title": "死ぬのがいいわ",
       "artist": "藤井 風"
+    },
+    {
+      "title": "何なんw",
+      "artist": "藤井 風"
+    },
+    {
+      "title": "Lemon",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "Pale Blue",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "さよーならまたいつか!",
+      "artist": "米津玄師"
     },
     {
       "title": "Flamingo",
@@ -361,20 +385,68 @@
       "artist": "羊文学"
     },
     {
+      "title": "光るとき",
+      "artist": "羊文学"
+    },
+    {
+      "title": "アイドル",
+      "artist": "YOASOBI"
+    },
+    {
+      "title": "言って。",
+      "artist": "ヨルシカ"
+    },
+    {
       "title": "ガーネット",
       "artist": "奥華子"
+    },
+    {
+      "title": "君の名は希望",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "シルエット",
+      "artist": "KANA-BOON"
+    },
+    {
+      "title": "明日への手紙",
+      "artist": "手嶌葵"
+    },
+    {
+      "title": "ラブレター",
+      "artist": "HoneyWorks"
     },
     {
       "title": "三日月",
       "artist": "絢香"
     },
     {
+      "title": "春よ、来い",
+      "artist": "松任谷由実"
+    },
+    {
       "title": "ハナミズキ",
       "artist": "一青窈"
     },
     {
+      "title": "桜",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "ともに",
+      "artist": "WANIMA"
+    },
+    {
+      "title": "やさしさで溢れるように",
+      "artist": "JUJU"
+    },
+    {
       "title": "キセキ",
       "artist": "GReeeeN"
+    },
+    {
+      "title": "シンクロニシティ",
+      "artist": "乃木坂46"
     },
     {
       "title": "友よ 〜この先もずっと…",
@@ -421,6 +493,10 @@
       "artist": "宇多田ヒカル"
     },
     {
+      "title": "白雪姫",
+      "artist": "back number"
+    },
+    {
       "title": "First Love",
       "artist": "宇多田ヒカル"
     },
@@ -465,6 +541,10 @@
       "artist": "サザンオールスターズ"
     },
     {
+      "title": "CAN YOU CELEBRATE",
+      "artist": "安室奈美恵"
+    },
+    {
       "title": "やさしさに包まれたなら",
       "artist": "松任谷由実"
     },
@@ -501,6 +581,10 @@
       "artist": "YOASOBI"
     },
     {
+      "title": "三原色",
+      "artist": "YOASOBI"
+    },
+    {
       "title": "ハルジオン",
       "artist": "YOASOBI"
     },
@@ -517,8 +601,20 @@
       "artist": "あいみょん"
     },
     {
+      "title": "ハート",
+      "artist": "あいみょん"
+    },
+    {
       "title": "orion",
       "artist": "米津玄師"
+    },
+    {
+      "title": "パプリカ",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "ANTIFRAGILE",
+      "artist": "LE SSERAFIM"
     },
     {
       "title": "FEARLESS",
@@ -529,6 +625,10 @@
       "artist": "aespa"
     },
     {
+      "title": "I AM",
+      "artist": "IVE"
+    },
+    {
       "title": "Boy With Luv",
       "artist": "BTS"
     },
@@ -537,12 +637,44 @@
       "artist": "BTS"
     },
     {
+      "title": "Sunflower",
+      "artist": "Post Malone, Swae Lee"
+    },
+    {
       "title": "Espresso",
       "artist": "Sabrina Carpenter"
     },
     {
+      "title": "As It Was",
+      "artist": "Harry Styles"
+    },
+    {
       "title": "紅蓮華",
       "artist": "LiSA"
+    },
+    {
+      "title": "千本桜",
+      "artist": "黒うさP"
+    },
+    {
+      "title": "シャルル",
+      "artist": "バルーン"
+    },
+    {
+      "title": "バラード",
+      "artist": "ケツメイシ"
+    },
+    {
+      "title": "アイネクライネ",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "僕の天使マリ",
+      "artist": "スピッツ"
+    },
+    {
+      "title": "幸せ",
+      "artist": "back number"
     },
     {
       "title": "me me she",
@@ -637,6 +769,10 @@
       "artist": "JUJU"
     },
     {
+      "title": "Love Story",
+      "artist": "安室奈美恵"
+    },
+    {
       "title": "Lovers",
       "artist": "sumika"
     },
@@ -689,6 +825,10 @@
       "artist": "back number"
     },
     {
+      "title": "パラサイト",
+      "artist": "DECO*27"
+    },
+    {
       "title": "毒占欲",
       "artist": "DECO*27"
     },
@@ -705,8 +845,28 @@
       "artist": "Flower"
     },
     {
+      "title": "浴槽とネオンテトラ",
+      "artist": "REISAI"
+    },
+    {
       "title": "WHY",
       "artist": "加藤ミリヤ"
+    },
+    {
+      "title": "ぎゅっと。",
+      "artist": "もさを。"
+    },
+    {
+      "title": "SAYONARAベイベー",
+      "artist": "加藤ミリヤ"
+    },
+    {
+      "title": "強く儚い者たち",
+      "artist": "Cocco"
+    },
+    {
+      "title": "White",
+      "artist": "SHE'S"
     },
     {
       "title": "ふたりごと",
@@ -719,6 +879,26 @@
     {
       "title": "他の誰かより悲しい恋をしただけ",
       "artist": "Flower"
+    },
+    {
+      "title": "Call",
+      "artist": "ちゃんみな"
+    },
+    {
+      "title": "コンタクトケース",
+      "artist": "Saucy Dog"
+    },
+    {
+      "title": "名前は片想い",
+      "artist": "indigo la End"
+    },
+    {
+      "title": "愛し",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "恋泥棒。",
+      "artist": "『ユイカ』"
     },
     {
       "title": "魔法にかけられて",
@@ -813,6 +993,10 @@
       "artist": "倉木麻衣"
     },
     {
+      "title": "渡月橋〜君想ふ〜",
+      "artist": "倉木麻衣"
+    },
+    {
       "title": "香水",
       "artist": "瑛人"
     },
@@ -869,6 +1053,10 @@
       "artist": "湘南乃風"
     },
     {
+      "title": "いとしのエリー",
+      "artist": "サザンオールスターズ"
+    },
+    {
       "title": "HOWEVER",
       "artist": "GLAY"
     },
@@ -885,8 +1073,32 @@
       "artist": "米米CLUB"
     },
     {
+      "title": "恋愛サーキュレーション",
+      "artist": "花澤香菜"
+    },
+    {
+      "title": "茜さす",
+      "artist": "Aimer"
+    },
+    {
+      "title": "ロード",
+      "artist": "THE 虎舞竜"
+    },
+    {
+      "title": "クロノスタシス",
+      "artist": "きのこ帝国"
+    },
+    {
+      "title": "クリスマスイブ",
+      "artist": "山下達郎"
+    },
+    {
       "title": "抱きしめたい",
       "artist": "Mr.Children"
+    },
+    {
+      "title": "メリクリ",
+      "artist": "BoA"
     },
     {
       "title": "STAY TUNE",
@@ -895,6 +1107,22 @@
     {
       "title": "Stay Gold",
       "artist": "BTS"
+    },
+    {
+      "title": "NIGHT DANCER",
+      "artist": "imase"
+    },
+    {
+      "title": "ドラマツルギー",
+      "artist": "Eve"
+    },
+    {
+      "title": "栞",
+      "artist": "クリープハイプ"
+    },
+    {
+      "title": "4月の永遠",
+      "artist": "Mrs. GREEN APPLE"
     },
     {
       "title": "青と夏",
@@ -915,6 +1143,10 @@
     {
       "title": "六等星の夜",
       "artist": "Aimer"
+    },
+    {
+      "title": "Slow Down",
+      "artist": "Vaundy"
     },
     {
       "title": "東京フラッシュ",
@@ -1029,8 +1261,40 @@
       "artist": "n-buna"
     },
     {
+      "title": "ECHO",
+      "artist": "Crusher-P"
+    },
+    {
+      "title": "ナンセンス文学",
+      "artist": "Eve"
+    },
+    {
+      "title": "秒針を噛む",
+      "artist": "ずっと真夜中でいいのに。"
+    },
+    {
       "title": "雪の華",
       "artist": "中島美嘉"
+    },
+    {
+      "title": "言葉にできない",
+      "artist": "オフコース"
+    },
+    {
+      "title": "桃色片想い",
+      "artist": "松浦亜弥"
+    },
+    {
+      "title": "SAKURA",
+      "artist": "いきものがかり"
+    },
+    {
+      "title": "夜光",
+      "artist": "Awich"
+    },
+    {
+      "title": "硝子の少年",
+      "artist": "KinKi Kids"
     },
     {
       "title": "言葉より大切なもの",
@@ -1043,6 +1307,14 @@
     {
       "title": "Happiness",
       "artist": "嵐"
+    },
+    {
+      "title": "Real Face",
+      "artist": "KAT-TUN"
+    },
+    {
+      "title": "SIGNAL",
+      "artist": "KAT-TUN"
     },
     {
       "title": "SOLO",
@@ -1063,6 +1335,10 @@
     {
       "title": "Don't Wanna Cry",
       "artist": "SEVENTEEN"
+    },
+    {
+      "title": "EUPHORIA",
+      "artist": "Jung Kook"
     },
     {
       "title": "Sugar",
@@ -1185,20 +1461,60 @@
       "artist": "SEKAI NO OWARI"
     },
     {
+      "title": "はじまりのうた",
+      "artist": "GReeeeN"
+    },
+    {
+      "title": "太陽が見ている",
+      "artist": "平井大"
+    },
+    {
+      "title": "シーソーゲーム",
+      "artist": "Mr.Children"
+    },
+    {
       "title": "名前のない空を見上げて",
       "artist": "MISIA"
+    },
+    {
+      "title": "歓びの種",
+      "artist": "YUKI"
     },
     {
       "title": "ハナガサイタ",
       "artist": "aiko"
     },
     {
+      "title": "田園",
+      "artist": "玉置浩二"
+    },
+    {
       "title": "輝く月のように",
       "artist": "Superfly"
     },
     {
+      "title": "天体観測",
+      "artist": "BUMP OF CHICKEN"
+    },
+    {
+      "title": "ray",
+      "artist": "BUMP OF CHICKEN"
+    },
+    {
+      "title": "アカシア",
+      "artist": "BUMP OF CHICKEN"
+    },
+    {
       "title": "望遠のマーチ",
       "artist": "BUMP OF CHICKEN"
+    },
+    {
+      "title": "シュガーソングとビターステップ",
+      "artist": "UNISON SQUARE GARDEN"
+    },
+    {
+      "title": "オリオンをなぞる",
+      "artist": "UNISON SQUARE GARDEN"
     },
     {
       "title": "fake town baby",
@@ -1206,6 +1522,18 @@
     },
     {
       "title": "君と羊と青",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "スパークル",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "有心論",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "オーダーメイド",
       "artist": "RADWIMPS"
     },
     {
@@ -1230,6 +1558,10 @@
     },
     {
       "title": "リライト",
+      "artist": "ASIAN KUNG-FU GENERATION"
+    },
+    {
+      "title": "ループ&ループ",
       "artist": "ASIAN KUNG-FU GENERATION"
     },
     {
@@ -1289,6 +1621,10 @@
       "artist": "TOMOO"
     },
     {
+      "title": "プロポーズ",
+      "artist": "クリープハイプ"
+    },
+    {
       "title": "ロストマン",
       "artist": "BUMP OF CHICKEN"
     },
@@ -1345,6 +1681,14 @@
       "artist": "Olivia Rodrigo"
     },
     {
+      "title": "brutal",
+      "artist": "Olivia Rodrigo"
+    },
+    {
+      "title": "Family Line",
+      "artist": "Conan Gray"
+    },
+    {
       "title": "Maniac",
       "artist": "Conan Gray"
     },
@@ -1353,16 +1697,32 @@
       "artist": "Doja Cat"
     },
     {
+      "title": "Say So",
+      "artist": "Doja Cat"
+    },
+    {
       "title": "Woman",
       "artist": "Doja Cat"
+    },
+    {
+      "title": "Beggin'",
+      "artist": "Maneskin"
     },
     {
       "title": "I Wanna Be Your Slave",
       "artist": "Maneskin"
     },
     {
+      "title": "Style",
+      "artist": "Taylor Swift"
+    },
+    {
       "title": "Blank Space",
       "artist": "Taylor Swift"
+    },
+    {
+      "title": "糸",
+      "artist": "中島みゆき"
     },
     {
       "title": "なごり雪",
@@ -1373,8 +1733,28 @@
       "artist": "風"
     },
     {
+      "title": "卒業写真",
+      "artist": "松任谷由実"
+    },
+    {
       "title": "ルージュの伝言",
       "artist": "松任谷由実"
+    },
+    {
+      "title": "花に亡霊",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "雲と幽霊",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "ヒッチコック",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "アイラブユー",
+      "artist": "Mrs. GREEN APPLE"
     },
     {
       "title": "アンビバレント",
@@ -1399,6 +1779,14 @@
     {
       "title": "虹",
       "artist": "菅田将暉"
+    },
+    {
+      "title": "桜のような恋でした",
+      "artist": "wacci"
+    },
+    {
+      "title": "君に出会えてよかった",
+      "artist": "TUBE"
     },
     {
       "title": "SUMMER NUDE",
@@ -1457,12 +1845,28 @@
       "artist": "福山雅治"
     },
     {
+      "title": "HELLO",
+      "artist": "福山雅治"
+    },
+    {
       "title": "Believe",
       "artist": "西野カナ"
     },
     {
       "title": "トリセツ",
       "artist": "西野カナ"
+    },
+    {
+      "title": "Don't",
+      "artist": "西野カナ"
+    },
+    {
+      "title": "Best Friend",
+      "artist": "西野カナ"
+    },
+    {
+      "title": "涙",
+      "artist": "KinKi Kids"
     },
     {
       "title": "フラワー",
@@ -1473,8 +1877,24 @@
       "artist": "KinKi Kids"
     },
     {
+      "title": "truth",
+      "artist": "嵐"
+    },
+    {
+      "title": "WISH",
+      "artist": "嵐"
+    },
+    {
       "title": "復活LOVE",
       "artist": "嵐"
+    },
+    {
+      "title": "ふるさと",
+      "artist": "嵐"
+    },
+    {
+      "title": "ピースサイン",
+      "artist": "米津玄師"
     },
     {
       "title": "TEENAGE RIOT",
@@ -1485,12 +1905,32 @@
       "artist": "米津玄師"
     },
     {
+      "title": "M八七",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "もしも命が描けたら",
+      "artist": "YOASOBI"
+    },
+    {
+      "title": "アドベンチャー",
+      "artist": "YOASOBI"
+    },
+    {
+      "title": "セブンティーン",
+      "artist": "YOASOBI"
+    },
+    {
       "title": "ノーダウト",
       "artist": "Official髭男dism"
     },
     {
       "title": "SOULSOUP",
       "artist": "Official髭男dism"
+    },
+    {
+      "title": "旅路",
+      "artist": "藤井 風"
     },
     {
       "title": "燃えよ",
@@ -1501,7 +1941,39 @@
       "artist": "藤井 風"
     },
     {
+      "title": "Workin' Hard",
+      "artist": "藤井 風"
+    },
+    {
+      "title": "思想犯",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "雨とカプチーノ",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "春愁",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "Magic",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "familie",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "Soranji",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
       "title": "走馬灯",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "おもかげ",
       "artist": "Vaundy"
     },
     {
@@ -1509,16 +1981,52 @@
       "artist": "Saucy Dog"
     },
     {
+      "title": "Tomorrow never knows",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "しるし",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "ヒカリノアトリエ",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "Sign",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "Snow White",
+      "artist": "もさを。"
+    },
+    {
       "title": "残機",
       "artist": "ずっと真夜中でいいのに。"
+    },
+    {
+      "title": "オレンジ",
+      "artist": "SMAP"
     },
     {
       "title": "蕾",
       "artist": "コブクロ"
     },
     {
+      "title": "ここにしか咲かない花",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "春の歌",
+      "artist": "スピッツ"
+    },
+    {
       "title": "渚",
       "artist": "スピッツ"
+    },
+    {
+      "title": "楽園",
+      "artist": "平井堅"
     },
     {
       "title": "夜明けと蛍",
@@ -1529,6 +2037,22 @@
       "artist": "ONE OK ROCK"
     },
     {
+      "title": "NOBODY ELSE BUT YOU",
+      "artist": "ONE OK ROCK"
+    },
+    {
+      "title": "Sugar Rush Ride",
+      "artist": "TXT"
+    },
+    {
+      "title": "0X1=LOVESONG",
+      "artist": "TXT"
+    },
+    {
+      "title": "Crown",
+      "artist": "TXT"
+    },
+    {
       "title": "LO$ER=LO♡ER",
       "artist": "TXT"
     },
@@ -1537,11 +2061,31 @@
       "artist": "ENHYPEN"
     },
     {
+      "title": "Future Perfect",
+      "artist": "ENHYPEN"
+    },
+    {
+      "title": "Sticker",
+      "artist": "NCT 127"
+    },
+    {
+      "title": "Set Me Free Pt.2",
+      "artist": "TWICE"
+    },
+    {
+      "title": "Talk That Talk",
+      "artist": "TWICE"
+    },
+    {
       "title": "Number One Girl",
       "artist": "ROSÉ"
     },
     {
       "title": "Lavender Haze",
+      "artist": "Taylor Swift"
+    },
+    {
+      "title": "Cardigan",
       "artist": "Taylor Swift"
     },
     {
@@ -1553,8 +2097,76 @@
       "artist": "Taylor Swift"
     },
     {
+      "title": "lovely",
+      "artist": "Billie Eilish"
+    },
+    {
+      "title": "Don't Start Now",
+      "artist": "Dua Lipa"
+    },
+    {
+      "title": "Houdini",
+      "artist": "Dua Lipa"
+    },
+    {
+      "title": "Training Season",
+      "artist": "Dua Lipa"
+    },
+    {
+      "title": "Save Your Tears",
+      "artist": "The Weeknd"
+    },
+    {
+      "title": "Starboy",
+      "artist": "The Weeknd"
+    },
+    {
+      "title": "Out of Time",
+      "artist": "The Weeknd"
+    },
+    {
+      "title": "Take My Breath",
+      "artist": "The Weeknd"
+    },
+    {
+      "title": "Snooze",
+      "artist": "SZA"
+    },
+    {
+      "title": "Saturn",
+      "artist": "SZA"
+    },
+    {
       "title": "lacy",
       "artist": "Olivia Rodrigo"
+    },
+    {
+      "title": "obsessed",
+      "artist": "Olivia Rodrigo"
+    },
+    {
+      "title": "teenage dream",
+      "artist": "Olivia Rodrigo"
+    },
+    {
+      "title": "Stay",
+      "artist": "The Kid LAROI & Justin Bieber"
+    },
+    {
+      "title": "Anyone",
+      "artist": "Justin Bieber"
+    },
+    {
+      "title": "Lonely",
+      "artist": "Justin Bieber & benny blanco"
+    },
+    {
+      "title": "Daylight",
+      "artist": "David Kushner"
+    },
+    {
+      "title": "Lovin On Me",
+      "artist": "Jack Harlow"
     },
     {
       "title": "君は天然色",
@@ -1571,6 +2183,18 @@
     {
       "title": "純愛",
       "artist": "竹内まりや"
+    },
+    {
+      "title": "SPARKLE",
+      "artist": "山下達郎"
+    },
+    {
+      "title": "Loveland Island",
+      "artist": "山下達郎"
+    },
+    {
+      "title": "オリビアを聴きながら",
+      "artist": "杏里"
     },
     {
       "title": "CAT'S EYE",
@@ -1597,8 +2221,48 @@
       "artist": "Mr.Children"
     },
     {
+      "title": "シーラカンス",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "旅人",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "メッセージ",
+      "artist": "福山雅治"
+    },
+    {
+      "title": "流星",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "オリジナルスマイル",
+      "artist": "SMAP"
+    },
+    {
+      "title": "夜空ノムコウ",
+      "artist": "SMAP"
+    },
+    {
+      "title": "どんなときも。",
+      "artist": "槇原敬之"
+    },
+    {
       "title": "遠く遠く",
       "artist": "槇原敬之"
+    },
+    {
+      "title": "STAY",
+      "artist": "三浦大知"
+    },
+    {
+      "title": "(RE)PLAY",
+      "artist": "三浦大知"
+    },
+    {
+      "title": "Cry & Fight",
+      "artist": "三浦大知"
     },
     {
       "title": "flag",
@@ -1606,6 +2270,10 @@
     },
     {
       "title": "ひらり",
+      "artist": "大原櫻子"
+    },
+    {
+      "title": "瞳",
       "artist": "大原櫻子"
     },
     {
@@ -1617,19 +2285,95 @@
       "artist": "西野カナ"
     },
     {
+      "title": "CIRCLE",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
       "title": "ありがとう",
       "artist": "FUNKY MONKEY BABYS"
+    },
+    {
+      "title": "桜",
+      "artist": "河口恭吾"
     },
     {
       "title": "LOVEマシーン",
       "artist": "モーニング娘。"
     },
     {
+      "title": "プルメリア",
+      "artist": "Aqua Timez"
+    },
+    {
+      "title": "君のままで",
+      "artist": "高橋優"
+    },
+    {
+      "title": "福笑い",
+      "artist": "高橋優"
+    },
+    {
       "title": "ヤキモチ",
       "artist": "高橋優"
     },
     {
+      "title": "君と夏フェス",
+      "artist": "SHISHAMO"
+    },
+    {
+      "title": "プレゼント",
+      "artist": "SEKAI NO OWARI"
+    },
+    {
+      "title": "traveling",
+      "artist": "宇多田ヒカル"
+    },
+    {
+      "title": "Goodbye Happiness",
+      "artist": "宇多田ヒカル"
+    },
+    {
+      "title": "Automatic",
+      "artist": "宇多田ヒカル"
+    },
+    {
+      "title": "道",
+      "artist": "EXILE"
+    },
+    {
+      "title": "NEVER EVER",
+      "artist": "浜崎あゆみ"
+    },
+    {
+      "title": "SURREAL",
+      "artist": "浜崎あゆみ"
+    },
+    {
+      "title": "ないものねだり",
+      "artist": "KANA-BOON"
+    },
+    {
+      "title": "拝啓、少年よ",
+      "artist": "Hump Back"
+    },
+    {
+      "title": "君に会いたいんだ。",
+      "artist": "FUNKY MONKEY BABYS"
+    },
+    {
+      "title": "ヒーロー",
+      "artist": "FUNKY MONKEY BABYS"
+    },
+    {
+      "title": "ロマンスの神様",
+      "artist": "広瀬香美"
+    },
+    {
       "title": "Wonderwall",
+      "artist": "Oasis"
+    },
+    {
+      "title": "Don't Look Back In Anger",
       "artist": "Oasis"
     },
     {
@@ -1641,8 +2385,16 @@
       "artist": "The Chainsmokers"
     },
     {
+      "title": "Lucky",
+      "artist": "Jason Mraz & Colbie Caillat"
+    },
+    {
       "title": "I'm Yours",
       "artist": "Jason Mraz"
+    },
+    {
+      "title": "We Found Love",
+      "artist": "Rihanna"
     },
     {
       "title": "Diamonds",
@@ -1657,6 +2409,14 @@
       "artist": "King & Prince"
     },
     {
+      "title": "Magic Touch",
+      "artist": "King & Prince"
+    },
+    {
+      "title": "Grandeur",
+      "artist": "Snow Man"
+    },
+    {
       "title": "マスカラ",
       "artist": "SixTONES"
     },
@@ -1669,6 +2429,22 @@
       "artist": "なにわ男子"
     },
     {
+      "title": "Gifted.",
+      "artist": "BE:FIRST"
+    },
+    {
+      "title": "Bye-Good-Bye",
+      "artist": "BE:FIRST"
+    },
+    {
+      "title": "キュン",
+      "artist": "日向坂46"
+    },
+    {
+      "title": "君しか勝たん",
+      "artist": "日向坂46"
+    },
+    {
       "title": "アザトカワイイ",
       "artist": "日向坂46"
     },
@@ -1677,8 +2453,60 @@
       "artist": "櫻坂46"
     },
     {
+      "title": "ズルいよ ズルいね",
+      "artist": "=LOVE"
+    },
+    {
       "title": "絶対アイドル辞めないで",
       "artist": "=LOVE"
+    },
+    {
+      "title": "君と僕の歌",
+      "artist": "≠ME"
+    },
+    {
+      "title": "思い出せる恋をしよう",
+      "artist": "STU48"
+    },
+    {
+      "title": "サヨナラの意味",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "インフルエンサー",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "夜明けまで強がらなくてもいい",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "裸足でSummer",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "ヘビーローテーション",
+      "artist": "AKB48"
+    },
+    {
+      "title": "願いごとの持ち腐れ",
+      "artist": "AKB48"
+    },
+    {
+      "title": "恋するフォーチュンクッキー",
+      "artist": "AKB48"
+    },
+    {
+      "title": "JOYFUL LOVE",
+      "artist": "日向坂46"
+    },
+    {
+      "title": "何度でも何度でも",
+      "artist": "櫻坂46"
+    },
+    {
+      "title": "わたしの一番かわいいところ",
+      "artist": "FRUITS ZIPPER"
     }
   ],
   "okArtwork": [
@@ -2095,6 +2923,10 @@
       "artist": "手嶌葵"
     },
     {
+      "title": "ラブレター",
+      "artist": "HoneyWorks"
+    },
+    {
       "title": "三日月",
       "artist": "絢香"
     },
@@ -2171,6 +3003,10 @@
       "artist": "宇多田ヒカル"
     },
     {
+      "title": "白雪姫",
+      "artist": "back number"
+    },
+    {
       "title": "First Love",
       "artist": "宇多田ヒカル"
     },
@@ -2213,6 +3049,10 @@
     {
       "title": "TSUNAMI",
       "artist": "サザンオールスターズ"
+    },
+    {
+      "title": "CAN YOU CELEBRATE",
+      "artist": "安室奈美恵"
     },
     {
       "title": "やさしさに包まれたなら",
@@ -2443,6 +3283,10 @@
       "artist": "JUJU"
     },
     {
+      "title": "Love Story",
+      "artist": "安室奈美恵"
+    },
+    {
       "title": "Lovers",
       "artist": "sumika"
     },
@@ -2571,6 +3415,10 @@
       "artist": "indigo la End"
     },
     {
+      "title": "愛し",
+      "artist": "RADWIMPS"
+    },
+    {
       "title": "C.O.S.M.O.S. 〜秋桜〜",
       "artist": "三代目 J Soul Brothers"
     },
@@ -2668,6 +3516,10 @@
     },
     {
       "title": "Time after time",
+      "artist": "倉木麻衣"
+    },
+    {
+      "title": "渡月橋〜君想ふ〜",
       "artist": "倉木麻衣"
     },
     {
@@ -2783,12 +3635,20 @@
       "artist": "BTS"
     },
     {
+      "title": "NIGHT DANCER",
+      "artist": "imase"
+    },
+    {
       "title": "ドラマツルギー",
       "artist": "Eve"
     },
     {
       "title": "栞",
       "artist": "クリープハイプ"
+    },
+    {
+      "title": "4月の永遠",
+      "artist": "Mrs. GREEN APPLE"
     },
     {
       "title": "青と夏",
@@ -2809,6 +3669,10 @@
     {
       "title": "六等星の夜",
       "artist": "Aimer"
+    },
+    {
+      "title": "Slow Down",
+      "artist": "Vaundy"
     },
     {
       "title": "東京フラッシュ",
@@ -2951,6 +3815,10 @@
       "artist": "いきものがかり"
     },
     {
+      "title": "夜光",
+      "artist": "Awich"
+    },
+    {
       "title": "硝子の少年",
       "artist": "KinKi Kids"
     },
@@ -2993,6 +3861,10 @@
     {
       "title": "Don't Wanna Cry",
       "artist": "SEVENTEEN"
+    },
+    {
+      "title": "EUPHORIA",
+      "artist": "Jung Kook"
     },
     {
       "title": "Sugar",
@@ -3115,6 +3987,14 @@
       "artist": "SEKAI NO OWARI"
     },
     {
+      "title": "はじまりのうた",
+      "artist": "GReeeeN"
+    },
+    {
+      "title": "太陽が見ている",
+      "artist": "平井大"
+    },
+    {
       "title": "シーソーゲーム",
       "artist": "Mr.Children"
     },
@@ -3207,6 +4087,10 @@
       "artist": "ASIAN KUNG-FU GENERATION"
     },
     {
+      "title": "ループ&ループ",
+      "artist": "ASIAN KUNG-FU GENERATION"
+    },
+    {
       "title": "春夏秋冬",
       "artist": "sumika"
     },
@@ -3261,6 +4145,10 @@
     {
       "title": "17",
       "artist": "TOMOO"
+    },
+    {
+      "title": "プロポーズ",
+      "artist": "クリープハイプ"
     },
     {
       "title": "ロストマン",
@@ -3391,6 +4279,10 @@
       "artist": "ヨルシカ"
     },
     {
+      "title": "アイラブユー",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
       "title": "アンビバレント",
       "artist": "欅坂46"
     },
@@ -3413,6 +4305,14 @@
     {
       "title": "虹",
       "artist": "菅田将暉"
+    },
+    {
+      "title": "桜のような恋でした",
+      "artist": "wacci"
+    },
+    {
+      "title": "君に出会えてよかった",
+      "artist": "TUBE"
     },
     {
       "title": "SUMMER NUDE",
@@ -3539,6 +4439,10 @@
       "artist": "米津玄師"
     },
     {
+      "title": "もしも命が描けたら",
+      "artist": "YOASOBI"
+    },
+    {
       "title": "アドベンチャー",
       "artist": "YOASOBI"
     },
@@ -3635,6 +4539,10 @@
       "artist": "ずっと真夜中でいいのに。"
     },
     {
+      "title": "オレンジ",
+      "artist": "SMAP"
+    },
+    {
       "title": "蕾",
       "artist": "コブクロ"
     },
@@ -3667,6 +4575,10 @@
       "artist": "ONE OK ROCK"
     },
     {
+      "title": "NOBODY ELSE BUT YOU",
+      "artist": "ONE OK ROCK"
+    },
+    {
       "title": "Sugar Rush Ride",
       "artist": "TXT"
     },
@@ -3693,6 +4605,10 @@
     {
       "title": "Sticker",
       "artist": "NCT 127"
+    },
+    {
+      "title": "Set Me Free Pt.2",
+      "artist": "TWICE"
     },
     {
       "title": "Talk That Talk",
@@ -3811,6 +4727,14 @@
       "artist": "竹内まりや"
     },
     {
+      "title": "SPARKLE",
+      "artist": "山下達郎"
+    },
+    {
+      "title": "Loveland Island",
+      "artist": "山下達郎"
+    },
+    {
       "title": "オリビアを聴きながら",
       "artist": "杏里"
     },
@@ -3847,8 +4771,20 @@
       "artist": "Mr.Children"
     },
     {
+      "title": "メッセージ",
+      "artist": "福山雅治"
+    },
+    {
       "title": "流星",
       "artist": "コブクロ"
+    },
+    {
+      "title": "オリジナルスマイル",
+      "artist": "SMAP"
+    },
+    {
+      "title": "夜空ノムコウ",
+      "artist": "SMAP"
     },
     {
       "title": "どんなときも。",
@@ -3911,6 +4847,10 @@
       "artist": "Aqua Timez"
     },
     {
+      "title": "君のままで",
+      "artist": "高橋優"
+    },
+    {
       "title": "福笑い",
       "artist": "高橋優"
     },
@@ -3957,6 +4897,10 @@
     {
       "title": "拝啓、少年よ",
       "artist": "Hump Back"
+    },
+    {
+      "title": "君に会いたいんだ。",
+      "artist": "FUNKY MONKEY BABYS"
     },
     {
       "title": "それでも",
@@ -4061,6 +5005,54 @@
     {
       "title": "絶対アイドル辞めないで",
       "artist": "=LOVE"
+    },
+    {
+      "title": "君と僕の歌",
+      "artist": "≠ME"
+    },
+    {
+      "title": "思い出せる恋をしよう",
+      "artist": "STU48"
+    },
+    {
+      "title": "サヨナラの意味",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "インフルエンサー",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "夜明けまで強がらなくてもいい",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "裸足でSummer",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "ヘビーローテーション",
+      "artist": "AKB48"
+    },
+    {
+      "title": "願いごとの持ち腐れ",
+      "artist": "AKB48"
+    },
+    {
+      "title": "恋するフォーチュンクッキー",
+      "artist": "AKB48"
+    },
+    {
+      "title": "JOYFUL LOVE",
+      "artist": "日向坂46"
+    },
+    {
+      "title": "何度でも何度でも",
+      "artist": "櫻坂46"
+    },
+    {
+      "title": "わたしの一番かわいいところ",
+      "artist": "FRUITS ZIPPER"
     }
   ],
   "okAll": [
@@ -4241,8 +5233,32 @@
       "artist": "Awesome City Club"
     },
     {
+      "title": "真夜中のドア",
+      "artist": "松原みき"
+    },
+    {
+      "title": "きらり",
+      "artist": "藤井 風"
+    },
+    {
       "title": "死ぬのがいいわ",
       "artist": "藤井 風"
+    },
+    {
+      "title": "何なんw",
+      "artist": "藤井 風"
+    },
+    {
+      "title": "Lemon",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "Pale Blue",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "さよーならまたいつか!",
+      "artist": "米津玄師"
     },
     {
       "title": "Flamingo",
@@ -4425,20 +5441,68 @@
       "artist": "羊文学"
     },
     {
+      "title": "光るとき",
+      "artist": "羊文学"
+    },
+    {
+      "title": "アイドル",
+      "artist": "YOASOBI"
+    },
+    {
+      "title": "言って。",
+      "artist": "ヨルシカ"
+    },
+    {
       "title": "ガーネット",
       "artist": "奥華子"
+    },
+    {
+      "title": "君の名は希望",
+      "artist": "乃木坂46"
+    },
+    {
+      "title": "シルエット",
+      "artist": "KANA-BOON"
+    },
+    {
+      "title": "明日への手紙",
+      "artist": "手嶌葵"
+    },
+    {
+      "title": "ラブレター",
+      "artist": "HoneyWorks"
     },
     {
       "title": "三日月",
       "artist": "絢香"
     },
     {
+      "title": "春よ、来い",
+      "artist": "松任谷由実"
+    },
+    {
       "title": "ハナミズキ",
       "artist": "一青窈"
     },
     {
+      "title": "桜",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "ともに",
+      "artist": "WANIMA"
+    },
+    {
+      "title": "やさしさで溢れるように",
+      "artist": "JUJU"
+    },
+    {
       "title": "キセキ",
       "artist": "GReeeeN"
+    },
+    {
+      "title": "シンクロニシティ",
+      "artist": "乃木坂46"
     },
     {
       "title": "友よ 〜この先もずっと…",
@@ -4485,6 +5549,10 @@
       "artist": "宇多田ヒカル"
     },
     {
+      "title": "白雪姫",
+      "artist": "back number"
+    },
+    {
       "title": "First Love",
       "artist": "宇多田ヒカル"
     },
@@ -4529,6 +5597,10 @@
       "artist": "サザンオールスターズ"
     },
     {
+      "title": "CAN YOU CELEBRATE",
+      "artist": "安室奈美恵"
+    },
+    {
       "title": "やさしさに包まれたなら",
       "artist": "松任谷由実"
     },
@@ -4565,6 +5637,10 @@
       "artist": "YOASOBI"
     },
     {
+      "title": "三原色",
+      "artist": "YOASOBI"
+    },
+    {
       "title": "ハルジオン",
       "artist": "YOASOBI"
     },
@@ -4581,8 +5657,20 @@
       "artist": "あいみょん"
     },
     {
+      "title": "ハート",
+      "artist": "あいみょん"
+    },
+    {
       "title": "orion",
       "artist": "米津玄師"
+    },
+    {
+      "title": "パプリカ",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "ANTIFRAGILE",
+      "artist": "LE SSERAFIM"
     },
     {
       "title": "FEARLESS",
@@ -4593,6 +5681,10 @@
       "artist": "aespa"
     },
     {
+      "title": "I AM",
+      "artist": "IVE"
+    },
+    {
       "title": "Boy With Luv",
       "artist": "BTS"
     },
@@ -4601,12 +5693,44 @@
       "artist": "BTS"
     },
     {
+      "title": "Sunflower",
+      "artist": "Post Malone, Swae Lee"
+    },
+    {
       "title": "Espresso",
       "artist": "Sabrina Carpenter"
     },
     {
+      "title": "As It Was",
+      "artist": "Harry Styles"
+    },
+    {
       "title": "紅蓮華",
       "artist": "LiSA"
+    },
+    {
+      "title": "千本桜",
+      "artist": "黒うさP"
+    },
+    {
+      "title": "シャルル",
+      "artist": "バルーン"
+    },
+    {
+      "title": "バラード",
+      "artist": "ケツメイシ"
+    },
+    {
+      "title": "アイネクライネ",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "僕の天使マリ",
+      "artist": "スピッツ"
+    },
+    {
+      "title": "幸せ",
+      "artist": "back number"
     },
     {
       "title": "me me she",
@@ -4701,6 +5825,10 @@
       "artist": "JUJU"
     },
     {
+      "title": "Love Story",
+      "artist": "安室奈美恵"
+    },
+    {
       "title": "Lovers",
       "artist": "sumika"
     },
@@ -4753,6 +5881,10 @@
       "artist": "back number"
     },
     {
+      "title": "パラサイト",
+      "artist": "DECO*27"
+    },
+    {
       "title": "毒占欲",
       "artist": "DECO*27"
     },
@@ -4769,8 +5901,28 @@
       "artist": "Flower"
     },
     {
+      "title": "浴槽とネオンテトラ",
+      "artist": "REISAI"
+    },
+    {
       "title": "WHY",
       "artist": "加藤ミリヤ"
+    },
+    {
+      "title": "ぎゅっと。",
+      "artist": "もさを。"
+    },
+    {
+      "title": "SAYONARAベイベー",
+      "artist": "加藤ミリヤ"
+    },
+    {
+      "title": "強く儚い者たち",
+      "artist": "Cocco"
+    },
+    {
+      "title": "White",
+      "artist": "SHE'S"
     },
     {
       "title": "ふたりごと",
@@ -4783,6 +5935,26 @@
     {
       "title": "他の誰かより悲しい恋をしただけ",
       "artist": "Flower"
+    },
+    {
+      "title": "Call",
+      "artist": "ちゃんみな"
+    },
+    {
+      "title": "コンタクトケース",
+      "artist": "Saucy Dog"
+    },
+    {
+      "title": "名前は片想い",
+      "artist": "indigo la End"
+    },
+    {
+      "title": "愛し",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "恋泥棒。",
+      "artist": "『ユイカ』"
     },
     {
       "title": "魔法にかけられて",
@@ -4877,6 +6049,10 @@
       "artist": "倉木麻衣"
     },
     {
+      "title": "渡月橋〜君想ふ〜",
+      "artist": "倉木麻衣"
+    },
+    {
       "title": "香水",
       "artist": "瑛人"
     },
@@ -4933,6 +6109,10 @@
       "artist": "湘南乃風"
     },
     {
+      "title": "いとしのエリー",
+      "artist": "サザンオールスターズ"
+    },
+    {
       "title": "HOWEVER",
       "artist": "GLAY"
     },
@@ -4949,8 +6129,32 @@
       "artist": "米米CLUB"
     },
     {
+      "title": "恋愛サーキュレーション",
+      "artist": "花澤香菜"
+    },
+    {
+      "title": "茜さす",
+      "artist": "Aimer"
+    },
+    {
+      "title": "ロード",
+      "artist": "THE 虎舞竜"
+    },
+    {
+      "title": "クロノスタシス",
+      "artist": "きのこ帝国"
+    },
+    {
+      "title": "クリスマスイブ",
+      "artist": "山下達郎"
+    },
+    {
       "title": "抱きしめたい",
       "artist": "Mr.Children"
+    },
+    {
+      "title": "メリクリ",
+      "artist": "BoA"
     },
     {
       "title": "STAY TUNE",
@@ -4959,6 +6163,22 @@
     {
       "title": "Stay Gold",
       "artist": "BTS"
+    },
+    {
+      "title": "NIGHT DANCER",
+      "artist": "imase"
+    },
+    {
+      "title": "ドラマツルギー",
+      "artist": "Eve"
+    },
+    {
+      "title": "栞",
+      "artist": "クリープハイプ"
+    },
+    {
+      "title": "4月の永遠",
+      "artist": "Mrs. GREEN APPLE"
     },
     {
       "title": "青と夏",
@@ -4979,6 +6199,10 @@
     {
       "title": "六等星の夜",
       "artist": "Aimer"
+    },
+    {
+      "title": "Slow Down",
+      "artist": "Vaundy"
     },
     {
       "title": "東京フラッシュ",
@@ -5093,8 +6317,40 @@
       "artist": "n-buna"
     },
     {
+      "title": "ECHO",
+      "artist": "Crusher-P"
+    },
+    {
+      "title": "ナンセンス文学",
+      "artist": "Eve"
+    },
+    {
+      "title": "秒針を噛む",
+      "artist": "ずっと真夜中でいいのに。"
+    },
+    {
       "title": "雪の華",
       "artist": "中島美嘉"
+    },
+    {
+      "title": "言葉にできない",
+      "artist": "オフコース"
+    },
+    {
+      "title": "桃色片想い",
+      "artist": "松浦亜弥"
+    },
+    {
+      "title": "SAKURA",
+      "artist": "いきものがかり"
+    },
+    {
+      "title": "夜光",
+      "artist": "Awich"
+    },
+    {
+      "title": "硝子の少年",
+      "artist": "KinKi Kids"
     },
     {
       "title": "言葉より大切なもの",
@@ -5107,6 +6363,14 @@
     {
       "title": "Happiness",
       "artist": "嵐"
+    },
+    {
+      "title": "Real Face",
+      "artist": "KAT-TUN"
+    },
+    {
+      "title": "SIGNAL",
+      "artist": "KAT-TUN"
     },
     {
       "title": "SOLO",
@@ -5127,6 +6391,10 @@
     {
       "title": "Don't Wanna Cry",
       "artist": "SEVENTEEN"
+    },
+    {
+      "title": "EUPHORIA",
+      "artist": "Jung Kook"
     },
     {
       "title": "Sugar",
@@ -5249,20 +6517,60 @@
       "artist": "SEKAI NO OWARI"
     },
     {
+      "title": "はじまりのうた",
+      "artist": "GReeeeN"
+    },
+    {
+      "title": "太陽が見ている",
+      "artist": "平井大"
+    },
+    {
+      "title": "シーソーゲーム",
+      "artist": "Mr.Children"
+    },
+    {
       "title": "名前のない空を見上げて",
       "artist": "MISIA"
+    },
+    {
+      "title": "歓びの種",
+      "artist": "YUKI"
     },
     {
       "title": "ハナガサイタ",
       "artist": "aiko"
     },
     {
+      "title": "田園",
+      "artist": "玉置浩二"
+    },
+    {
       "title": "輝く月のように",
       "artist": "Superfly"
     },
     {
+      "title": "天体観測",
+      "artist": "BUMP OF CHICKEN"
+    },
+    {
+      "title": "ray",
+      "artist": "BUMP OF CHICKEN"
+    },
+    {
+      "title": "アカシア",
+      "artist": "BUMP OF CHICKEN"
+    },
+    {
       "title": "望遠のマーチ",
       "artist": "BUMP OF CHICKEN"
+    },
+    {
+      "title": "シュガーソングとビターステップ",
+      "artist": "UNISON SQUARE GARDEN"
+    },
+    {
+      "title": "オリオンをなぞる",
+      "artist": "UNISON SQUARE GARDEN"
     },
     {
       "title": "fake town baby",
@@ -5270,6 +6578,18 @@
     },
     {
       "title": "君と羊と青",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "スパークル",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "有心論",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "オーダーメイド",
       "artist": "RADWIMPS"
     },
     {
@@ -5294,6 +6614,10 @@
     },
     {
       "title": "リライト",
+      "artist": "ASIAN KUNG-FU GENERATION"
+    },
+    {
+      "title": "ループ&ループ",
       "artist": "ASIAN KUNG-FU GENERATION"
     },
     {
@@ -5353,6 +6677,10 @@
       "artist": "TOMOO"
     },
     {
+      "title": "プロポーズ",
+      "artist": "クリープハイプ"
+    },
+    {
       "title": "ロストマン",
       "artist": "BUMP OF CHICKEN"
     },
@@ -5409,6 +6737,14 @@
       "artist": "Olivia Rodrigo"
     },
     {
+      "title": "brutal",
+      "artist": "Olivia Rodrigo"
+    },
+    {
+      "title": "Family Line",
+      "artist": "Conan Gray"
+    },
+    {
       "title": "Maniac",
       "artist": "Conan Gray"
     },
@@ -5417,16 +6753,32 @@
       "artist": "Doja Cat"
     },
     {
+      "title": "Say So",
+      "artist": "Doja Cat"
+    },
+    {
       "title": "Woman",
       "artist": "Doja Cat"
+    },
+    {
+      "title": "Beggin'",
+      "artist": "Maneskin"
     },
     {
       "title": "I Wanna Be Your Slave",
       "artist": "Maneskin"
     },
     {
+      "title": "Style",
+      "artist": "Taylor Swift"
+    },
+    {
       "title": "Blank Space",
       "artist": "Taylor Swift"
+    },
+    {
+      "title": "糸",
+      "artist": "中島みゆき"
     },
     {
       "title": "なごり雪",
@@ -5437,8 +6789,28 @@
       "artist": "風"
     },
     {
+      "title": "卒業写真",
+      "artist": "松任谷由実"
+    },
+    {
       "title": "ルージュの伝言",
       "artist": "松任谷由実"
+    },
+    {
+      "title": "花に亡霊",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "雲と幽霊",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "ヒッチコック",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "アイラブユー",
+      "artist": "Mrs. GREEN APPLE"
     },
     {
       "title": "アンビバレント",
@@ -5463,6 +6835,14 @@
     {
       "title": "虹",
       "artist": "菅田将暉"
+    },
+    {
+      "title": "桜のような恋でした",
+      "artist": "wacci"
+    },
+    {
+      "title": "君に出会えてよかった",
+      "artist": "TUBE"
     },
     {
       "title": "SUMMER NUDE",
@@ -5521,12 +6901,28 @@
       "artist": "福山雅治"
     },
     {
+      "title": "HELLO",
+      "artist": "福山雅治"
+    },
+    {
       "title": "Believe",
       "artist": "西野カナ"
     },
     {
       "title": "トリセツ",
       "artist": "西野カナ"
+    },
+    {
+      "title": "Don't",
+      "artist": "西野カナ"
+    },
+    {
+      "title": "Best Friend",
+      "artist": "西野カナ"
+    },
+    {
+      "title": "涙",
+      "artist": "KinKi Kids"
     },
     {
       "title": "フラワー",
@@ -5537,8 +6933,24 @@
       "artist": "KinKi Kids"
     },
     {
+      "title": "truth",
+      "artist": "嵐"
+    },
+    {
+      "title": "WISH",
+      "artist": "嵐"
+    },
+    {
       "title": "復活LOVE",
       "artist": "嵐"
+    },
+    {
+      "title": "ふるさと",
+      "artist": "嵐"
+    },
+    {
+      "title": "ピースサイン",
+      "artist": "米津玄師"
     },
     {
       "title": "TEENAGE RIOT",
@@ -5549,12 +6961,32 @@
       "artist": "米津玄師"
     },
     {
+      "title": "M八七",
+      "artist": "米津玄師"
+    },
+    {
+      "title": "もしも命が描けたら",
+      "artist": "YOASOBI"
+    },
+    {
+      "title": "アドベンチャー",
+      "artist": "YOASOBI"
+    },
+    {
+      "title": "セブンティーン",
+      "artist": "YOASOBI"
+    },
+    {
       "title": "ノーダウト",
       "artist": "Official髭男dism"
     },
     {
       "title": "SOULSOUP",
       "artist": "Official髭男dism"
+    },
+    {
+      "title": "旅路",
+      "artist": "藤井 風"
     },
     {
       "title": "燃えよ",
@@ -5565,7 +6997,39 @@
       "artist": "藤井 風"
     },
     {
+      "title": "Workin' Hard",
+      "artist": "藤井 風"
+    },
+    {
+      "title": "思想犯",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "雨とカプチーノ",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "春愁",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "Magic",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "familie",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "Soranji",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
       "title": "走馬灯",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "おもかげ",
       "artist": "Vaundy"
     },
     {
@@ -5573,16 +7037,52 @@
       "artist": "Saucy Dog"
     },
     {
+      "title": "Tomorrow never knows",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "しるし",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "ヒカリノアトリエ",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "Sign",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "Snow White",
+      "artist": "もさを。"
+    },
+    {
       "title": "残機",
       "artist": "ずっと真夜中でいいのに。"
+    },
+    {
+      "title": "オレンジ",
+      "artist": "SMAP"
     },
     {
       "title": "蕾",
       "artist": "コブクロ"
     },
     {
+      "title": "ここにしか咲かない花",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "春の歌",
+      "artist": "スピッツ"
+    },
+    {
       "title": "渚",
       "artist": "スピッツ"
+    },
+    {
+      "title": "楽園",
+      "artist": "平井堅"
     },
     {
       "title": "夜明けと蛍",
@@ -5593,6 +7093,22 @@
       "artist": "ONE OK ROCK"
     },
     {
+      "title": "NOBODY ELSE BUT YOU",
+      "artist": "ONE OK ROCK"
+    },
+    {
+      "title": "Sugar Rush Ride",
+      "artist": "TXT"
+    },
+    {
+      "title": "0X1=LOVESONG",
+      "artist": "TXT"
+    },
+    {
+      "title": "Crown",
+      "artist": "TXT"
+    },
+    {
       "title": "LO$ER=LO♡ER",
       "artist": "TXT"
     },
@@ -5601,11 +7117,31 @@
       "artist": "ENHYPEN"
     },
     {
+      "title": "Future Perfect",
+      "artist": "ENHYPEN"
+    },
+    {
+      "title": "Sticker",
+      "artist": "NCT 127"
+    },
+    {
+      "title": "Set Me Free Pt.2",
+      "artist": "TWICE"
+    },
+    {
+      "title": "Talk That Talk",
+      "artist": "TWICE"
+    },
+    {
       "title": "Number One Girl",
       "artist": "ROSÉ"
     },
     {
       "title": "Lavender Haze",
+      "artist": "Taylor Swift"
+    },
+    {
+      "title": "Cardigan",
       "artist": "Taylor Swift"
     },
     {
@@ -5617,8 +7153,76 @@
       "artist": "Taylor Swift"
     },
     {
+      "title": "lovely",
+      "artist": "Billie Eilish"
+    },
+    {
+      "title": "Don't Start Now",
+      "artist": "Dua Lipa"
+    },
+    {
+      "title": "Houdini",
+      "artist": "Dua Lipa"
+    },
+    {
+      "title": "Training Season",
+      "artist": "Dua Lipa"
+    },
+    {
+      "title": "Save Your Tears",
+      "artist": "The Weeknd"
+    },
+    {
+      "title": "Starboy",
+      "artist": "The Weeknd"
+    },
+    {
+      "title": "Out of Time",
+      "artist": "The Weeknd"
+    },
+    {
+      "title": "Take My Breath",
+      "artist": "The Weeknd"
+    },
+    {
+      "title": "Snooze",
+      "artist": "SZA"
+    },
+    {
+      "title": "Saturn",
+      "artist": "SZA"
+    },
+    {
       "title": "lacy",
       "artist": "Olivia Rodrigo"
+    },
+    {
+      "title": "obsessed",
+      "artist": "Olivia Rodrigo"
+    },
+    {
+      "title": "teenage dream",
+      "artist": "Olivia Rodrigo"
+    },
+    {
+      "title": "Stay",
+      "artist": "The Kid LAROI & Justin Bieber"
+    },
+    {
+      "title": "Anyone",
+      "artist": "Justin Bieber"
+    },
+    {
+      "title": "Lonely",
+      "artist": "Justin Bieber & benny blanco"
+    },
+    {
+      "title": "Daylight",
+      "artist": "David Kushner"
+    },
+    {
+      "title": "Lovin On Me",
+      "artist": "Jack Harlow"
     },
     {
       "title": "君は天然色",
@@ -5635,6 +7239,18 @@
     {
       "title": "純愛",
       "artist": "竹内まりや"
+    },
+    {
+      "title": "SPARKLE",
+      "artist": "山下達郎"
+    },
+    {
+      "title": "Loveland Island",
+      "artist": "山下達郎"
+    },
+    {
+      "title": "オリビアを聴きながら",
+      "artist": "杏里"
     },
     {
       "title": "CAT'S EYE",
@@ -5661,8 +7277,48 @@
       "artist": "Mr.Children"
     },
     {
+      "title": "シーラカンス",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "旅人",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "メッセージ",
+      "artist": "福山雅治"
+    },
+    {
+      "title": "流星",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "オリジナルスマイル",
+      "artist": "SMAP"
+    },
+    {
+      "title": "夜空ノムコウ",
+      "artist": "SMAP"
+    },
+    {
+      "title": "どんなときも。",
+      "artist": "槇原敬之"
+    },
+    {
       "title": "遠く遠く",
       "artist": "槇原敬之"
+    },
+    {
+      "title": "STAY",
+      "artist": "三浦大知"
+    },
+    {
+      "title": "(RE)PLAY",
+      "artist": "三浦大知"
+    },
+    {
+      "title": "Cry & Fight",
+      "artist": "三浦大知"
     },
     {
       "title": "flag",
@@ -5670,6 +7326,10 @@
     },
     {
       "title": "ひらり",
+      "artist": "大原櫻子"
+    },
+    {
+      "title": "瞳",
       "artist": "大原櫻子"
     },
     {
@@ -5681,19 +7341,95 @@
       "artist": "西野カナ"
     },
     {
+      "title": "CIRCLE",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
       "title": "ありがとう",
       "artist": "FUNKY MONKEY BABYS"
+    },
+    {
+      "title": "桜",
+      "artist": "河口恭吾"
     },
     {
       "title": "LOVEマシーン",
       "artist": "モーニング娘。"
     },
     {
+      "title": "プルメリア",
+      "artist": "Aqua Timez"
+    },
+    {
+      "title": "君のままで",
+      "artist": "高橋優"
+    },
+    {
+      "title": "福笑い",
+      "artist": "高橋優"
+    },
+    {
       "title": "ヤキモチ",
       "artist": "高橋優"
     },
     {
+      "title": "君と夏フェス",
+      "artist": "SHISHAMO"
+    },
+    {
+      "title": "プレゼント",
+      "artist": "SEKAI NO OWARI"
+    },
+    {
+      "title": "traveling",
+      "artist": "宇多田ヒカル"
+    },
+    {
+      "title": "Goodbye Happiness",
+      "artist": "宇多田ヒカル"
+    },
+    {
+      "title": "Automatic",
+      "artist": "宇多田ヒカル"
+    },
+    {
+      "title": "道",
+      "artist": "EXILE"
+    },
+    {
+      "title": "NEVER EVER",
+      "artist": "浜崎あゆみ"
+    },
+    {
+      "title": "SURREAL",
+      "artist": "浜崎あゆみ"
+    },
+    {
+      "title": "ないものねだり",
+      "artist": "KANA-BOON"
+    },
+    {
+      "title": "拝啓、少年よ",
+      "artist": "Hump Back"
+    },
+    {
+      "title": "君に会いたいんだ。",
+      "artist": "FUNKY MONKEY BABYS"
+    },
+    {
+      "title": "ヒーロー",
+      "artist": "FUNKY MONKEY BABYS"
+    },
+    {
+      "title": "ロマンスの神様",
+      "artist": "広瀬香美"
+    },
+    {
       "title": "Wonderwall",
+      "artist": "Oasis"
+    },
+    {
+      "title": "Don't Look Back In Anger",
       "artist": "Oasis"
     },
     {
@@ -5705,8 +7441,16 @@
       "artist": "The Chainsmokers"
     },
     {
+      "title": "Lucky",
+      "artist": "Jason Mraz & Colbie Caillat"
+    },
+    {
       "title": "I'm Yours",
       "artist": "Jason Mraz"
+    },
+    {
+      "title": "We Found Love",
+      "artist": "Rihanna"
     },
     {
       "title": "Diamonds",
@@ -5721,6 +7465,14 @@
       "artist": "King & Prince"
     },
     {
+      "title": "Magic Touch",
+      "artist": "King & Prince"
+    },
+    {
+      "title": "Grandeur",
+      "artist": "Snow Man"
+    },
+    {
       "title": "マスカラ",
       "artist": "SixTONES"
     },
@@ -5733,6 +7485,22 @@
       "artist": "なにわ男子"
     },
     {
+      "title": "Gifted.",
+      "artist": "BE:FIRST"
+    },
+    {
+      "title": "Bye-Good-Bye",
+      "artist": "BE:FIRST"
+    },
+    {
+      "title": "キュン",
+      "artist": "日向坂46"
+    },
+    {
+      "title": "君しか勝たん",
+      "artist": "日向坂46"
+    },
+    {
       "title": "アザトカワイイ",
       "artist": "日向坂46"
     },
@@ -5741,422 +7509,12 @@
       "artist": "櫻坂46"
     },
     {
+      "title": "ズルいよ ズルいね",
+      "artist": "=LOVE"
+    },
+    {
       "title": "絶対アイドル辞めないで",
       "artist": "=LOVE"
-    }
-  ],
-  "notFound": [
-    {
-      "title": "Plastic Love",
-      "artist": "竹内まりや"
-    },
-    {
-      "title": "愛している",
-      "artist": "マルシィ"
-    },
-    {
-      "title": "はじまりの歌",
-      "artist": "Tele"
-    },
-    {
-      "title": "ラブレター",
-      "artist": "HoneyWorks"
-    },
-    {
-      "title": "丸の内サディスティック",
-      "artist": "椎名林檎"
-    },
-    {
-      "title": "ともだち",
-      "artist": "Mrs. GREEN APPLE"
-    },
-    {
-      "title": "白雪姫",
-      "artist": "back number"
-    },
-    {
-      "title": "CAN YOU CELEBRATE?",
-      "artist": "安室奈美恵"
-    },
-    {
-      "title": "怪盗",
-      "artist": "Vaundy"
-    },
-    {
-      "title": "Love Story",
-      "artist": "安室奈美恵"
-    },
-    {
-      "title": "LOVE AFFAIR〜秘密のデート",
-      "artist": "サザンオールスターズ"
-    },
-    {
-      "title": "愛し",
-      "artist": "RADWIMPS"
-    },
-    {
-      "title": "シネマ",
-      "artist": "Vaundy"
-    },
-    {
-      "title": "渡月橋〜君想ふ〜",
-      "artist": "倉木麻衣"
-    },
-    {
-      "title": "主人公",
-      "artist": "DECO*27"
-    },
-    {
-      "title": "シャワー",
-      "artist": "yama"
-    },
-    {
-      "title": "やわらかな日",
-      "artist": "Lamp"
-    },
-    {
-      "title": "ボトルシップ",
-      "artist": "Lamp"
-    },
-    {
-      "title": "Slowly",
-      "artist": "Bonobos"
-    },
-    {
-      "title": "ナイトダンサー",
-      "artist": "imase"
-    },
-    {
-      "title": "4月の永遠",
-      "artist": "Mrs. GREEN APPLE"
-    },
-    {
-      "title": "スポットライト",
-      "artist": "Vaundy"
-    },
-    {
-      "title": "Slow Down",
-      "artist": "Vaundy"
-    },
-    {
-      "title": "セツナレンサ",
-      "artist": "GReeeeN"
-    },
-    {
-      "title": "キミガタメ",
-      "artist": "GARNiDELiA"
-    },
-    {
-      "title": "ロウワー",
-      "artist": "ヨルシカ"
-    },
-    {
-      "title": "もう一度",
-      "artist": "中島美嘉"
-    },
-    {
-      "title": "アイ",
-      "artist": "SIRUP"
-    },
-    {
-      "title": "Cure",
-      "artist": "SIRUP"
-    },
-    {
-      "title": "シャイニング",
-      "artist": "iri"
-    },
-    {
-      "title": "君に幸あれ",
-      "artist": "iri"
-    },
-    {
-      "title": "midnight stranger",
-      "artist": "Friday Night Plans"
-    },
-    {
-      "title": "都心",
-      "artist": "Friday Night Plans"
-    },
-    {
-      "title": "夜光",
-      "artist": "Awich"
-    },
-    {
-      "title": "君となら",
-      "artist": "関ジャニ∞"
-    },
-    {
-      "title": "何度でも歌おう",
-      "artist": "関ジャニ∞"
-    },
-    {
-      "title": "EUPHORIA",
-      "artist": "Jung Kook"
-    },
-    {
-      "title": "ジュピター",
-      "artist": "平原綾香"
-    },
-    {
-      "title": "抱きしめてあげる",
-      "artist": "阿部真央"
-    },
-    {
-      "title": "はじまりのうた",
-      "artist": "GReeeeN"
-    },
-    {
-      "title": "太陽が見ている",
-      "artist": "平井大"
-    },
-    {
-      "title": "アイのうた",
-      "artist": "GReeeeN"
-    },
-    {
-      "title": "旅の途中",
-      "artist": "槇原敬之"
-    },
-    {
-      "title": "AISHITERU",
-      "artist": "mihimaru GT"
-    },
-    {
-      "title": "ハロー",
-      "artist": "ナオト・インティライミ"
-    },
-    {
-      "title": "才能人応援歌",
-      "artist": "BUMP OF CHICKEN"
-    },
-    {
-      "title": "ループ&ループ",
-      "artist": "ASIAN KUNG-FU GENERATION"
-    },
-    {
-      "title": "忘れてた",
-      "artist": "Vaundy"
-    },
-    {
-      "title": "プロポーズ",
-      "artist": "クリープハイプ"
-    },
-    {
-      "title": "ハロハロ",
-      "artist": "マカロニえんぴつ"
-    },
-    {
-      "title": "クラクラ",
-      "artist": "マカロニえんぴつ"
-    },
-    {
-      "title": "別世界",
-      "artist": "amazarashi"
-    },
-    {
-      "title": "ラストダンス",
-      "artist": "Vaundy"
-    },
-    {
-      "title": "アイラブユー",
-      "artist": "Mrs. GREEN APPLE"
-    },
-    {
-      "title": "月の大きさ",
-      "artist": "RADWIMPS"
-    },
-    {
-      "title": "KING",
-      "artist": "菅田将暉"
-    },
-    {
-      "title": "桜のような恋でした",
-      "artist": "wacci"
-    },
-    {
-      "title": "メリーゴーランド",
-      "artist": "HoneyWorks"
-    },
-    {
-      "title": "君に出会えてよかった",
-      "artist": "TUBE"
-    },
-    {
-      "title": "ハートビート",
-      "artist": "GReeeeN"
-    },
-    {
-      "title": "Honey",
-      "artist": "Suchmos"
-    },
-    {
-      "title": "もしも命が描けたなら",
-      "artist": "YOASOBI"
-    },
-    {
-      "title": "異常気象",
-      "artist": "Official髭男dism"
-    },
-    {
-      "title": "同じ夜",
-      "artist": "Official髭男dism"
-    },
-    {
-      "title": "倍倍FIGHT!",
-      "artist": "Vaundy"
-    },
-    {
-      "title": "バランス",
-      "artist": "Vaundy"
-    },
-    {
-      "title": "spread",
-      "artist": "Vaundy"
-    },
-    {
-      "title": "真夏の夜の夢",
-      "artist": "Saucy Dog"
-    },
-    {
-      "title": "ぷれぜんと",
-      "artist": "Hump Back"
-    },
-    {
-      "title": "シニカルナイトプラン",
-      "artist": "ずっと真夜中でいいのに。"
-    },
-    {
-      "title": "ジレンマ",
-      "artist": "マカロニえんぴつ"
-    },
-    {
-      "title": "ジムノペティ",
-      "artist": "マカロニえんぴつ"
-    },
-    {
-      "title": "アバウト",
-      "artist": "マカロニえんぴつ"
-    },
-    {
-      "title": "オレンジ",
-      "artist": "SMAP"
-    },
-    {
-      "title": "Diamond Days",
-      "artist": "コブクロ"
-    },
-    {
-      "title": "月の踊り",
-      "artist": "TENDRE"
-    },
-    {
-      "title": "風通る丘",
-      "artist": "Lamp"
-    },
-    {
-      "title": "NOBODY ELSE BUT YOU",
-      "artist": "ONE OK ROCK"
-    },
-    {
-      "title": "シャンディ・ガフ",
-      "artist": "カネヨリマサル"
-    },
-    {
-      "title": "アタラシイヒカリ",
-      "artist": "マルシィ"
-    },
-    {
-      "title": "XOXO",
-      "artist": "ENHYPEN"
-    },
-    {
-      "title": "Set Me Free Pt.2",
-      "artist": "TWICE"
-    },
-    {
-      "title": "SPARKLE",
-      "artist": "山下達郎"
-    },
-    {
-      "title": "Loveland Island",
-      "artist": "山下達郎"
-    },
-    {
-      "title": "ボトルシップ",
-      "artist": "sumika"
-    },
-    {
-      "title": "メッセージ",
-      "artist": "福山雅治"
-    },
-    {
-      "title": "戦友",
-      "artist": "コブクロ"
-    },
-    {
-      "title": "オリジナルスマイル",
-      "artist": "SMAP"
-    },
-    {
-      "title": "ライオンハート",
-      "artist": "SMAP"
-    },
-    {
-      "title": "夜空ノムコウ",
-      "artist": "SMAP"
-    },
-    {
-      "title": "Make me happy",
-      "artist": "西野カナ"
-    },
-    {
-      "title": "ナンバーナイン",
-      "artist": "Mr.Children"
-    },
-    {
-      "title": "ハングリースパイダー",
-      "artist": "槇原敬之"
-    },
-    {
-      "title": "ピノ",
-      "artist": "Mrs. GREEN APPLE"
-    },
-    {
-      "title": "SAY YEAH!",
-      "artist": "Aqua Timez"
-    },
-    {
-      "title": "君のままで",
-      "artist": "高橋優"
-    },
-    {
-      "title": "名前",
-      "artist": "SHISHAMO"
-    },
-    {
-      "title": "すごい人",
-      "artist": "SHISHAMO"
-    },
-    {
-      "title": "unlock",
-      "artist": "SEKAI NO OWARI"
-    },
-    {
-      "title": "ライムライト",
-      "artist": "EXILE"
-    },
-    {
-      "title": "PURE",
-      "artist": "浜崎あゆみ"
-    },
-    {
-      "title": "君に会いたいんだ。",
-      "artist": "FUNKY MONKEY BABYS"
-    },
-    {
-      "title": "鏡",
-      "artist": "sumika"
     },
     {
       "title": "君と僕の歌",
@@ -6205,6 +7563,304 @@
     {
       "title": "わたしの一番かわいいところ",
       "artist": "FRUITS ZIPPER"
+    }
+  ],
+  "notFound": [
+    {
+      "title": "Plastic Love",
+      "artist": "竹内まりや"
+    },
+    {
+      "title": "愛している",
+      "artist": "マルシィ"
+    },
+    {
+      "title": "はじまりの歌",
+      "artist": "Tele"
+    },
+    {
+      "title": "丸の内サディスティック",
+      "artist": "椎名林檎"
+    },
+    {
+      "title": "ともだち",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "怪盗",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "LOVE AFFAIR〜秘密のデート",
+      "artist": "サザンオールスターズ"
+    },
+    {
+      "title": "シネマ",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "主人公",
+      "artist": "DECO*27"
+    },
+    {
+      "title": "シャワー",
+      "artist": "yama"
+    },
+    {
+      "title": "やわらかな日",
+      "artist": "Lamp"
+    },
+    {
+      "title": "ボトルシップ",
+      "artist": "Lamp"
+    },
+    {
+      "title": "Slowly",
+      "artist": "Bonobos"
+    },
+    {
+      "title": "スポットライト",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "セツナレンサ",
+      "artist": "GReeeeN"
+    },
+    {
+      "title": "キミガタメ",
+      "artist": "GARNiDELiA"
+    },
+    {
+      "title": "ロウワー",
+      "artist": "ヨルシカ"
+    },
+    {
+      "title": "もう一度",
+      "artist": "中島美嘉"
+    },
+    {
+      "title": "アイ",
+      "artist": "SIRUP"
+    },
+    {
+      "title": "Cure",
+      "artist": "SIRUP"
+    },
+    {
+      "title": "シャイニング",
+      "artist": "iri"
+    },
+    {
+      "title": "君に幸あれ",
+      "artist": "iri"
+    },
+    {
+      "title": "midnight stranger",
+      "artist": "Friday Night Plans"
+    },
+    {
+      "title": "都心",
+      "artist": "Friday Night Plans"
+    },
+    {
+      "title": "君となら",
+      "artist": "関ジャニ∞"
+    },
+    {
+      "title": "何度でも歌おう",
+      "artist": "関ジャニ∞"
+    },
+    {
+      "title": "ジュピター",
+      "artist": "平原綾香"
+    },
+    {
+      "title": "抱きしめてあげる",
+      "artist": "阿部真央"
+    },
+    {
+      "title": "アイのうた",
+      "artist": "GReeeeN"
+    },
+    {
+      "title": "旅の途中",
+      "artist": "槇原敬之"
+    },
+    {
+      "title": "AISHITERU",
+      "artist": "mihimaru GT"
+    },
+    {
+      "title": "ハロー",
+      "artist": "ナオト・インティライミ"
+    },
+    {
+      "title": "才能人応援歌",
+      "artist": "BUMP OF CHICKEN"
+    },
+    {
+      "title": "忘れてた",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "ハロハロ",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "クラクラ",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "別世界",
+      "artist": "amazarashi"
+    },
+    {
+      "title": "ラストダンス",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "月の大きさ",
+      "artist": "RADWIMPS"
+    },
+    {
+      "title": "KING",
+      "artist": "菅田将暉"
+    },
+    {
+      "title": "メリーゴーランド",
+      "artist": "HoneyWorks"
+    },
+    {
+      "title": "ハートビート",
+      "artist": "GReeeeN"
+    },
+    {
+      "title": "Honey",
+      "artist": "Suchmos"
+    },
+    {
+      "title": "異常気象",
+      "artist": "Official髭男dism"
+    },
+    {
+      "title": "同じ夜",
+      "artist": "Official髭男dism"
+    },
+    {
+      "title": "倍倍FIGHT!",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "バランス",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "spread",
+      "artist": "Vaundy"
+    },
+    {
+      "title": "真夏の夜の夢",
+      "artist": "Saucy Dog"
+    },
+    {
+      "title": "ぷれぜんと",
+      "artist": "Hump Back"
+    },
+    {
+      "title": "シニカルナイトプラン",
+      "artist": "ずっと真夜中でいいのに。"
+    },
+    {
+      "title": "ジレンマ",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "ジムノペティ",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "アバウト",
+      "artist": "マカロニえんぴつ"
+    },
+    {
+      "title": "Diamond Days",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "月の踊り",
+      "artist": "TENDRE"
+    },
+    {
+      "title": "風通る丘",
+      "artist": "Lamp"
+    },
+    {
+      "title": "シャンディ・ガフ",
+      "artist": "カネヨリマサル"
+    },
+    {
+      "title": "アタラシイヒカリ",
+      "artist": "マルシィ"
+    },
+    {
+      "title": "XOXO",
+      "artist": "ENHYPEN"
+    },
+    {
+      "title": "ボトルシップ",
+      "artist": "sumika"
+    },
+    {
+      "title": "戦友",
+      "artist": "コブクロ"
+    },
+    {
+      "title": "ライオンハート",
+      "artist": "SMAP"
+    },
+    {
+      "title": "Make me happy",
+      "artist": "西野カナ"
+    },
+    {
+      "title": "ナンバーナイン",
+      "artist": "Mr.Children"
+    },
+    {
+      "title": "ハングリースパイダー",
+      "artist": "槇原敬之"
+    },
+    {
+      "title": "ピノ",
+      "artist": "Mrs. GREEN APPLE"
+    },
+    {
+      "title": "SAY YEAH!",
+      "artist": "Aqua Timez"
+    },
+    {
+      "title": "名前",
+      "artist": "SHISHAMO"
+    },
+    {
+      "title": "すごい人",
+      "artist": "SHISHAMO"
+    },
+    {
+      "title": "unlock",
+      "artist": "SEKAI NO OWARI"
+    },
+    {
+      "title": "ライムライト",
+      "artist": "EXILE"
+    },
+    {
+      "title": "PURE",
+      "artist": "浜崎あゆみ"
+    },
+    {
+      "title": "鏡",
+      "artist": "sumika"
     }
   ],
   "fails": []
